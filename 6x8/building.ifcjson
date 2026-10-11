@@ -23,46 +23,35 @@
       "tread_thickness": 0.03
     },
     {
+      "id": "beam_slab_g0", "type": "IfcBeam", "storey": "Ground Floor",
+      "name": "IBeam_Slab_G0",
+      "x": 1.0, "y": 0.0, "z": 1.1, "rotation": 90.0, "length": 1.0, "depth": 0.2
+    },
+    {
+      "id": "beam_slab_g1", "type": "IfcBeam", "storey": "Ground Floor",
+      "name": "IBeam_Slab_G1",
+      "x": 0.0, "y": 1.0, "z": 1.1, "rotation": 0.0, "length": 3.0, "depth": 0.2
+    },
+    {
       "id": "slab_landing_1a",
       "type": "IfcSlab",
       "storey": "Ground Floor",
       "name": "Landing_1a_Slab",
-      "x": 0.0, "y": 0.0, "z": 1.1, "rotation": 0.0,
-      "points": [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]],
-      "thickness": 0.2
+      "x": 0.0, "y": 0.0, "z": 1.2, "rotation": 0.0,
+      "points": [[0.0, 0.0], [3.0, 0.0], [3.0, 1.0], [0.0, 1.0]],
+      "thickness": 0.1
     },
     {
       "id": "Stair_Flight_1b",
       "type": "IfcStair",
       "storey": "Ground Floor",
       "name": "Stair_Flight_1b",
-      "x": 1.0, "y": 0.5, "z": 1.3, "rotation": 0.0,
+      "x": 1.5, "y": 1.0, "z": 1.3, "rotation": 90.0,
       "width": 1.0,
-      "flight_run": 1.0,
-      "flight_rise": 0.65,
+      "flight_run": 2.0,
+      "flight_rise": 1.3,
       "tread_thickness": 0.03
     },
-    {
-      "id": "slab_landing_1b",
-      "type": "IfcSlab",
-      "storey": "Ground Floor",
-      "name": "Landing_1b_Slab",
-      "x": 0.0, "y": 0.0, "z": 1.75, "rotation": 0.0,
-      "points": [[2.0, 0.0], [3.0, 0.0], [3.0, 1.0], [2.0, 1.0]],
-      "thickness": 0.2
-    },
-    {
-      "id": "Stair_Flight_1c",
-      "type": "IfcStair",
-      "storey": "Ground Floor",
-      "name": "Stair_Flight_1c",
-      "x": 2.5, "y": 1.0, "z": 1.95, "rotation": 90.0,
-      "width": 1.0,
-      "flight_run": 1.0,
-      "flight_rise": 0.65,
-      "tread_thickness": 0.03
-    },
-
 
     {
       "id": "slab_g1_main",
@@ -134,26 +123,39 @@
       "type": "IfcWall",
       "storey": "Ground Floor",
       "name": "F1_South_3_Wall",
-      "x": 5.0, "y": 2.0, "z": 0.0, "rotation": 0.0,
-      "length": 1.0, "thickness": 0.1, "height": 1.8
-    },
-    {
-      "id": "wall_f1_south_4",
-      "type": "IfcWall",
-      "storey": "Ground Floor",
-      "name": "F1_South_3_Wall",
-      "x": 5.0, "y": 2.0, "z": 0.0, "rotation": 90.0,
+      "x": 5.0, "y": 3.0, "z": 0.0, "rotation": 0.0,
       "length": 1.0, "thickness": 0.1, "height": 2.6
     },
 
+    {
+      "id": "beam_by_g0", "type": "IfcBeam", "storey": "Ground Floor",
+      "name": "IBeam_Bath_Y_G0",
+      "x": 3.0, "y": 0.0, "z": 1.1, "rotation": 90.0, "length": 3.0, "depth": 0.2
+    },
+    {
+      "id": "beam_by_g1", "type": "IfcBeam", "storey": "Ground Floor",
+      "name": "IBeam_Bath_Y_G1",
+      "x": 5.0, "y": 0.0, "z": 1.1, "rotation": 90.0, "length": 3.0, "depth": 0.2
+    },
+    {
+      "id": "beam_bx_g0", "type": "IfcBeam", "storey": "Ground Floor",
+      "name": "IBeam_Bath_X_G0",
+      "x": 0.0, "y": 0.0, "z": 1.1, "rotation": 0.0, "length": 5.0, "depth": 0.2
+    },
+    {
+      "id": "beam_bx_g1", "type": "IfcBeam", "storey": "Ground Floor",
+      "name": "IBeam_Bath_X_G1",
+      "x": 3.0, "y": 3.0, "z": 1.1, "rotation": 0.0, "length": 2.0, "depth": 0.2
+    },
+	
     {
       "id": "slab_g1_bathroom_raised",
       "type": "IfcSlab",
       "storey": "Ground Floor",
       "name": "Raised_Bathroom_Floor_Platform",
-      "x": 0.0, "y": 0.0, "z": 1.1, "rotation": 0.0,
+      "x": 0.0, "y": 0.0, "z": 1.2, "rotation": 0.0,
       "points": [[3.0, 0.0], [5.0, 0.0], [5.0, 3.0], [3.0, 3.0]],
-      "thickness": 0.2
+      "thickness": 0.1
     },
     {
       "id": "wall_bath_north",
@@ -192,28 +194,63 @@
       "type": "IfcSlab",
       "storey": "First Floor",
       "name": "Raised_Bathroom_Ceiling",
-      "x": 0.0, "y": 0.0, "z": 3.7, "rotation": 0.0,
+      "x": 0.0, "y": 0.0, "z": 3.8, "rotation": 0.0,
       "points": [[3.0, 0.0], [5.0, 0.0], [5.0, 3.0], [3.0, 3.0]],
-      "thickness": 0.2
+      "thickness": 0.1
+    },
+    {
+      "id": "beam_by_10", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Bath_Y_10",
+      "x": 3.0, "y": 0.0, "z": 3.7, "rotation": 90.0, "length": 4.0, "depth": 0.2
+    },
+    {
+      "id": "beam_by_11", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Bath_Y_11",
+      "x": 5.0, "y": 0.0, "z": 3.7, "rotation": 90.0, "length": 4.0, "depth": 0.2
+    },
+    {
+      "id": "beam_bx_10", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Bath_X_10",
+      "x": 0.0, "y": 0.0, "z": 3.7, "rotation": 0.0, "length": 5.0, "depth": 0.2
+    },
+    {
+      "id": "beam_bx_11", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Bath_X_11",
+      "x": 3.0, "y": 3.0, "z": 3.7, "rotation": 0.0, "length": 2.0, "depth": 0.2
     },
 
+    {
+      "id": "beam_x_11", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Floor_X_11",
+      "x": 0.0, "y": 3.0, "z": 2.4, "rotation": 0.0, "length": 6.0, "depth": 0.2
+    },
+    {
+      "id": "beam_x_12", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Floor_X_12",
+      "x": 2.0, "y": 1.0, "z": 2.4, "rotation": 90.0, "length": 2.0, "depth": 0.2
+    },
+    {
+      "id": "beam_x_13", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Floor_X_13",
+      "x": 2.0, "y": 1.0, "z": 2.4, "rotation": 0.0, "length": 1.0, "depth": 0.2
+    },
     {
       "id": "slab_f2_main",
       "type": "IfcSlab",
       "storey": "First Floor",
       "name": "First_Floor_Structural_Slab",
-      "x": 0.0, "y": 0.0, "z": 2.4, "rotation": 0.0,
-      "points": [[0.0, 3.0], [2.0, 3.0], [2.0, 2.0], [3.0, 2.0], [3.0, 3.0], [6.0, 3.0], [6.0, 8.0], [0.0, 8.0]],
-      "thickness": 0.2
+      "x": 0.0, "y": 0.0, "z": 2.5, "rotation": 0.0,
+      "points": [[0.0, 3.0], [2.0, 3.0], [2.0, 1.0], [3.0, 1.0], [3.0, 3.0], [6.0, 3.0], [6.0, 8.0], [0.0, 8.0]],
+      "thickness": 0.1
     },
     {
       "id": "slab_f2_Se",
       "type": "IfcSlab",
       "storey": "First Floor",
       "name": "First_Floor_Se_Slab",
-      "x": 0.0, "y": 0.0, "z": 2.4, "rotation": 0.0,
+      "x": 0.0, "y": 0.0, "z": 2.5, "rotation": 0.0,
       "points": [[5.0, 0.0], [6.0, 0.0], [6.0, 3.0], [5.0, 3.0]],
-      "thickness": 0.2
+      "thickness": 0.1
     },
 
     {
@@ -221,70 +258,40 @@
       "type": "IfcStair",
       "storey": "First Floor",
       "name": "Stair_Flight_2a",
-      "x": 2.0, "y": 2.5, "z": 2.6, "rotation": 180.0,
+      "x": 0.5, "y": 3.0, "z": 2.6, "rotation": -90.0,
       "width": 1.0,
-      "flight_run": 1.0,
-      "flight_rise": 0.65,
+      "flight_run": 2.0,
+      "flight_rise": 1.3,
       "tread_thickness": 0.03
+    },
+    {
+      "id": "beam_slab_11", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Slab_11",
+      "x": 1.0, "y": 0.0, "z": 3.7, "rotation": 90.0, "length": 1.0, "depth": 0.2
+    },
+    {
+      "id": "beam_slab_12", "type": "IfcBeam", "storey": "Ground Floor",
+      "name": "IBeam_Slab_12",
+      "x": 0.0, "y": 1.0, "z": 3.7, "rotation": 0.0, "length": 3.0, "depth": 0.2
     },
     {
       "id": "slab_landing_2a",
       "type": "IfcSlab",
       "storey": "First Floor",
       "name": "Landing_2a_Slab",
-      "x": 0.0, "y": 0.0, "z": 3.05, "rotation": 0.0,
-      "points": [[0.0, 2.0], [1.0, 2.0], [1.0, 3.0], [0.0, 3.0]],
-      "thickness": 0.2
+      "x": 0.0, "y": 0.0, "z": 3.8, "rotation": 0.0,
+      "points": [[0.0, 0.0], [3.0, 0.0], [3.0, 1.0], [0.0, 1.0]],
+      "thickness": 0.1
     },
     {
-      "id": "stair_flight_1a",
+      "id": "Stair_Flight_2b",
       "type": "IfcStair",
       "storey": "First Floor",
-      "name": "Stair_Flight_1a",
-      "x": 0.5, "y": 2.0, "z": 3.25, "rotation": -90.0,
+      "name": "Stair_Flight_2b",
+      "x": 1.5, "y": 1.0, "z": 3.9, "rotation": 90.0,
       "width": 1.0,
-      "flight_run": 1.0,
-      "flight_rise": 0.65,
-      "tread_thickness": 0.03
-    },
-    {
-      "id": "slab_landing_2b",
-      "type": "IfcSlab",
-      "storey": "First Floor",
-      "name": "Landing_2b_Slab",
-      "x": 0.0, "y": 0.0, "z": 3.7, "rotation": 0.0,
-      "points": [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]],
-      "thickness": 0.2
-    },
-    {
-      "id": "Stair_Flight_2c",
-      "type": "IfcStair",
-      "storey": "First Floor",
-      "name": "Stair_Flight_2c",
-      "x": 1.0, "y": 0.5, "z": 3.9, "rotation": 0.0,
-      "width": 1.0,
-      "flight_run": 1.0,
-      "flight_rise": 0.65,
-      "tread_thickness": 0.03
-    },
-    {
-      "id": "slab_landing_2c",
-      "type": "IfcSlab",
-      "storey": "First Floor",
-      "name": "Landing_2c_Slab",
-      "x": 0.0, "y": 0.0, "z": 4.35, "rotation": 0.0,
-      "points": [[2.0, 0.0], [3.0, 0.0], [3.0, 1.0], [2.0, 1.0]],
-      "thickness": 0.2
-    },
-    {
-      "id": "Stair_Flight_2d",
-      "type": "IfcStair",
-      "storey": "First Floor",
-      "name": "Stair_Flight_2d",
-      "x": 2.5, "y": 1.0, "z": 4.55, "rotation": 90.0,
-      "width": 1.0,
-      "flight_run": 1.0,
-      "flight_rise": 0.65,
+      "flight_run": 2.0,
+      "flight_rise": 1.3,
       "tread_thickness": 0.03
     },
 
@@ -336,6 +343,176 @@
       "x": 5.0, "y": 0.0, "z": 2.6, "rotation": 0.0,
       "length": 1.0, "thickness": 0.1, "height": 2.6
     },
+    {
+      "id": "wall_f2_x_3",
+      "type": "IfcWall",
+      "storey": "First Floor",
+      "name": "F2_X_3_Wall",
+      "x": 0.0, "y": 4.0, "z": 2.6, "rotation": 0.0,
+      "length": 2.0, "thickness": 0.1, "height": 2.6
+    },
+    {
+      "id": "wall_f2_y_20",
+      "type": "IfcWall",
+      "storey": "First Floor",
+      "name": "F2_Y_20_Wall",
+      "x": 2.0, "y": 1.0, "z": 2.6, "rotation": 90.0,
+      "length": 3.0, "thickness": 0.1, "height": 2.6
+    },
+    {
+      "id": "wall_f2_y_21",
+      "type": "IfcWall",
+      "storey": "First Floor",
+      "name": "F2_Y_21_Wall",
+      "x": 2.0, "y": 0.0, "z": 3.9, "rotation": 90.0,
+      "length": 1.0, "thickness": 0.1, "height": 1.3
+    },
+    {
+      "id": "wall_f2_x_1",
+      "type": "IfcWall",
+      "storey": "First Floor",
+      "name": "F2_X_1_Wall",
+      "x": 2.0, "y": 1.0, "z": 2.6, "rotation": 0.0,
+      "length": 1.0, "thickness": 0.1, "height": 1.3
+    },
+
+    {
+      "id": "col_G_00", "type": "IfcColumn", "storey": "Ground Floor",
+      "name": "HBeam_Column_G_00",
+      "x": 1.0, "y": 1.0, "z": 0.0, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_G_10", "type": "IfcColumn", "storey": "Ground Floor",
+      "name": "HBeam_Column_G_10",
+      "x": 3.0, "y": 1.0, "z": 0.0, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_G_20", "type": "IfcColumn", "storey": "Ground Floor",
+      "name": "HBeam_Column_G_20",
+      "x": 5.0, "y": 1.0, "z": 0.0, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_G_01", "type": "IfcColumn", "storey": "Ground Floor",
+      "name": "HBeam_Column_G_01",
+      "x": 1.0, "y": 4.0, "z": 0.0, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_G_11", "type": "IfcColumn", "storey": "Ground Floor",
+      "name": "HBeam_Column_G_11",
+      "x": 3.0, "y": 4.0, "z": 0.0, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_G_21", "type": "IfcColumn", "storey": "Ground Floor",
+      "name": "HBeam_Column_G_21",
+      "x": 5.0, "y": 4.0, "z": 0.0, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_G_02", "type": "IfcColumn", "storey": "Ground Floor",
+      "name": "HBeam_Column_G_02",
+      "x": 1.0, "y": 7.0, "z": 0.0, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_G_12", "type": "IfcColumn", "storey": "Ground Floor",
+      "name": "HBeam_Column_G_12",
+      "x": 3.0, "y": 7.0, "z": 0.0, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_G_22", "type": "IfcColumn", "storey": "Ground Floor",
+      "name": "HBeam_Column_G_22",
+      "x": 5.0, "y": 7.0, "z": 0.0, "rotation": 0.0, "height": 2.6
+    },
+
+    {
+      "id": "col_F_00", "type": "IfcColumn", "storey": "First Floor",
+      "name": "HBeam_Column_F_00",
+      "x": 1.0, "y": 1.0, "z": 2.6, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_F_10", "type": "IfcColumn", "storey": "First Floor",
+      "name": "HBeam_Column_F_10",
+      "x": 3.0, "y": 1.0, "z": 2.6, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_F_20", "type": "IfcColumn", "storey": "First Floor",
+      "name": "HBeam_Column_F_20",
+      "x": 5.0, "y": 1.0, "z": 2.6, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_F_01", "type": "IfcColumn", "storey": "First Floor",
+      "name": "HBeam_Column_F_01",
+      "x": 1.0, "y": 4.0, "z": 2.6, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_F_11", "type": "IfcColumn", "storey": "First Floor",
+      "name": "HBeam_Column_F_11",
+      "x": 3.0, "y": 4.0, "z": 2.6, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_F_21", "type": "IfcColumn", "storey": "First Floor",
+      "name": "HBeam_Column_F_21",
+      "x": 5.0, "y": 4.0, "z": 2.6, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_F_02", "type": "IfcColumn", "storey": "First Floor",
+      "name": "HBeam_Column_F_02",
+      "x": 1.0, "y": 7.0, "z": 2.6, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_F_12", "type": "IfcColumn", "storey": "First Floor",
+      "name": "HBeam_Column_F_12",
+      "x": 3.0, "y": 7.0, "z": 2.6, "rotation": 0.0, "height": 2.6
+    },
+    {
+      "id": "col_F_22", "type": "IfcColumn", "storey": "First Floor",
+      "name": "HBeam_Column_F_22",
+      "x": 5.0, "y": 7.0, "z": 2.6, "rotation": 0.0, "height": 2.6
+    },
+
+    {
+      "id": "beam_y_0", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Floor2_Y_0",
+      "x": 0.0, "y": 3.0, "z": 2.4, "rotation": 90.0, "length": 5.0, "depth": 0.2
+    },
+    {
+      "id": "beam_y_1", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Floor2_Y_1",
+      "x": 1.0, "y": 3.0, "z": 2.4, "rotation": 90.0, "length": 5.0, "depth": 0.2
+    },
+    {
+      "id": "beam_y_3", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Floor2_Y_3",
+      "x": 3.0, "y": 1.0, "z": 2.4, "rotation": 90.0, "length": 7.0, "depth": 0.2
+    },
+    {
+      "id": "beam_y_5", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Floor2_Y_5",
+      "x": 5.0, "y": 0.0, "z": 2.4, "rotation": 90.0, "length": 8.0, "depth": 0.2
+    },
+    {
+      "id": "beam_y_6", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Floor2_Y_6",
+      "x": 6.0, "y": 0.0, "z": 2.4, "rotation": 90.0, "length": 8.0, "depth": 0.2
+    },
+    {
+      "id": "beam_x_0", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Floor2_X_0",
+      "x": 5.0, "y": 1.0, "z": 2.4, "rotation": 0.0, "length": 1.0, "depth": 0.2
+    },
+    {
+      "id": "beam_x_1", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Floor2_X_1",
+      "x": 0.0, "y": 4.0, "z": 2.4, "rotation": 0.0, "length": 6.0, "depth": 0.2
+    },
+    {
+      "id": "beam_x_2", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Floor2_X_2",
+      "x": 0.0, "y": 7.0, "z": 2.4, "rotation": 0.0, "length": 6.0, "depth": 0.2
+    },
+    {
+      "id": "beam_x_8", "type": "IfcBeam", "storey": "First Floor",
+      "name": "IBeam_Floor2_X_8",
+      "x": 0.0, "y": 8.0, "z": 2.4, "rotation": 0.0, "length": 6.0, "depth": 0.2
+    },
 
     {
       "id": "roof_1",
@@ -343,7 +520,7 @@
       "storey": "Second Floor",
       "name": "Roof_1",
       "x": 0.0, "y": 0.0, "z": 5.0, "rotation": 0.0,
-      "points": [[0.0, 2.0], [3.0, 2.0], [3.0, 0.0], [6.0, 0.0], [6.0, 8.0], [0.0, 8.0]],
+      "points": [[0.0, 3.0], [2.0, 3.0], [2.0, 0.0], [6.0, 0.0], [6.0, 8.0], [0.0, 8.0]],
       "thickness": 0.2
     },
     {

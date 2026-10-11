@@ -10,17 +10,59 @@
       "floor_height": 2.6,
       "roof_pitch": 30.0
     },
+
     {
-      "id": "staircase_main",
+      "id": "stair_flight_1a",
       "type": "IfcStair",
       "storey": "Ground Floor",
-      "name": "Main_U_Staircase",
-      "x": 0.0, "y": 3.0, "z": 0.0, "rotation": -90.0,
+      "name": "Stair_Flight_1a",
+      "x": 0.5, "y": 3.0, "z": 0.0, "rotation": -90.0,
       "width": 1.0,
       "flight_run": 2.0,
       "flight_rise": 1.3,
       "tread_thickness": 0.03
     },
+    {
+      "id": "slab_landing_1a",
+      "type": "IfcSlab",
+      "storey": "Ground Floor",
+      "name": "Landing_1a_Slab",
+      "x": 0.0, "y": 0.0, "z": 1.1, "rotation": 0.0,
+      "points": [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]],
+      "thickness": 0.2
+    },
+    {
+      "id": "Stair_Flight_1b",
+      "type": "IfcStair",
+      "storey": "Ground Floor",
+      "name": "Stair_Flight_1b",
+      "x": 1.0, "y": 0.5, "z": 1.3, "rotation": 0.0,
+      "width": 1.0,
+      "flight_run": 1.0,
+      "flight_rise": 0.65,
+      "tread_thickness": 0.03
+    },
+    {
+      "id": "slab_landing_1b",
+      "type": "IfcSlab",
+      "storey": "Ground Floor",
+      "name": "Landing_1b_Slab",
+      "x": 0.0, "y": 0.0, "z": 1.75, "rotation": 0.0,
+      "points": [[2.0, 0.0], [3.0, 0.0], [3.0, 1.0], [2.0, 1.0]],
+      "thickness": 0.2
+    },
+    {
+      "id": "Stair_Flight_1c",
+      "type": "IfcStair",
+      "storey": "Ground Floor",
+      "name": "Stair_Flight_1c",
+      "x": 2.5, "y": 1.0, "z": 1.95, "rotation": 90.0,
+      "width": 1.0,
+      "flight_run": 1.0,
+      "flight_rise": 0.65,
+      "tread_thickness": 0.03
+    },
+
 
     {
       "id": "slab_g1_main",
@@ -28,7 +70,7 @@
       "storey": "Ground Floor",
       "name": "Ground_Main_Living_Slab",
       "x": 0.0, "y": 0.0, "z": 0.0, "rotation": 0.0,
-      "points": [[0.0, 0.0], [3.0, 0.0], [3.0, 4.0], [6.0, 4.0], [6.0, 8.0], [0.0, 8.0]],
+      "points": [[0.0, 0.0], [3.0, 0.0], [3.0, 3.0], [6.0, 3.0], [6.0, 8.0], [0.0, 8.0]],
       "thickness": 0.2
     },
     {
@@ -60,16 +102,8 @@
       "type": "IfcWall",
       "storey": "Ground Floor",
       "name": "F1_East_1_Wall",
-      "x": 6.0, "y": 4.0, "z": 0.0, "rotation": 90.0,
-      "length": 4.0, "thickness": 0.1, "height": 2.6
-    },
-    {
-      "id": "wall_f1_east_2",
-      "type": "IfcWall",
-      "storey": "Ground Floor",
-      "name": "F1_East_2_Wall",
-      "x": 3.0, "y": 0.0, "z": 0.0, "rotation": 90.0,
-      "length": 1.0, "thickness": 0.1, "height": 2.6
+      "x": 6.0, "y": 3.0, "z": 0.0, "rotation": 90.0,
+      "length": 5.0, "thickness": 0.1, "height": 2.6
     },
     {
       "id": "wall_f1_room_west",
@@ -84,7 +118,7 @@
       "type": "IfcWall",
       "storey": "Ground Floor",
       "name": "F1_Room_Center_Wall",
-      "x": 3.0, "y": 1.0, "z": 0.0, "rotation": 90.0,
+      "x": 3.0, "y": 0.0, "z": 0.0, "rotation": 90.0,
       "length": 3.0, "thickness": 0.1, "height": 1.3
     },
     {
@@ -92,7 +126,7 @@
       "type": "IfcWall",
       "storey": "Ground Floor",
       "name": "F1_South_2_Wall",
-      "x": 3.0, "y": 4.0, "z": 0.0, "rotation": 0.0,
+      "x": 3.0, "y": 3.0, "z": 0.0, "rotation": 0.0,
       "length": 2.0, "thickness": 0.1, "height": 1.3
     },
     {
@@ -100,7 +134,7 @@
       "type": "IfcWall",
       "storey": "Ground Floor",
       "name": "F1_South_3_Wall",
-      "x": 5.0, "y": 4.0, "z": 0.0, "rotation": 0.0,
+      "x": 5.0, "y": 3.0, "z": 0.0, "rotation": 0.0,
       "length": 1.0, "thickness": 0.1, "height": 2.6
     },
 
@@ -110,7 +144,7 @@
       "storey": "Ground Floor",
       "name": "Raised_Bathroom_Floor_Platform",
       "x": 0.0, "y": 0.0, "z": 1.1, "rotation": 0.0,
-      "points": [[3.0, 1.0], [5.0, 1.0], [5.0, 4.0], [3.0, 4.0]],
+      "points": [[3.0, 0.0], [5.0, 0.0], [5.0, 3.0], [3.0, 3.0]],
       "thickness": 0.2
     },
     {
@@ -118,7 +152,7 @@
       "type": "IfcWall",
       "storey": "Ground Floor",
       "name": "Bath_North_Wall",
-      "x": 3.0, "y": 4.0, "z": 1.3, "rotation": 0.0,
+      "x": 3.0, "y": 3.0, "z": 1.3, "rotation": 0.0,
       "length": 2.0, "thickness": 0.1, "height": 2.6
     },
     {
@@ -126,7 +160,7 @@
       "type": "IfcWall",
       "storey": "Ground Floor",
       "name": "Bath_South_Wall",
-      "x": 3.0, "y": 1.0, "z": 1.3, "rotation": 0.0,
+      "x": 3.0, "y": 0.0, "z": 1.3, "rotation": 0.0,
       "length": 2.0, "thickness": 0.1, "height": 2.6
     },
     {
@@ -134,7 +168,7 @@
       "type": "IfcWall",
       "storey": "Ground Floor",
       "name": "Bath_West_Wall",
-      "x": 3.0, "y": 1.0, "z": 1.3, "rotation": 90.0,
+      "x": 3.0, "y": 0.0, "z": 1.3, "rotation": 90.0,
       "length": 3.0, "thickness": 0.1, "height": 2.6
     },
     {
@@ -142,8 +176,17 @@
       "type": "IfcWall",
       "storey": "Ground Floor",
       "name": "Bath_East_Wall",
-      "x": 5.0, "y": 1.0, "z": 1.3, "rotation": 90.0,
+      "x": 5.0, "y": 0.0, "z": 1.3, "rotation": 90.0,
       "length": 3.0, "thickness": 0.1, "height": 2.6
+    },
+    {
+      "id": "slab_g2_bathroom_raised",
+      "type": "IfcSlab",
+      "storey": "First Floor",
+      "name": "Raised_Bathroom_Ceiling",
+      "x": 0.0, "y": 0.0, "z": 3.7, "rotation": 0.0,
+      "points": [[3.0, 0.0], [5.0, 0.0], [5.0, 3.0], [3.0, 3.0]],
+      "thickness": 0.2
     },
 
     {
@@ -152,17 +195,89 @@
       "storey": "First Floor",
       "name": "First_Floor_Structural_Slab",
       "x": 0.0, "y": 0.0, "z": 2.4, "rotation": 0.0,
-      "points": [[0.0, 3.0], [3.0, 3.0], [3.0, 4.0], [6.0, 4.0], [6.0, 8.0], [0.0, 8.0]],
+      "points": [[0.0, 3.0], [2.0, 3.0], [2.0, 2.0], [3.0, 2.0], [3.0, 3.0], [6.0, 3.0], [6.0, 8.0], [0.0, 8.0]],
       "thickness": 0.2
     },
     {
-      "id": "slab_f2_l",
+      "id": "slab_f2_Se",
       "type": "IfcSlab",
       "storey": "First Floor",
-      "name": "First_Floor_L_Slab",
+      "name": "First_Floor_Se_Slab",
       "x": 0.0, "y": 0.0, "z": 2.4, "rotation": 0.0,
-      "points": [[3.0, 0.0], [6.0, 0.0], [6.0, 4.0], [5.0, 4.0], [5.0, 1.0], [3.0, 1.0]],
+      "points": [[5.0, 0.0], [6.0, 0.0], [6.0, 3.0], [5.0, 3.0]],
       "thickness": 0.2
+    },
+
+    {
+      "id": "stair_flight_2a",
+      "type": "IfcStair",
+      "storey": "First Floor",
+      "name": "Stair_Flight_2a",
+      "x": 2.0, "y": 2.5, "z": 2.6, "rotation": 180.0,
+      "width": 1.0,
+      "flight_run": 1.0,
+      "flight_rise": 0.65,
+      "tread_thickness": 0.03
+    },
+    {
+      "id": "slab_landing_2a",
+      "type": "IfcSlab",
+      "storey": "First Floor",
+      "name": "Landing_2a_Slab",
+      "x": 0.0, "y": 0.0, "z": 3.05, "rotation": 0.0,
+      "points": [[0.0, 2.0], [1.0, 2.0], [1.0, 3.0], [0.0, 3.0]],
+      "thickness": 0.2
+    },
+    {
+      "id": "stair_flight_1a",
+      "type": "IfcStair",
+      "storey": "First Floor",
+      "name": "Stair_Flight_1a",
+      "x": 0.5, "y": 2.0, "z": 3.25, "rotation": -90.0,
+      "width": 1.0,
+      "flight_run": 1.0,
+      "flight_rise": 0.65,
+      "tread_thickness": 0.03
+    },
+    {
+      "id": "slab_landing_2b",
+      "type": "IfcSlab",
+      "storey": "First Floor",
+      "name": "Landing_2b_Slab",
+      "x": 0.0, "y": 0.0, "z": 3.7, "rotation": 0.0,
+      "points": [[0.0, 0.0], [1.0, 0.0], [1.0, 1.0], [0.0, 1.0]],
+      "thickness": 0.2
+    },
+    {
+      "id": "Stair_Flight_2c",
+      "type": "IfcStair",
+      "storey": "First Floor",
+      "name": "Stair_Flight_2c",
+      "x": 1.0, "y": 0.5, "z": 3.9, "rotation": 0.0,
+      "width": 1.0,
+      "flight_run": 1.0,
+      "flight_rise": 0.65,
+      "tread_thickness": 0.03
+    },
+    {
+      "id": "slab_landing_2c",
+      "type": "IfcSlab",
+      "storey": "First Floor",
+      "name": "Landing_2c_Slab",
+      "x": 0.0, "y": 0.0, "z": 4.35, "rotation": 0.0,
+      "points": [[2.0, 0.0], [3.0, 0.0], [3.0, 1.0], [2.0, 1.0]],
+      "thickness": 0.2
+    },
+    {
+      "id": "Stair_Flight_2d",
+      "type": "IfcStair",
+      "storey": "First Floor",
+      "name": "Stair_Flight_2d",
+      "x": 2.5, "y": 1.0, "z": 4.55, "rotation": 90.0,
+      "width": 1.0,
+      "flight_run": 1.0,
+      "flight_rise": 0.65,
+      "tread_thickness": 0.03
     },
 
     {
@@ -171,14 +286,6 @@
       "storey": "First Floor",
       "name": "F2_North_Wall",
       "x": 0.0, "y": 8.0, "z": 2.6, "rotation": 0.0,
-      "length": 6.0, "thickness": 0.1, "height": 2.6
-    },
-    {
-      "id": "wall_f2_south",
-      "type": "IfcWall",
-      "storey": "First Floor",
-      "name": "F2_South_Wall",
-      "x": 0.0, "y": 0.0, "z": 2.6, "rotation": 0.0,
       "length": 6.0, "thickness": 0.1, "height": 2.6
     },
     {
@@ -196,6 +303,52 @@
       "name": "F2_East_Wall",
       "x": 6.0, "y": 0.0, "z": 2.6, "rotation": 90.0,
       "length": 8.0, "thickness": 0.1, "height": 2.6
+    },
+    {
+      "id": "wall_f2_south_1",
+      "type": "IfcWall",
+      "storey": "First Floor",
+      "name": "F2_South_1_Wall",
+      "x": 0.0, "y": 0.0, "z": 2.6, "rotation": 0.0,
+      "length": 3.0, "thickness": 0.1, "height": 2.6
+    },
+    {
+      "id": "wall_f2_south_2",
+      "type": "IfcWall",
+      "storey": "First Floor",
+      "name": "F2_South_2_Wall",
+      "x": 3.0, "y": 0.0, "z": 3.9, "rotation": 0.0,
+      "length": 2.0, "thickness": 0.1, "height": 1.3
+    },
+    {
+      "id": "wall_f2_south_3",
+      "type": "IfcWall",
+      "storey": "First Floor",
+      "name": "F2_South_3_Wall",
+      "x": 5.0, "y": 0.0, "z": 2.6, "rotation": 0.0,
+      "length": 1.0, "thickness": 0.1, "height": 2.6
+    },
+
+    {
+      "id": "roof_1",
+      "type": "IfcSlab",
+      "storey": "Second Floor",
+      "name": "Roof_1",
+      "x": 0.0, "y": 0.0, "z": 5.0, "rotation": 0.0,
+      "points": [[0.0, 2.0], [3.0, 2.0], [3.0, 0.0], [6.0, 0.0], [6.0, 8.0], [0.0, 8.0]],
+      "thickness": 0.2
+    },
+    {
+      "id": "roof_1",
+      "type": "IfcRoof",
+      "storey": "Second Floor",
+      "name": "Main_Hip_Roof_30deg",
+      "x": 0.0,
+      "y": 0.0,
+      "z": 5.2,
+      "rotation": 0.0,
+      "points": [[0.0, 0.0], [6.0, 0.0], [6.0, 8.0], [0.0, 8.0]],
+      "thickness": 0.2
     }
   ]
 }

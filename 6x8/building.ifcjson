@@ -1,0 +1,78 @@
+{
+  "version": "0.0.1",
+  "data": [
+    {
+      "id": "house_config",
+      "type": "ProjectGlobal",
+      "width": 6.0,
+      "length": 8.0,
+      "wall_thickness": 0.1,
+      "floor_height": 2.8,
+      "roof_pitch": 30.0
+    },
+    {
+      "id": "wall_f1_north",
+      "type": "IfcWall",
+      "storey": "Ground Floor",
+      "name": "F1_North_Wall",
+      "x": 0.0, "y": 8.0, "z": 0.0, "rotation": 0.0,
+      "length": 6.0, "thickness": 0.1, "height": 2.8
+    },
+    {
+      "id": "wall_f1_south",
+      "type": "IfcWall",
+      "storey": "Ground Floor",
+      "name": "F1_South_Wall",
+      "x": 0.0, "y": 0.0, "z": 0.0, "rotation": 0.0,
+      "length": 6.0, "thickness": 0.1, "height": 2.8
+    },
+    {
+      "id": "wall_f1_west",
+      "type": "IfcWall",
+      "storey": "Ground Floor",
+      "name": "F1_West_Wall",
+      "x": 0.0, "y": 0.0, "z": 0.0, "rotation": 90.0,
+      "length": 8.0, "thickness": 0.1, "height": 2.8
+    },
+    {
+      "id": "wall_f1_east",
+      "type": "IfcWall",
+      "storey": "Ground Floor",
+      "name": "F1_East_Wall",
+      "x": 6.0, "y": 0.0, "z": 0.0, "rotation": 90.0,
+      "length": 8.0, "thickness": 0.1, "height": 2.8
+    },
+    {
+      "id": "wall_f2_north",
+      "type": "IfcWall",
+      "storey": "First Floor",
+      "name": "F2_North_Wall",
+      "x": 0.0, "y": 8.0, "z": 2.8, "rotation": 0.0,
+      "length": 6.0, "thickness": 0.1, "height": 2.8
+    },
+    {
+      "id": "wall_f2_south",
+      "type": "IfcWall",
+      "storey": "First Floor",
+      "name": "F2_South_Wall",
+      "x": 0.0, "y": 0.0, "z": 2.8, "rotation": 0.0,
+      "length": 6.0, "thickness": 0.1, "height": 2.8
+    },
+    {
+      "id": "wall_f2_west",
+      "type": "IfcWall",
+      "storey": "First Floor",
+      "name": "F2_West_Wall",
+      "x": 0.0, "y": 0.0, "z": 2.8, "rotation": 90.0,
+      "length": 8.0, "thickness": 0.1, "height": 2.8
+    },
+    {
+      "id": "wall_f2_east",
+      "type": "IfcWall",
+      "storey": "First Floor",
+      "name": "F2_East_Wall",
+      "x": 6.0, "y": 0.0, "z": 2.8, "rotation": 90.0,
+      "length": 8.0, "thickness": 0.1, "height": 2.8
+    }
+  ]
+}

@@ -7,24 +7,36 @@
       "width": 6.0,
       "length": 8.0,
       "wall_thickness": 0.1,
-      "floor_height": 2.8,
+      "floor_height": 2.6,
       "roof_pitch": 30.0
     },
+    {
+      "id": "staircase_main",
+      "type": "IfcStair",
+      "storey": "Ground Floor",
+      "name": "Main_U_Staircase",
+      "x": 0.0, "y": 3.0, "z": 0.0, "rotation": -90.0,
+      "width": 1.0,
+      "flight_run": 2.0,
+      "flight_rise": 1.3,
+      "tread_thickness": 0.03
+    },
+
     {
       "id": "wall_f1_north",
       "type": "IfcWall",
       "storey": "Ground Floor",
       "name": "F1_North_Wall",
       "x": 0.0, "y": 8.0, "z": 0.0, "rotation": 0.0,
-      "length": 6.0, "thickness": 0.1, "height": 2.8
+      "length": 6.0, "thickness": 0.1, "height": 2.6
     },
     {
-      "id": "wall_f1_south",
+      "id": "wall_f1_south_1",
       "type": "IfcWall",
       "storey": "Ground Floor",
-      "name": "F1_South_Wall",
+      "name": "F1_South_1_Wall",
       "x": 0.0, "y": 0.0, "z": 0.0, "rotation": 0.0,
-      "length": 6.0, "thickness": 0.1, "height": 2.8
+      "length": 3.0, "thickness": 0.1, "height": 2.6
     },
     {
       "id": "wall_f1_west",
@@ -32,47 +44,122 @@
       "storey": "Ground Floor",
       "name": "F1_West_Wall",
       "x": 0.0, "y": 0.0, "z": 0.0, "rotation": 90.0,
-      "length": 8.0, "thickness": 0.1, "height": 2.8
+      "length": 8.0, "thickness": 0.1, "height": 2.6
     },
     {
-      "id": "wall_f1_east",
+      "id": "wall_f1_east_1",
       "type": "IfcWall",
       "storey": "Ground Floor",
-      "name": "F1_East_Wall",
-      "x": 6.0, "y": 0.0, "z": 0.0, "rotation": 90.0,
-      "length": 8.0, "thickness": 0.1, "height": 2.8
+      "name": "F1_East_1_Wall",
+      "x": 6.0, "y": 4.0, "z": 0.0, "rotation": 90.0,
+      "length": 4.0, "thickness": 0.1, "height": 2.6
     },
+    {
+      "id": "wall_f1_east_2",
+      "type": "IfcWall",
+      "storey": "Ground Floor",
+      "name": "F1_East_2_Wall",
+      "x": 3.0, "y": 0.0, "z": 0.0, "rotation": 90.0,
+      "length": 1.0, "thickness": 0.1, "height": 2.6
+    },
+	
+    {
+      "id": "wall_f1_room_west",
+      "type": "IfcWall",
+      "storey": "Ground Floor",
+      "name": "F1_Room_West_Wall",
+      "x": 3.0, "y": 4.0, "z": 0.0, "rotation": 90.0,
+      "length": 4.0, "thickness": 0.1, "height": 2.6
+    },
+    {
+      "id": "wall_f1_center",
+      "type": "IfcWall",
+      "storey": "Ground Floor",
+      "name": "F1_Room_Center_Wall",
+      "x": 3.0, "y": 1.0, "z": 0.0, "rotation": 90.0,
+      "length": 3.0, "thickness": 0.1, "height": 1.3
+    },
+    {
+      "id": "wall_f1_south_2",
+      "type": "IfcWall",
+      "storey": "Ground Floor",
+      "name": "F1_South_2_Wall",
+      "x": 3.0, "y": 4.0, "z": 0.0, "rotation": 0.0,
+      "length": 2.0, "thickness": 0.1, "height": 1.3
+    },
+    {
+      "id": "wall_f1_south_3",
+      "type": "IfcWall",
+      "storey": "Ground Floor",
+      "name": "F1_South_3_Wall",
+      "x": 5.0, "y": 4.0, "z": 0.0, "rotation": 0.0,
+      "length": 1.0, "thickness": 0.1, "height": 2.6
+    },
+
+    {
+      "id": "wall_bath_north",
+      "type": "IfcWall",
+      "storey": "Ground Floor",
+      "name": "Bath_North_Wall",
+      "x": 3.0, "y": 4.0, "z": 1.3, "rotation": 0.0,
+      "length": 2.0, "thickness": 0.1, "height": 2.6
+    },
+    {
+      "id": "wall_bath_south",
+      "type": "IfcWall",
+      "storey": "Ground Floor",
+      "name": "Bath_South_Wall",
+      "x": 3.0, "y": 1.0, "z": 1.3, "rotation": 0.0,
+      "length": 2.0, "thickness": 0.1, "height": 2.6
+    },
+    {
+      "id": "wall_bath_west",
+      "type": "IfcWall",
+      "storey": "Ground Floor",
+      "name": "Bath_West_Wall",
+      "x": 3.0, "y": 1.0, "z": 1.3, "rotation": 90.0,
+      "length": 3.0, "thickness": 0.1, "height": 2.6
+    },
+    {
+      "id": "wall_bath_east",
+      "type": "IfcWall",
+      "storey": "Ground Floor",
+      "name": "Bath_East_Wall",
+      "x": 5.0, "y": 1.0, "z": 1.3, "rotation": 90.0,
+      "length": 3.0, "thickness": 0.1, "height": 2.6
+    },
+
     {
       "id": "wall_f2_north",
       "type": "IfcWall",
       "storey": "First Floor",
       "name": "F2_North_Wall",
-      "x": 0.0, "y": 8.0, "z": 2.8, "rotation": 0.0,
-      "length": 6.0, "thickness": 0.1, "height": 2.8
+      "x": 0.0, "y": 8.0, "z": 2.6, "rotation": 0.0,
+      "length": 6.0, "thickness": 0.1, "height": 2.6
     },
     {
       "id": "wall_f2_south",
       "type": "IfcWall",
       "storey": "First Floor",
       "name": "F2_South_Wall",
-      "x": 0.0, "y": 0.0, "z": 2.8, "rotation": 0.0,
-      "length": 6.0, "thickness": 0.1, "height": 2.8
+      "x": 0.0, "y": 0.0, "z": 2.6, "rotation": 0.0,
+      "length": 6.0, "thickness": 0.1, "height": 2.6
     },
     {
       "id": "wall_f2_west",
       "type": "IfcWall",
       "storey": "First Floor",
       "name": "F2_West_Wall",
-      "x": 0.0, "y": 0.0, "z": 2.8, "rotation": 90.0,
-      "length": 8.0, "thickness": 0.1, "height": 2.8
+      "x": 0.0, "y": 0.0, "z": 2.6, "rotation": 90.0,
+      "length": 8.0, "thickness": 0.1, "height": 2.6
     },
     {
       "id": "wall_f2_east",
       "type": "IfcWall",
       "storey": "First Floor",
       "name": "F2_East_Wall",
-      "x": 6.0, "y": 0.0, "z": 2.8, "rotation": 90.0,
-      "length": 8.0, "thickness": 0.1, "height": 2.8
+      "x": 6.0, "y": 0.0, "z": 2.6, "rotation": 90.0,
+      "length": 8.0, "thickness": 0.1, "height": 2.6
     }
   ]
 }

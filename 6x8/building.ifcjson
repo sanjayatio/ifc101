@@ -59,12 +59,17 @@
     {
       "id": "beam_slab_g0", "type": "IfcBeam", "storey": "Ground Floor",
       "name": "WF_Main_Slab_G0",
-      "x": 1.0, "y": 0.0, "z": 1.1, "rotation": 90.0, "length": 1.0
+      "x": 1.0, "y": 0.0025, "z": 1.1, "rotation": 90.0, "length": 0.9225
     },
     {
-      "id": "beam_slab_g1", "type": "IfcBeam", "storey": "Ground Floor",
-      "name": "WF_Secondary_Slab_G1",
-      "x": 0.0, "y": 1.0, "z": 1.1, "rotation": 0.0, "length": 3.0
+      "id": "beam_slab_g1_a", "type": "IfcBeam", "storey": "Ground Floor",
+      "name": "WF_Secondary_Slab_G1_a",
+      "x": 0.0, "y": 1.0, "z": 1.15, "rotation": 0.0, "length": 0.9965
+    },
+    {
+      "id": "beam_slab_g1_b", "type": "IfcBeam", "storey": "Ground Floor",
+      "name": "WF_Secondary_Slab_G1_b",
+      "x": 1.075, "y": 1.0, "z": 1.15, "rotation": 0.0, "length": 1.85
     },
     {
       "id": "slab_landing_1a",
@@ -166,24 +171,34 @@
     },
 
     {
-      "id": "beam_by_g0", "type": "IfcBeam", "storey": "Ground Floor",
-      "name": "WF_Main_Bath_Y_G0",
-      "x": 3.0, "y": 0.0, "z": 1.1, "rotation": 90.0, "length": 3.0
+      "id": "beam_by_g0_a", "type": "IfcBeam", "storey": "Ground Floor",
+      "name": "WF_Main_Bath_Y_G0_a",
+      "x": 3.0, "y": 0.0025, "z": 1.1, "rotation": 90.0, "length": 0.9225
     },
     {
-      "id": "beam_by_g1", "type": "IfcBeam", "storey": "Ground Floor",
-      "name": "WF_Main_Bath_Y_G1",
-      "x": 5.0, "y": 0.0, "z": 1.1, "rotation": 90.0, "length": 3.0
+      "id": "beam_by_g0_b", "type": "IfcBeam", "storey": "Ground Floor",
+      "name": "WF_Main_Bath_Y_G0_b",
+      "x": 3.0, "y": 1.075, "z": 1.1, "rotation": 90.0, "length": 1.925
+    },
+    {
+      "id": "beam_by_g1_a", "type": "IfcBeam", "storey": "Ground Floor",
+      "name": "WF_Main_Bath_Y_G1_a",
+      "x": 5.0, "y": 0.0, "z": 1.1, "rotation": 90.0, "length": 0.925
+    },
+    {
+      "id": "beam_by_g1_b", "type": "IfcBeam", "storey": "Ground Floor",
+      "name": "WF_Main_Bath_Y_G1_b",
+      "x": 5.0, "y": 1.075, "z": 1.1, "rotation": 90.0, "length": 1.925
     },
     {
       "id": "beam_bx_g0", "type": "IfcBeam", "storey": "Ground Floor",
       "name": "WF_Secondary_Bath_X_G0",
-      "x": 0.0, "y": 0.0, "z": 1.1, "rotation": 0.0, "length": 5.0
+      "x": 0.0, "y": 0.0, "z": 1.15, "rotation": 0.0, "length": 4.99725
     },
     {
       "id": "beam_bx_g1", "type": "IfcBeam", "storey": "Ground Floor",
       "name": "WF_Secondary_Bath_X_G1",
-      "x": 3.0, "y": 3.0, "z": 1.1, "rotation": 0.0, "length": 2.0
+      "x": 3.00275, "y": 3.0, "z": 1.15, "rotation": 0.0, "length": 1.9945
     },
 	
     {
@@ -254,40 +269,55 @@
       "thickness": 0.1
     },
     {
-      "id": "beam_by_10", "type": "IfcBeam", "storey": "First Floor",
-      "name": "WF_Main_Bath_Y_10",
-      "x": 3.0, "y": 0.0, "z": 3.7, "rotation": 90.0, "length": 4.0
+      "id": "beam_by_10_a", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Main_Bath_Y_10_a",
+      "x": 3.0, "y": 0.0025, "z": 3.7, "rotation": 90.0, "length": 0.9225
     },
     {
-      "id": "beam_by_11", "type": "IfcBeam", "storey": "First Floor",
-      "name": "WF_Main_Bath_Y_11",
-      "x": 5.0, "y": 0.0, "z": 3.7, "rotation": 90.0, "length": 4.0
+      "id": "beam_by_10_b", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Main_Bath_Y_10_b",
+      "x": 3.0, "y": 1.075, "z": 3.7, "rotation": 90.0, "length": 2.85
+    },
+    {
+      "id": "beam_by_11_a", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Main_Bath_Y_11_a",
+      "x": 5.0, "y": 0.0, "z": 3.7, "rotation": 90.0, "length": 0.925
+    },
+    {
+      "id": "beam_by_11_b", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Main_Bath_Y_11_b",
+      "x": 5.0, "y": 1.075, "z": 3.7, "rotation": 90.0, "length": 2.85
     },
     {
       "id": "beam_bx_10", "type": "IfcBeam", "storey": "First Floor",
       "name": "WF_Secondary_Bath_X_10",
-      "x": 0.0, "y": 0.0, "z": 3.7, "rotation": 0.0, "length": 5.0
+      "x": 0.0, "y": 0.0, "z": 3.75, "rotation": 0.0, "length": 4.99725
     },
     {
       "id": "beam_bx_11", "type": "IfcBeam", "storey": "First Floor",
       "name": "WF_Secondary_Bath_X_11",
-      "x": 3.0, "y": 3.0, "z": 3.7, "rotation": 0.0, "length": 2.0
+      "x": 3.00275, "y": 3.0, "z": 3.75, "rotation": 0.0, "length": 1.9945
     },
 
     {
-      "id": "beam_x_11", "type": "IfcBeam", "storey": "First Floor",
-      "name": "WF_Secondary_Floor_X_11",
-      "x": 0.0, "y": 3.0, "z": 2.4, "rotation": 0.0, "length": 6.0
+      "id": "beam_x_11_a", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Secondary_Floor_X_11_a",
+      "x": 0.00275, "y": 3.0, "z": 2.45, "rotation": 0.0, "length": 2.9945
+    },
+    {
+      "id": "beam_x_11_b", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Secondary_Floor_X_11_b",
+      "x": 3.0027, "y": 3.0, "z": 2.45, "rotation": 0.0, "length": 1.9946
     },
     {
       "id": "beam_x_12", "type": "IfcBeam", "storey": "First Floor",
       "name": "WF_Main_Floor_X_12",
-      "x": 2.0, "y": 1.0, "z": 2.4, "rotation": 90.0, "length": 2.0
+      "x": 2.0, "y": 1.0, "z": 2.4, "rotation": 90.0, "length": 1.9975
     },
     {
       "id": "beam_x_13", "type": "IfcBeam", "storey": "First Floor",
       "name": "WF_Secondary_Floor_X_13",
-      "x": 2.0, "y": 1.0, "z": 2.4, "rotation": 0.0, "length": 1.0
+      "x": 2.00275, "y": 1.0, "z": 2.45, "rotation": 0.0, "length": 0.99375
     },
     {
       "id": "slab_f2_main",
@@ -322,12 +352,17 @@
     {
       "id": "beam_slab_11", "type": "IfcBeam", "storey": "First Floor",
       "name": "WF_Main_Slab_11",
-      "x": 1.0, "y": 0.0, "z": 3.7, "rotation": 90.0, "length": 1.0
+      "x": 1.0, "y": 0.0025, "z": 3.7, "rotation": 90.0, "length": 0.9225
     },
     {
-      "id": "beam_slab_12", "type": "IfcBeam", "storey": "First Floor",
-      "name": "WF_Secondary_Slab_12",
-      "x": 0.0, "y": 1.0, "z": 3.7, "rotation": 0.0, "length": 3.0
+      "id": "beam_slab_12_a", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Secondary_Slab_12_a",
+      "x": 0.0, "y": 1.0, "z": 3.75, "rotation": 0.0, "length": 0.9965
+    },
+    {
+      "id": "beam_slab_12_b", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Secondary_Slab_12_b",
+      "x": 1.075, "y": 1.0, "z": 3.75, "rotation": 0.0, "length": 1.85
     },
     {
       "id": "slab_landing_2a",
@@ -527,19 +562,54 @@
       "x": 0.0, "y": 3.0, "z": 2.4, "rotation": 90.0, "length": 5.0
     },
     {
-      "id": "beam_y_1", "type": "IfcBeam", "storey": "First Floor",
-      "name": "WF_Main_Floor2_Y_1",
-      "x": 1.0, "y": 3.0, "z": 2.4, "rotation": 90.0, "length": 5.0
+      "id": "beam_y_1_a", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Main_Floor2_Y_1_a",
+      "x": 1.0, "y": 3.0025, "z": 2.4, "rotation": 90.0, "length": 0.9225
     },
     {
-      "id": "beam_y_3", "type": "IfcBeam", "storey": "First Floor",
-      "name": "WF_Main_Floor2_Y_3",
-      "x": 3.0, "y": 1.0, "z": 2.4, "rotation": 90.0, "length": 7.0
+      "id": "beam_y_1_b", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Main_Floor2_Y_1_b",
+      "x": 1.0, "y": 4.075, "z": 2.4, "rotation": 90.0, "length": 2.85
     },
     {
-      "id": "beam_y_5", "type": "IfcBeam", "storey": "First Floor",
-      "name": "WF_Main_Floor2_Y_5",
-      "x": 5.0, "y": 0.0, "z": 2.4, "rotation": 90.0, "length": 8.0
+      "id": "beam_y_1_c", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Main_Floor2_Y_1_c",
+      "x": 1.0, "y": 7.075, "z": 2.4, "rotation": 90.0, "length": 0.925
+    },
+    {
+      "id": "beam_y_3_a", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Main_Floor2_Y_3_a",
+      "x": 3.0, "y": 1.075, "z": 2.4, "rotation": 90.0, "length": 2.85
+    },
+    {
+      "id": "beam_y_3_b", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Main_Floor2_Y_3_b",
+      "x": 3.0, "y": 4.075, "z": 2.4, "rotation": 90.0, "length": 2.85
+    },
+    {
+      "id": "beam_y_3_c", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Main_Floor2_Y_3_c",
+      "x": 3.0, "y": 7.075, "z": 2.4, "rotation": 90.0, "length": 0.925
+    },
+    {
+      "id": "beam_y_5_a", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Main_Floor2_Y_5_a",
+      "x": 5.0, "y": 0.0, "z": 2.4, "rotation": 90.0, "length": 0.925
+    },
+    {
+      "id": "beam_y_5_b", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Main_Floor2_Y_5_b",
+      "x": 5.0, "y": 1.075, "z": 2.4, "rotation": 90.0, "length": 2.85
+    },
+    {
+      "id": "beam_y_5_c", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Main_Floor2_Y_5_c",
+      "x": 5.0, "y": 4.075, "z": 2.4, "rotation": 90.0, "length": 2.85
+    },
+    {
+      "id": "beam_y_5_d", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Main_Floor2_Y_5_d",
+      "x": 5.0, "y": 7.075, "z": 2.4, "rotation": 90.0, "length": 0.925
     },
     {
       "id": "beam_y_6", "type": "IfcBeam", "storey": "First Floor",
@@ -549,73 +619,178 @@
     {
       "id": "beam_x_0", "type": "IfcBeam", "storey": "First Floor",
       "name": "WF_Secondary_Floor2_X_0",
-      "x": 5.0, "y": 1.0, "z": 2.4, "rotation": 0.0, "length": 1.0
+      "x": 5.0035, "y": 1.0, "z": 2.45, "rotation": 0.0, "length": 0.99375
     },
     {
-      "id": "beam_x_1", "type": "IfcBeam", "storey": "First Floor",
-      "name": "WF_Secondary_Floor2_X_1",
-      "x": 0.0, "y": 4.0, "z": 2.4, "rotation": 0.0, "length": 6.0
+      "id": "beam_x_1_a", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Secondary_Floor2_X_1_a",
+      "x": 0.00275, "y": 4.0, "z": 2.45, "rotation": 0.0, "length": 0.99375
     },
     {
-      "id": "beam_x_2", "type": "IfcBeam", "storey": "First Floor",
-      "name": "WF_Secondary_Floor2_X_2",
-      "x": 0.0, "y": 7.0, "z": 2.4, "rotation": 0.0, "length": 6.0
+      "id": "beam_x_1_b", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Secondary_Floor2_X_1_b",
+      "x": 1.075, "y": 4.0, "z": 2.45, "rotation": 0.0, "length": 1.85
+    },
+    {
+      "id": "beam_x_1_c", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Secondary_Floor2_X_1_c",
+      "x": 3.075, "y": 4.0, "z": 2.45, "rotation": 0.0, "length": 1.85
+    },
+    {
+      "id": "beam_x_1_d", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Secondary_Floor2_X_1_d",
+      "x": 5.075, "y": 4.0, "z": 2.45, "rotation": 0.0, "length": 0.925
+    },
+    {
+      "id": "beam_x_2_a", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Secondary_Floor2_X_2_a",
+      "x": 0.00275, "y": 7.0, "z": 2.45, "rotation": 0.0, "length": 0.99375
+    },
+    {
+      "id": "beam_x_2_b", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Secondary_Floor2_X_2_b",
+      "x": 1.075, "y": 7.0, "z": 2.45, "rotation": 0.0, "length": 1.85
+    },
+    {
+      "id": "beam_x_2_c", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Secondary_Floor2_X_2_c",
+      "x": 3.075, "y": 7.0, "z": 2.45, "rotation": 0.0, "length": 1.85
+    },
+    {
+      "id": "beam_x_2_d", "type": "IfcBeam", "storey": "First Floor",
+      "name": "WF_Secondary_Floor2_X_2_d",
+      "x": 5.075, "y": 7.0, "z": 2.45, "rotation": 0.0, "length": 0.925
     },
     {
       "id": "beam_x_8", "type": "IfcBeam", "storey": "First Floor",
       "name": "WF_Secondary_Floor2_X_8",
-      "x": 0.0, "y": 8.0, "z": 2.4, "rotation": 0.0, "length": 6.0
+      "x": 0.00275, "y": 8.0, "z": 2.45, "rotation": 0.0, "length": 5.9945
     },
 
     {
       "id": "beam_roof_y_0", "type": "IfcBeam", "storey": "Second Floor",
       "name": "WF_Main_Roof_Y_0",
-      "x": 0.0, "y": 0.0, "z": 4.8, "rotation": 90.0, "length": 8.0
+      "x": 0.0, "y": 0.0, "z": 5.0, "rotation": 90.0, "length": 8.0
     },
     {
       "id": "beam_roof_y_2", "type": "IfcBeam", "storey": "Second Floor",
       "name": "WF_Main_Roof_Y_2",
-      "x": 2.0, "y": 0.0, "z": 4.8, "rotation": 90.0, "length": 4.0
+      "x": 2.0, "y": 0.0025, "z": 5.0, "rotation": 90.0, "length": 3.995
     },
     {
-      "id": "beam_roof_y_3", "type": "IfcBeam", "storey": "Second Floor",
-      "name": "WF_Main_Roof_Y_3",
-      "x": 3.0, "y": 0.0, "z": 4.8, "rotation": 90.0, "length": 8.0
+      "id": "beam_roof_y_3_a", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Main_Roof_Y_3_a",
+      "x": 3.0, "y": 0.0025, "z": 5.0, "rotation": 90.0, "length": 0.9225
     },
     {
-      "id": "beam_roof_y_5", "type": "IfcBeam", "storey": "Second Floor",
-      "name": "WF_Main_Roof_Y_5",
-      "x": 5.0, "y": 0.0, "z": 4.8, "rotation": 90.0, "length": 8.0
+      "id": "beam_roof_y_3_b", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Main_Roof_Y_3_b",
+      "x": 3.0, "y": 1.075, "z": 5.0, "rotation": 90.0, "length": 2.85
+    },
+    {
+      "id": "beam_roof_y_3_c", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Main_Roof_Y_3_c",
+      "x": 3.0, "y": 4.075, "z": 5.0, "rotation": 90.0, "length": 2.85
+    },
+    {
+      "id": "beam_roof_y_3_d", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Main_Roof_Y_3_d",
+      "x": 3.0, "y": 7.075, "z": 5.0, "rotation": 90.0, "length": 0.925
+    },
+    {
+      "id": "beam_roof_y_5_a", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Main_Roof_Y_5_a",
+      "x": 5.0, "y": 0.0025, "z": 5.0, "rotation": 90.0, "length": 0.9225
+    },
+    {
+      "id": "beam_roof_y_5_b", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Main_Roof_Y_5_b",
+      "x": 5.0, "y": 1.075, "z": 5.0, "rotation": 90.0, "length": 2.85
+    },
+    {
+      "id": "beam_roof_y_5_c", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Main_Roof_Y_5_c",
+      "x": 5.0, "y": 4.075, "z": 5.0, "rotation": 90.0, "length": 2.85
+    },
+    {
+      "id": "beam_roof_y_5_d", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Main_Roof_Y_5_d",
+      "x": 5.0, "y": 7.075, "z": 5.0, "rotation": 90.0, "length": 0.925
     },
     {
       "id": "beam_roof_y_6", "type": "IfcBeam", "storey": "Second Floor",
       "name": "WF_Main_Roof_Y_6",
-      "x": 6.0, "y": 0.0, "z": 4.8, "rotation": 90.0, "length": 8.0
+      "x": 6.0, "y": 0.0, "z": 5.0, "rotation": 90.0, "length": 8.0
     },
     {
       "id": "beam_roof_x_0", "type": "IfcBeam", "storey": "Second Floor",
       "name": "WF_Secondary_Roof_X_0",
-      "x": 0.0, "y": 0.0, "z": 4.8, "rotation": 0.0, "length": 6.0
+      "x": 0.00275, "y": 0.0, "z": 5.05, "rotation": 0.0, "length": 5.9945
     },
     {
-      "id": "beam_roof_x_3", "type": "IfcBeam", "storey": "Second Floor",
-      "name": "WF_Secondary_Roof_X_3",
-      "x": 0.0, "y": 3.0, "z": 4.8, "rotation": 0.0, "length": 6.0
+      "id": "beam_roof_x_3_a", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Secondary_Roof_X_3_a",
+      "x": 0.00275, "y": 3.0, "z": 5.05, "rotation": 0.0, "length": 1.9945
     },
     {
-      "id": "beam_roof_x_4", "type": "IfcBeam", "storey": "Second Floor",
-      "name": "WF_Secondary_Roof_X_4",
-      "x": 0.0, "y": 4.0, "z": 4.8, "rotation": 0.0, "length": 6.0
+      "id": "beam_roof_x_3_b", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Secondary_Roof_X_3_b",
+      "x": 2.0027, "y": 3.0, "z": 5.05, "rotation": 0.0, "length": 0.9946
     },
     {
-      "id": "beam_roof_x_7", "type": "IfcBeam", "storey": "Second Floor",
-      "name": "WF_Secondary_Roof_X_7",
-      "x": 0.0, "y": 7.0, "z": 4.8, "rotation": 0.0, "length": 6.0
+      "id": "beam_roof_x_3_c", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Secondary_Roof_X_3_c",
+      "x": 3.0027, "y": 3.0, "z": 5.05, "rotation": 0.0, "length": 1.9946
+    },
+    {
+      "id": "beam_roof_x_3_d", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Secondary_Roof_X_3_d",
+      "x": 5.0027, "y": 3.0, "z": 5.05, "rotation": 0.0, "length": 0.9946
+    },
+    {
+      "id": "beam_roof_x_4_a", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Secondary_Roof_X_4_a",
+      "x": 0.00275, "y": 4.0, "z": 5.05, "rotation": 0.0, "length": 0.99375
+    },
+    {
+      "id": "beam_roof_x_4_b", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Secondary_Roof_X_4_b",
+      "x": 1.075, "y": 4.0, "z": 5.05, "rotation": 0.0, "length": 1.85
+    },
+    {
+      "id": "beam_roof_x_4_c", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Secondary_Roof_X_4_c",
+      "x": 3.075, "y": 4.0, "z": 5.05, "rotation": 0.0, "length": 1.85
+    },
+    {
+      "id": "beam_roof_x_4_d", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Secondary_Roof_X_4_d",
+      "x": 5.075, "y": 4.0, "z": 5.05, "rotation": 0.0, "length": 0.925
+    },
+    {
+      "id": "beam_roof_x_7_a", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Secondary_Roof_X_7_a",
+      "x": 0.00275, "y": 7.0, "z": 5.05, "rotation": 0.0, "length": 0.99375
+    },
+    {
+      "id": "beam_roof_x_7_b", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Secondary_Roof_X_7_b",
+      "x": 1.075, "y": 7.0, "z": 5.05, "rotation": 0.0, "length": 1.85
+    },
+    {
+      "id": "beam_roof_x_7_c", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Secondary_Roof_X_7_c",
+      "x": 3.075, "y": 7.0, "z": 5.05, "rotation": 0.0, "length": 1.85
+    },
+    {
+      "id": "beam_roof_x_7_d", "type": "IfcBeam", "storey": "Second Floor",
+      "name": "WF_Secondary_Roof_X_7_d",
+      "x": 5.075, "y": 7.0, "z": 5.05, "rotation": 0.0, "length": 0.925
     },
     {
       "id": "beam_roof_x_8", "type": "IfcBeam", "storey": "Second Floor",
       "name": "WF_Secondary_Roof_X_8",
-      "x": 0.0, "y": 8.0, "z": 4.8, "rotation": 0.0, "length": 6.0
+      "x": 0.00275, "y": 8.0, "z": 5.05, "rotation": 0.0, "length": 5.9945
     },
 
     {

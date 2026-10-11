@@ -62,11 +62,23 @@ def build_stair(model, element, context, placement, storey, floor_height):
     add_to_storey(model, stair, storey)
 
 
-def _i_profile(model, element, width, depth, web, flange, y_offset=0.0):
+# (flange width, depth, web thickness, flange thickness) in metres
+H_BEAM_150x150 = (0.15, 0.15, 0.007, 0.010)
+WF_200x100 = (0.10, 0.20, 0.0055, 0.008)
+WF_150x75 = (0.075, 0.15, 0.005, 0.007)
+
+
+def _i_profile(model, element, section, y_offset=0.0):
+    width, depth, web, flange = section
     return model.create_entity("IfcIShapeProfileDef", ProfileType="AREA",
         Position=model.create_entity("IfcAxis2Placement2D", Location=point(model, 0.0, y_offset)),
         OverallWidth=float(element.get("flange_width", width)), OverallDepth=float(element.get("depth", depth)),
         WebThickness=float(element.get("web_thickness", web)), FlangeThickness=float(element.get("flange_thickness", flange)))
+
+
+def _beam_section(element):
+    """Main beams run along the long side (Y, rotation 90); secondary beams along the short side (X)."""
+    return WF_200x100 if abs(float(element.get("rotation", 0.0))) % 180.0 == 90.0 else WF_150x75
 
 
 def _finish_steel(model, product, solid, storey):
@@ -78,7 +90,7 @@ def _finish_steel(model, product, solid, storey):
 
 def build_column(model, element, context, placement, storey, floor_height):
     """Vertical H-beam column; (x, y, z) is the centre of its base, extruded up by `height`."""
-    prof = _i_profile(model, element, 0.2, 0.2, 0.008, 0.012)
+    prof = _i_profile(model, element, H_BEAM_150x150)
     solid = extrude_up(model, prof, float(element.get("height", floor_height)))
     column = model.create_entity("IfcColumn", GlobalId=new_guid(), Name=element.get("name"), PredefinedType="COLUMN",
         ObjectPlacement=placement, Representation=body_shape(model, context, "SweptSolid", [solid]))
@@ -87,8 +99,9 @@ def build_column(model, element, context, placement, storey, floor_height):
 
 def build_beam(model, element, context, placement, storey, floor_height):
     """Horizontal I-beam; (x, y, z) is the start of its underside centreline, running `length` along local X."""
-    depth = float(element.get("depth", 0.2))
-    prof = _i_profile(model, element, 0.1, 0.2, 0.006, 0.009, y_offset=depth / 2.0)
+    section = _beam_section(element)
+    depth = float(element.get("depth", section[1]))
+    prof = _i_profile(model, element, section, y_offset=depth / 2.0)
     # profile X -> world Y, profile Y -> world Z, extrusion (local Z) -> world X
     position = axis_placement_3d(model, axis=(1.0, 0.0, 0.0), ref_direction=(0.0, 1.0, 0.0))
     solid = model.create_entity("IfcExtrudedAreaSolid", SweptArea=prof, Position=position,

@@ -58,7 +58,7 @@ Units and geometric contexts are supplied by the IFC template (metres, degrees).
 | `HasProperties` | **M** | Object of `name: value`. Each entry is an `IfcPropertySingleValue` (`Name` **M**, `NominalValue` O). JSON booleans, numbers and strings become `IfcBoolean`, `IfcReal` and `IfcLabel`. |
 
 Any set is carried into the IFC model as given. The generator also **reads** these two sets, so the properties are required where an element uses them:
-- `Custom_HipRoof` (on an `IfcRoof`): `PitchAngle` (degrees, default 30) and `PanelMaterial_<Side>` / `PanelMaterial_Default` (`metal` or `polycarbonate`; sides are `South`, `East`, `North`, `West`).
+- `Custom_HipRoof` (on an `IfcRoof`): `PitchAngle` (degrees, default 30) and `PanelMaterial_<Side>` / `PanelMaterial_Default` (`metal` or `polycarbonate`; sides are `South`, `East`, `North`, `West`). Optional `GableSide` (`South`) replaces that side's hip with a vertical gable end: the ridge runs to that edge and the side gets no panel. Optional `WestRun` (metres, needs `GableSide`) stops the west slope that far west of the ridge, from the south edge to where the ridge ends.
 - `Custom_StairFlight` (on an `IfcStairFlightType`): `Width`, `TreadThickness`, `RiserHeightMin`, `RiserHeightMax` (metres).
 
 ---
@@ -97,11 +97,11 @@ All of these take `id`, `type`, `Name`, `Location`, `RefDirection`, `Decomposes`
 
 | `type` | Extra keys | Notes |
 |---|---|---|
-| `IfcWall` | `Length` **M**, `Height` **M** | Thickness comes from the type's layers. `Location` is the start of the wall's centreline, running `Length` along local X. |
+| `IfcWall` | `Length` **M**, `Height` **M**, `Outline` O (*JSON*) | Thickness comes from the type's layers. `Location` is the start of the wall's centreline, running `Length` along local X. `Outline` is a closed polygon `[[u, z], ...]` in the wall's own plane (u along the wall, z up from `Location.z`) that replaces the rectangle, for gable ends and infill under sloped roofs. |
 | `IfcSlab` | `OuterCurve` **M** | Closed polyline `[[x, y], ...]` (the first point is repeated automatically). Thickness comes from the type. `Location.z` is the slab underside. |
 | `IfcBeam` | `Length` **M** | Section from the type. `Location` is the start of the underside centreline. |
 | `IfcColumn` | `Length` **M** | Section from the type. `Location` is the centre of the base, extruded up. |
-| `IfcRoof` | `OuterCurve` **M**, `HasPropertySets` **M** (`Custom_HipRoof`) | `PredefinedType` `HIP_ROOF`. Only the bounding rectangle of `OuterCurve` is used. Panels are generated and aggregated into the roof. |
+| `IfcRoof` | `OuterCurve` **M**, `HasPropertySets` **M** (`Custom_HipRoof`) | `PredefinedType` `HIP_ROOF`. `Location.z` is the eave height. Only the bounding rectangle of `OuterCurve` is used. Panels are generated and aggregated into the roof. |
 | `IfcStair` | none | Container only (no geometry). `PredefinedType` e.g. `TWO_STRAIGHT_RUN_STAIR`. Its flights and landing slabs `Decomposes` into it. |
 | `IfcStairFlight` | `Rise` **M**, `Run` **M** (*JSON*) | `Rise` is the total height gained, `Run` the horizontal length (metres). The generator derives the `IfcStairFlight` attributes `NumberOfRisers`, `NumberOfTreads`, `RiserHeight` and `TreadLength` from them: risers = `ceil(Rise / RiserHeightMax)` (fewest steps), `RiserHeight` = `Rise / risers`, treads = risers − 1, `TreadLength` = `Run / treads`. It fails if `RiserHeight` would fall below `RiserHeightMin`. `Width`, `TreadThickness`, `RiserHeightMin` and `RiserHeightMax` come from the type's `Custom_StairFlight`. `Location` is the centre of the flight's width at its lower start. The flight runs `NumberOfTreads × TreadLength` along `RefDirection`, and the width spreads equally to both sides. The top of the flight is at `Location.z + NumberOfRisers × RiserHeight`, which is where the next landing's top surface should be. |
 

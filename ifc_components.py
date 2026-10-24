@@ -100,7 +100,9 @@ def build_roof(scene, node, placement):
     pts = node["OuterCurve"]
     xs, ys = [float(p[0]) for p in pts], [float(p[1]) for p in pts]
     props = _properties(scene, node)
-    panels = hip_panels(min(xs), min(ys), max(xs), max(ys), float(props.get("PitchAngle", 30.0)))
+    gable = props.get("GableSide")
+    panels = hip_panels(min(xs), min(ys), max(xs), max(ys), float(props.get("PitchAngle", 30.0)),
+                        gable.lower() if gable else None, props.get("WestRun"))
     default = props.get("PanelMaterial_Default", "polycarbonate")
 
     roof = _product(scene, node, placement)
@@ -113,6 +115,15 @@ def build_roof(scene, node, placement):
 def build_wall(scene, node, placement):
     model = scene.model
     length, thick, height = node["Length"], _thickness(_type_of(scene, node)), node["Height"]
+    if node.get("Outline"):  # polygon in the wall's XZ plane, extruded across the thickness
+        outline = [tuple(p) for p in node["Outline"]]
+        outline.append(outline[0])
+        prof = model.create_entity("IfcArbitraryClosedProfileDef", ProfileType="AREA",
+            OuterCurve=model.create_entity("IfcPolyline", Points=[point(model, *p) for p in outline]))
+        solid = model.create_entity("IfcExtrudedAreaSolid", SweptArea=prof,
+            Position=axis_placement_3d(model, (0.0, thick / 2.0, 0.0), axis=(0.0, -1.0, 0.0), ref_direction=(1.0, 0.0, 0.0)),
+            ExtrudedDirection=direction(model, 0.0, 0.0, 1.0), Depth=thick)
+        return _product(scene, node, placement, body_shape(model, scene.context, "SweptSolid", [solid]))
     prof_placement = model.create_entity("IfcAxis2Placement2D", Location=point(model, length / 2.0, 0.0))
     prof = model.create_entity("IfcRectangleProfileDef", ProfileType="AREA", Position=prof_placement, XDim=length, YDim=thick)
     solid = extrude_up(model, prof, height)

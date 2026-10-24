@@ -37,14 +37,36 @@ def trapezoid(a, b, c, d):
 
 # ---- hip roof layout ---------------------------------------------------------
 
-def hip_panels(min_x, min_y, max_x, max_y, pitch_deg):
-    """Faces of a hip roof over a rectangle, keyed by side (south = min_y)."""
+def roof_height(min_x, max_x, pitch_deg):
+    """Ridge height above the eaves."""
+    return (max_x - min_x) / 2.0 * math.tan(math.radians(pitch_deg))
+
+
+def hip_panels(min_x, min_y, max_x, max_y, pitch_deg, gable=None, west_run=None):
+    """Faces of a hip roof over a rectangle, keyed by side (south = min_y).
+    `gable="south"` turns the south hip into a vertical gable end: the ridge reaches the south edge and that
+    side gets no roof panel (the gable wall closes it).
+    `west_run` (gable only) stops the west slope that far west of the ridge, from the south edge up to where the
+    ridge ends; the north hip keeps its full width."""
     half = (max_x - min_x) / 2.0
-    h = half * math.tan(math.radians(pitch_deg))
+    h = roof_height(min_x, max_x, pitch_deg)
     rx = min_x + half
     sw, se = (min_x, min_y, 0.0), (max_x, min_y, 0.0)
     ne, nw = (max_x, max_y, 0.0), (min_x, max_y, 0.0)
     r_s, r_n = (rx, min_y + half, h), (rx, max_y - half, h)
+    if gable == "south":
+        r_s = (rx, min_y, h)
+        west = trapezoid(nw, sw, r_s, r_n)
+        if west_run is not None:
+            xc = rx - west_run
+            zc = (xc - min_x) * math.tan(math.radians(pitch_deg))
+            west = [nw, (min_x, r_n[1], 0.0), (xc, r_n[1], zc), (xc, min_y, zc), r_s, r_n]
+        return {
+            "east":  trapezoid(se, ne, r_n, r_s),
+            "north": isosceles_triangle(ne, nw, r_n),
+            "west":  west,
+        }
+    assert gable is None and west_run is None, f"unsupported gable side {gable}"
     return {
         "south": isosceles_triangle(sw, se, r_s),
         "east":  trapezoid(se, ne, r_n, r_s),

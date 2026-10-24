@@ -1,4 +1,4 @@
-import argparse, json
+import argparse, json, math
 from pathlib import Path
 
 SPEC_NAME, OUTPUT_NAME = "spec.json", "design.ifcjson"
@@ -129,8 +129,8 @@ class Design:
             for a, b, openings in merged:
                 self.wall_run(storey, orient, fixed, material, a, b, sorted(set(openings)))
 
-    def wall_run(self, storey, orient, fixed, material, a, b, openings):
-        z, height, n = self.elevation(storey), self.height, 0
+    def wall_run(self, storey, orient, fixed, material, a, b, openings, height=None):
+        z, height, n = self.elevation(storey), height or self.height, 0
         cursor, pieces = a, []
         for o0, o1, oh in openings:
             pieces += [(cursor, o0, z, height)] if o0 > cursor + 1e-9 else []
@@ -167,6 +167,42 @@ class Design:
             for i, land in enumerate(stair.get("landings", []), 1):
                 self.add(id=f"{sid}_landing_{i}", type="IfcSlab", IsTypedBy="slab_type_landing_100", Decomposes=sid,
                          Location=[0.0, 0.0, r(z0 + land["z"])], OuterCurve=land["polygon"])
+
+    # ---- roofs: a hip over a rectangle, optionally with a south gable and a west slope cut short ---
+    def roofs(self):
+        for roof in self.spec.get("roofs", []):
+            x0, y0, x1, y1 = roof["rect"]
+            storey, pitch, gable = roof["storey"], roof.get("pitch", 30), roof.get("gable")
+            wall, rise, west_run = roof.get("wall", "aac"), roof.get("wall_height", 0.0), roof.get("west_run")
+            tan, z0 = math.tan(math.radians(pitch)), self.elevation(storey)
+            props = {"PitchAngle": pitch, "PanelMaterial_Default": roof.get("panel", "polycarbonate")}
+            if gable:
+                props["GableSide"] = gable.capitalize()
+            if west_run is not None:
+                props["WestRun"] = west_run
+            pset = f"pset_{roof['id']}_hip"
+            self.add(id=pset, type="IfcPropertySet", Name="Custom_HipRoof", HasProperties=props)
+            self.add(id=roof["id"], type="IfcRoof", PredefinedType="HIP_ROOF", ContainedIn=self.storey_id(storey), HasPropertySets=[pset],
+                     Location=[0.0, 0.0, r(z0 + rise)], OuterCurve=[[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
+
+            for (xa, ya), (xb, yb) in roof.get("parapet", []):  # walls under the eaves, on edges that have support
+                orient, fixed, a, b = ("x", ya, min(xa, xb), max(xa, xb)) if ya == yb else ("y", xa, min(ya, yb), max(ya, yb))
+                self.wall_run(storey, orient, fixed, wall, a, b, [], height=rise)
+
+            half = (x1 - x0) / 2.0
+            rx, ridge_end, peak = x0 + half, y1 - half, half * tan
+            if gable:
+                assert gable == "south", f"unsupported gable side {gable}"
+                gx = roof.get("gable_from", x0)  # the gable wall only stands where something carries it
+                eave = lambda x: rise + (min(x, rx) - x0) * tan
+                self.add(id=f"{roof['id']}_gable_south", type="IfcWall", IsTypedBy=WALL_TYPES[wall],
+                         ContainedIn=self.storey_id(storey), Location=[gx, y0, z0], Length=r(x1 - gx), Height=r(rise + peak),
+                         Outline=[[0, 0], [r(x1 - gx), 0], [r(x1 - gx), rise], [r(rx - gx), r(rise + peak)], [0, r(eave(gx))]])
+            if west_run is not None:  # the cut slope leaves a sloped gap above the room's south wall, closed by an infill wall
+                xc = rx - west_run
+                self.add(id=f"{roof['id']}_infill_west", type="IfcWall", IsTypedBy=WALL_TYPES[wall],
+                         ContainedIn=self.storey_id(storey), Location=[x0, ridge_end, z0], Length=r(xc - x0), Height=r(rise + (xc - x0) * tan),
+                         Outline=[[0, 0], [r(xc - x0), 0], [r(xc - x0), r(rise + (xc - x0) * tan)], [0, rise]])
 
     # ---- beams: they end on the face of a column, or (secondary) on the web of a main beam ------
     def beams(self):
@@ -210,7 +246,7 @@ class Design:
 
     def build(self):
         self.header()
-        for step in (self.slabs, self.stairs, self.walls, self.columns, self.beams):
+        for step in (self.slabs, self.stairs, self.walls, self.columns, self.beams, self.roofs):
             step()
         return self.nodes
 

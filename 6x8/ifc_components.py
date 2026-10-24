@@ -1,114 +1,176 @@
+import math
 from ifc_roof import hip_panels, build_panel
-from ifc_utils import (new_guid, point, direction, extrude_up, body_shape,
-                       add_to_storey, create_face, axis_placement_3d,
-                       get_material, assign_material, style_item)
+from ifc_utils import (guid_for, point, direction, extrude_up, body_shape,
+                       axis_placement_3d, get_material, plain_material, assign_material, style_item)
+
+# Materials that carry a surface style; any other material name becomes a plain IfcMaterial.
+STYLED_MATERIALS = {"Steel_Black": (0.0, 0.0, 0.0)}
 
 
-def build_slab(model, element, context, placement, storey, floor_height):
-    pts = element.get("points", [])
-    if pts and pts[0] != pts[-1]:
+# ---- helpers -----------------------------------------------------------------
+
+def _type_of(scene, node):
+    return scene.nodes[node["IsTypedBy"]]
+
+
+def _properties(scene, node):
+    """Merged properties of every property set listed in `node["HasPropertySets"]`."""
+    props = {}
+    for pset_id in node.get("HasPropertySets", []):
+        props.update(scene.nodes[pset_id]["HasProperties"])
+    return props
+
+
+def _thickness(type_node):
+    return sum(layer["LayerThickness"] for layer in type_node["MaterialLayers"])
+
+
+def _material(model, name):
+    if name in STYLED_MATERIALS:
+        return get_material(model, name, STYLED_MATERIALS[name])[0]
+    return plain_material(model, name)
+
+
+def _style_solid(model, solid, material_name):
+    style_item(model, solid, get_material(model, material_name, STYLED_MATERIALS[material_name])[1])
+
+
+def _product(scene, node, placement, shape=None, **attrs):
+    return scene.model.create_entity(node["type"], GlobalId=guid_for(node["id"]), Name=node.get("Name"),
+        PredefinedType=node.get("PredefinedType"), ObjectPlacement=placement, Representation=shape, **attrs)
+
+
+def _i_profile(model, spec, y_offset=0.0):
+    assert spec["type"] == "IfcIShapeProfileDef", f"unsupported profile {spec['type']}"
+    return model.create_entity("IfcIShapeProfileDef", ProfileType="AREA",
+        Position=model.create_entity("IfcAxis2Placement2D", Location=point(model, 0.0, y_offset)),
+        OverallWidth=spec["OverallWidth"], OverallDepth=spec["OverallDepth"],
+        WebThickness=spec["WebThickness"], FlangeThickness=spec["FlangeThickness"])
+
+
+# ---- types ---------------------------------------------------------------------
+
+def _type_object(scene, node, material_select=None):
+    model = scene.model
+    psets = [scene.entities[p] for p in node.get("HasPropertySets", [])]
+    type_object = model.create_entity(node["type"], GlobalId=guid_for(node["id"]), Name=node.get("Name"),
+        Description=node.get("Description"), HasPropertySets=psets or None, PredefinedType=node["PredefinedType"])
+    if material_select is not None:
+        assign_material(model, type_object, material_select)
+    return type_object
+
+
+def build_profile_type(scene, node):
+    """Beam/column type: the section is an IfcMaterialProfileSet shared by every occurrence."""
+    model = scene.model
+    profile = model.create_entity("IfcMaterialProfile", Name=node.get("Name"), Material=_material(model, node["Material"]),
+        Profile=_i_profile(model, node["Profile"]))
+    return _type_object(scene, node, model.create_entity("IfcMaterialProfileSet", Name=node.get("Name"), MaterialProfiles=[profile]))
+
+
+def build_layered_type(scene, node):
+    """Wall/slab type: the build-up is an IfcMaterialLayerSet, which fixes the thickness."""
+    model = scene.model
+    layers = [model.create_entity("IfcMaterialLayer", Material=_material(model, layer["Material"]) if "Material" in layer else None,
+                                  LayerThickness=layer["LayerThickness"]) for layer in node["MaterialLayers"]]
+    return _type_object(scene, node, model.create_entity("IfcMaterialLayerSet", MaterialLayers=layers, LayerSetName=node.get("Name")))
+
+
+def build_plain_type(scene, node):
+    return _type_object(scene, node)
+
+
+# ---- occurrences ---------------------------------------------------------------
+
+def build_slab(scene, node, placement):
+    model = scene.model
+    pts = [list(p) for p in node["OuterCurve"]]
+    if pts[0] != pts[-1]:
         pts.append(pts[0])
     ifc_pts = [point(model, float(p[0]), float(p[1])) for p in pts]
     prof = model.create_entity("IfcArbitraryClosedProfileDef", ProfileType="AREA", OuterCurve=model.create_entity("IfcPolyline", Points=ifc_pts))
-    solid = extrude_up(model, prof, float(element.get("thickness", 0.2)))
-    slab = model.create_entity("IfcSlab", GlobalId=new_guid(), Name=element.get("name"), PredefinedType="FLOOR",
-        ObjectPlacement=placement, Representation=body_shape(model, context, "SweptSolid", [solid]))
-    add_to_storey(model, slab, storey)
+    solid = extrude_up(model, prof, _thickness(_type_of(scene, node)))
+    return _product(scene, node, placement, body_shape(model, scene.context, "SweptSolid", [solid]))
 
 
-def build_roof(model, element, context, placement, storey, floor_height):
-    """Hip roof assembled from per-side panels; `panel_materials` maps a side
-    (south/east/north/west) or "default" to a ROOF_MATERIALS key."""
-    pts = element.get("points", [])
-    if not pts:
-        return
+def build_roof(scene, node, placement):
+    """Hip roof assembled from per-side panels. Pitch and per-side panel materials come from the
+    roof's property set (`PitchAngle`, `PanelMaterial_<Side>` / `PanelMaterial_Default`)."""
+    model = scene.model
+    pts = node["OuterCurve"]
     xs, ys = [float(p[0]) for p in pts], [float(p[1]) for p in pts]
-    panels = hip_panels(min(xs), min(ys), max(xs), max(ys), float(element.get("pitch", 30.0)))
-    materials = element.get("panel_materials", {})
+    props = _properties(scene, node)
+    panels = hip_panels(min(xs), min(ys), max(xs), max(ys), float(props.get("PitchAngle", 30.0)))
+    default = props.get("PanelMaterial_Default", "polycarbonate")
 
-    roof = model.create_entity("IfcRoof", GlobalId=new_guid(), Name=element.get("name"), PredefinedType="HIP_ROOF",
-        ObjectPlacement=placement)
+    roof = _product(scene, node, placement)
     for side, verts in panels.items():
-        material_name = materials.get(side, materials.get("default", "polycarbonate"))
-        build_panel(model, context, placement, roof, f"{element.get('name')}_{side}", verts, material_name)
-    add_to_storey(model, roof, storey)
+        material_name = props.get(f"PanelMaterial_{side.capitalize()}", default)
+        build_panel(model, scene.context, placement, roof, f"{node['id']}_{side}", verts, material_name)
+    return roof
 
 
-def build_wall(model, element, context, placement, storey, floor_height):
-    length = float(element.get("length", 3.0))
-    thick = float(element.get("thickness", 0.1))
-    height = float(element.get("height", floor_height))
+def build_wall(scene, node, placement):
+    model = scene.model
+    length, thick, height = node["Length"], _thickness(_type_of(scene, node)), node["Height"]
     prof_placement = model.create_entity("IfcAxis2Placement2D", Location=point(model, length / 2.0, 0.0))
     prof = model.create_entity("IfcRectangleProfileDef", ProfileType="AREA", Position=prof_placement, XDim=length, YDim=thick)
     solid = extrude_up(model, prof, height)
-    wall = model.create_entity("IfcWall", GlobalId=new_guid(), Name=element.get("name"),
-        ObjectPlacement=placement, Representation=body_shape(model, context, "SweptSolid", [solid]))
-    add_to_storey(model, wall, storey)
+    return _product(scene, node, placement, body_shape(model, scene.context, "SweptSolid", [solid]))
 
 
-def build_stair(model, element, context, placement, storey, floor_height):
-    w = float(element.get("width", 1.0))
-    r = float(element.get("flight_run", 2.0))
-    h = float(element.get("flight_rise", 1.3))
-    t = float(element.get("tread_thickness", 0.03))
-    num = 7
-    rh, td = h / num, r / (num - 1)
+def build_stair(scene, node, placement):
+    """Container only: its flights and landings aggregate into it."""
+    return _product(scene, node, placement)
+
+
+def _flight_steps(rise, rh_min, rh_max):
+    """Fewest risers that keep each at or below `rh_max`; the rise is shared evenly between them."""
+    n = math.ceil(rise / rh_max - 1e-9)
+    if n < 2 or rise / n < rh_min - 1e-9:
+        raise ValueError(f"no riser count puts a rise of {rise} m between {rh_min} and {rh_max} m per step")
+    return n
+
+
+def build_stair_flight(scene, node, placement):
+    """`Rise` and `Run` are the flight's total height and horizontal length; the riser count, `RiserHeight`
+    and `TreadLength` follow from them and the type's `RiserHeightMin` / `RiserHeightMax`."""
+    model = scene.model
+    props = _properties(scene, _type_of(scene, node))
+    w, t = props["Width"], props["TreadThickness"]
+    risers = _flight_steps(node["Rise"], props["RiserHeightMin"], props["RiserHeightMax"])
+    treads_n = risers - 1
+    rh, td = node["Rise"] / risers, node["Run"] / treads_n
     treads = []
-    for i in range(num - 1):
-        sp = model.create_entity("IfcRectangleProfileDef", ProfileType="AREA", Position=point(model, td / 2.0, w / 2.0), XDim=td, YDim=w)
+    for i in range(treads_n):
+        sp = model.create_entity("IfcRectangleProfileDef", ProfileType="AREA",
+            Position=model.create_entity("IfcAxis2Placement2D", Location=point(model, td / 2.0, 0.0)), XDim=td, YDim=w)
         treads.append(extrude_up(model, sp, t, location=(i * td, 0.0, i * rh)))
-    stair = model.create_entity("IfcStair", GlobalId=new_guid(), Name=element.get("name"),
-        ObjectPlacement=placement, Representation=body_shape(model, context, "SweptSolid", treads))
-    add_to_storey(model, stair, storey)
+    return _product(scene, node, placement, body_shape(model, scene.context, "SweptSolid", treads),
+        NumberOfRisers=risers, NumberOfTreads=treads_n, RiserHeight=rh, TreadLength=td)
 
 
-# (flange width, depth, web thickness, flange thickness) in metres
-H_BEAM_150x150 = (0.15, 0.15, 0.007, 0.010)
-WF_200x100 = (0.10, 0.20, 0.0055, 0.008)
-WF_150x75 = (0.075, 0.15, 0.005, 0.007)
+def build_column(scene, node, placement):
+    """Vertical section; Location is the centre of its base, extruded up by `Length`."""
+    model = scene.model
+    type_node = _type_of(scene, node)
+    solid = extrude_up(model, _i_profile(model, type_node["Profile"]), node["Length"])
+    _style_solid(model, solid, type_node["Material"])
+    return _product(scene, node, placement, body_shape(model, scene.context, "SweptSolid", [solid]))
 
 
-def _i_profile(model, element, section, y_offset=0.0):
-    width, depth, web, flange = section
-    return model.create_entity("IfcIShapeProfileDef", ProfileType="AREA",
-        Position=model.create_entity("IfcAxis2Placement2D", Location=point(model, 0.0, y_offset)),
-        OverallWidth=float(element.get("flange_width", width)), OverallDepth=float(element.get("depth", depth)),
-        WebThickness=float(element.get("web_thickness", web)), FlangeThickness=float(element.get("flange_thickness", flange)))
-
-
-def _beam_section(element):
-    """Main beams run along the long side (Y, rotation 90); secondary beams along the short side (X)."""
-    return WF_200x100 if abs(float(element.get("rotation", 0.0))) % 180.0 == 90.0 else WF_150x75
-
-
-def _finish_steel(model, product, solid, storey):
-    material, style = get_material(model, "Steel_Black", (0.0, 0.0, 0.0))
-    style_item(model, solid, style)
-    assign_material(model, product, material)
-    add_to_storey(model, product, storey)
-
-
-def build_column(model, element, context, placement, storey, floor_height):
-    """Vertical H-beam column; (x, y, z) is the centre of its base, extruded up by `height`."""
-    prof = _i_profile(model, element, H_BEAM_150x150)
-    solid = extrude_up(model, prof, float(element.get("height", floor_height)))
-    column = model.create_entity("IfcColumn", GlobalId=new_guid(), Name=element.get("name"), PredefinedType="COLUMN",
-        ObjectPlacement=placement, Representation=body_shape(model, context, "SweptSolid", [solid]))
-    _finish_steel(model, column, solid, storey)
-
-
-def build_beam(model, element, context, placement, storey, floor_height):
-    """Horizontal I-beam; (x, y, z) is the start of its underside centreline, running `length` along local X."""
-    section = _beam_section(element)
-    depth = float(element.get("depth", section[1]))
-    prof = _i_profile(model, element, section, y_offset=depth / 2.0)
+def build_beam(scene, node, placement):
+    """Horizontal section; Location is the start of its underside centreline, running `Length` along local X."""
+    model = scene.model
+    type_node = _type_of(scene, node)
+    spec = type_node["Profile"]
+    prof = _i_profile(model, spec, y_offset=spec["OverallDepth"] / 2.0)
     # profile X -> world Y, profile Y -> world Z, extrusion (local Z) -> world X
     position = axis_placement_3d(model, axis=(1.0, 0.0, 0.0), ref_direction=(0.0, 1.0, 0.0))
     solid = model.create_entity("IfcExtrudedAreaSolid", SweptArea=prof, Position=position,
-        ExtrudedDirection=direction(model, 0.0, 0.0, 1.0), Depth=float(element.get("length", 3.0)))
-    beam = model.create_entity("IfcBeam", GlobalId=new_guid(), Name=element.get("name"), PredefinedType="BEAM",
-        ObjectPlacement=placement, Representation=body_shape(model, context, "SweptSolid", [solid]))
-    _finish_steel(model, beam, solid, storey)
+        ExtrudedDirection=direction(model, 0.0, 0.0, 1.0), Depth=node["Length"])
+    _style_solid(model, solid, type_node["Material"])
+    return _product(scene, node, placement, body_shape(model, scene.context, "SweptSolid", [solid]))
 
 
 BUILDERS = {
@@ -117,5 +179,14 @@ BUILDERS = {
     "IfcSlab": build_slab,
     "IfcWall": build_wall,
     "IfcStair": build_stair,
+    "IfcStairFlight": build_stair_flight,
     "IfcRoof": build_roof,
+}
+
+TYPE_BUILDERS = {
+    "IfcBeamType": build_profile_type,
+    "IfcColumnType": build_profile_type,
+    "IfcWallType": build_layered_type,
+    "IfcSlabType": build_layered_type,
+    "IfcStairFlightType": build_plain_type,
 }

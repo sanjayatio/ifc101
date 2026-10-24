@@ -1,8 +1,10 @@
-import json, ifcopenshell, ifcopenshell.template
+import argparse, json, ifcopenshell, ifcopenshell.template
+from pathlib import Path
 from types import SimpleNamespace
 from ifc_utils import guid_for, aggregate, local_placement, add_to_storey, define_by_type, define_by_properties, property_set
 from ifc_components import BUILDERS, TYPE_BUILDERS
 
+INPUT_NAME, OUTPUT_NAME = "design.ifcjson", "render.ifc"
 SPATIAL = {"IfcSite", "IfcBuilding", "IfcBuildingStorey"}
 
 
@@ -44,11 +46,13 @@ def relate(scene, node, entity):
             define_by_properties(model, entity, entities[pset_id])
 
 
-def create_ifc_from_json(json_path, output_ifc_path):
+def create_ifc_from_folder(folder):
+    json_path, output_ifc_path = Path(folder) / INPUT_NAME, Path(folder) / OUTPUT_NAME
     with open(json_path, 'r') as f:
         nodes = json.load(f).get("data", [])
 
-    model = ifcopenshell.template.create(filename=output_ifc_path, schema_identifier="IFC4")
+    # the name lands in the STEP header, where a path's backslashes would be read as escape sequences
+    model = ifcopenshell.template.create(filename=output_ifc_path.name, schema_identifier="IFC4")
     body_context = next((c for c in model.by_type("IfcGeometricRepresentationSubContext") if c.ContextIdentifier == "Body"), model.by_type("IfcGeometricRepresentationContext")[0])
     scene = SimpleNamespace(model=model, context=body_context, nodes={n["id"]: n for n in nodes}, entities={})
 
@@ -57,9 +61,11 @@ def create_ifc_from_json(json_path, output_ifc_path):
         scene.entities[node["id"]] = entity
         relate(scene, node, entity)
 
-    model.write(output_ifc_path)
+    model.write(str(output_ifc_path))
     print(f"🚀 SUCCESS: Model with Hip Roof generated completely inside '{output_ifc_path}'")
 
 
 if __name__ == "__main__":
-    create_ifc_from_json("building.ifcjson", "building.ifc")
+    parser = argparse.ArgumentParser(description=f"Build {OUTPUT_NAME} from {INPUT_NAME} inside a project folder.")
+    parser.add_argument("folder", help=f"project folder holding {INPUT_NAME}; {OUTPUT_NAME} is written next to it")
+    create_ifc_from_folder(parser.parse_args().folder)

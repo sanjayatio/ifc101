@@ -1,6 +1,6 @@
-# building.ifcjson: IFC nodes reference (IFC4 / ISO 16739-1)
+# ifcjson: IFC nodes reference (IFC4 / ISO 16739-1)
 
-`building.ifcjson` is a flat list of nodes under `data`. Each node is one IFC entity, and `run.py` turns the list into `building.ifc`.
+An `.ifcjson` document is a flat list of nodes under `data`. Each node is one IFC entity, and the generator turns the list into an IFC4 model.
 
 **Legend:** **M** = mandatory, **O** = optional. For IFC attributes, M/O is the cardinality in the IFC4 schema. For keys that are not IFC attributes (marked *JSON*), M/O is what the generator requires.
 
@@ -8,7 +8,7 @@
 
 | Key | M/O | Meaning |
 |---|---|---|
-| `id` | **M** (*JSON*) | Local key, unique in the file. Other nodes refer to it. The generator derives a stable `GlobalId` from it, so regenerating keeps each element's identity. |
+| `id` | **M** (*JSON*) | Local key, unique in the document. Other nodes refer to it. The generator derives a stable `GlobalId` from it, so regenerating keeps each element's identity. |
 | `type` | **M** (*JSON*) | IFC entity name, e.g. `IfcWall`. |
 | `Name` | O | Human label. Omit it when it would only repeat the `id` or the type. |
 | `Description` | O | Free text. |
@@ -16,13 +16,13 @@
 | `Location` | O (default `[0,0,0]`) | `IfcAxis2Placement3D.Location` (x, y, z in metres). |
 | `RefDirection` | O (default `[1,0,0]`) | `IfcAxis2Placement3D.RefDirection`, the local X axis. This is the rotation: `[0,1,0]` = 90°, `[0,-1,0]` = -90°. |
 
-Relationship keys (all hold `id` references). A parent, type or property set must appear **earlier** in the file than the node that refers to it.
+Relationship keys (all hold `id` references). A parent, type or property set must appear **earlier** in the document than the node that refers to it.
 
 | Key | IFC relationship | M/O |
 |---|---|---|
 | `Decomposes` | `IfcRelAggregates` (the parent): project → site → building → storey; stair → flight / landing | **M** for site, building, storey, flight and landing; otherwise not used |
 | `ContainedIn` | `IfcRelContainedInSpatialStructure` (a storey) | **M** for every element that is not the part of an aggregate |
-| `IsTypedBy` | `IfcRelDefinesByType` | O (**M** in this model for beams, columns, walls, slabs and stair flights) |
+| `IsTypedBy` | `IfcRelDefinesByType` | O in IFC (**M** for beams, columns, walls, slabs and stair flights, whose geometry comes from the type) |
 | `HasPropertySets` | `IfcRelDefinesByProperties` on an occurrence, `IfcTypeObject.HasPropertySets` on a type | O |
 
 An element is either `ContainedIn` a storey or `Decomposes` into a parent, never both. Aggregated parts follow their parent's placement.
@@ -53,16 +53,13 @@ Units and geometric contexts are supplied by the IFC template (metres, degrees).
 | Key | M/O | Meaning |
 |---|---|---|
 | `id` | **M** | |
-| `Name` | O | `Pset_*` is reserved for sets defined by the standard (e.g. `Pset_WallCommon`). Project-specific sets use another prefix (here `Custom_`). |
+| `Name` | O | `Pset_*` is reserved for sets defined by the standard (e.g. `Pset_WallCommon`). Project-specific sets use another prefix (this document uses `Custom_`). |
 | `Description` | O | |
 | `HasProperties` | **M** | Object of `name: value`. Each entry is an `IfcPropertySingleValue` (`Name` **M**, `NominalValue` O). JSON booleans, numbers and strings become `IfcBoolean`, `IfcReal` and `IfcLabel`. |
 
-Sets in this file:
-- `Pset_WallCommon`: `LoadBearing`.
-- `Custom_Decision`: `Status` (design decision state: Decided / Candidate).
-- `Custom_SlabDecision`: `BaseStructure`, `TopFinish`, `Status`, `DiscardedMaterial`.
-- `Custom_HipRoof`: `PitchAngle` (degrees) and `PanelMaterial_<Side>` / `PanelMaterial_Default` (`metal`, `polycarbonate`). The roof generator reads these.
-- `Custom_StairFlight`: `Width`, `TreadThickness`, `RiserHeightMin` (0.15), `RiserHeightMax` (0.18).
+Any set is carried into the IFC model as given. The generator also **reads** these two sets, so the properties are required where an element uses them:
+- `Custom_HipRoof` (on an `IfcRoof`): `PitchAngle` (degrees, default 30) and `PanelMaterial_<Side>` / `PanelMaterial_Default` (`metal` or `polycarbonate`; sides are `South`, `East`, `North`, `West`).
+- `Custom_StairFlight` (on an `IfcStairFlightType`): `Width`, `TreadThickness`, `RiserHeightMin`, `RiserHeightMax` (metres).
 
 ---
 

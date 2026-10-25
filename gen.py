@@ -326,7 +326,7 @@ class Design:
         return r(fixed + (thickness / 2.0 if centre > fixed else -thickness / 2.0))
 
     def roof_walls(self, roof, specs):
-        """Parapets under the eaves (`parapet`: edge numbers), and a wall under every sloped edge, up to the roof surface.
+        """Parapets under the eaves (`parapet`: edge numbers), and a wall under each sloped edge named in `edge_walls`, up to the roof surface.
         Edge i runs from corner i to corner i + 1. Where another roof meets an edge there is no wall below that roof's surface."""
         storey, rise, material = roof["storey"], roof.get("wall_height", 0.0), roof.get("wall", "aac")
         z0 = self.elevation(storey)
@@ -344,9 +344,10 @@ class Design:
                 assert any({tuple(map(r, A)), tuple(map(r, B))} == {tuple(map(r, P)), tuple(map(r, Q))} for _, (P, Q) in others), \
                     f"{roof['id']}: the sloped edge {i} needs the neighbouring roof's edge to meet it"
                 continue  # a hip or valley between two slopes needs no wall
-            choice = roof.get("edge_walls", {}).get(str(i), {})
-            if choice is None:
-                continue
+            choice = roof.get("edge_walls", {}).get(str(i))
+            if not choice:
+                continue  # a wall is opt-in: `true` for the roof's own wall type, or {"wall": ..., "doors": [...]}
+            choice = {} if choice is True else choice
             self.edge_wall(roof, i, A, B, z0, rise, choice.get("wall", material), choice.get("doors", []), others)
 
     def edge_wall(self, roof, i, A, B, z0, rise, material, doors, others):

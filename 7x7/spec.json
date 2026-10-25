@@ -28,24 +28,33 @@
 
   "roofs": [
     {"id": "roof_north_east", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
+     "edge_walls": {"1": true},
       "corners": [[7.05, 7.05, 0], [3, 7.05, 0], [3, 3.5, 2.17]]},
     {"id": "roof_north_west", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
+     "edge_walls": {"1": true},
       "corners": [[-0.55, 7.05, 0], [3, 7.05, 0], [3, 4.5, 1.55873]]},
     {"id": "roof_west", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
      "edge_walls": {"1": {"wall": "polycarbonate"}},
      "corners": [[-0.55, 7.05, 0], [-0.55, 4.5, 0], [3, 4.5, 1.55873]]},
     {"id": "roof_slant", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
+     "edge_walls": {"1": true, "2": true},
      "corners": [[-0.55, 3.5, 0], [3.0, 3.5, 0], [3.0, 4.5, 0.43907887324], [0.45, 4.5, 0.43907887324]]},
     {"id": "roof_west_3", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
+     "edge_walls": {"1": true},
      "corners": [[-0.55, 3.5, 0], [-0.55, 4.5, 0], [0.45, 4.5, 0.43907887324]]},
 
     {"id": "roof_east", "storey": "roof", "corners": [[3, 3.5, 2.17], [7.05, 3.5, 0], [7.05, 7.05, 0]], "panel": "polycarbonate", "wall": "sandwich", "edge_walls": {"0": {"wall": "polycarbonate"}}},
-    {"id": "roof_south_east", "storey": "roof", "corners": [[3, 0, 2.17], [7.05, 0, 0], [7.05, 3.5, 0], [3, 3.5, 2.17]], "panel": "polycarbonate", "wall": "sandwich", "edge_walls": {"3": {"wall": "polycarbonate", "doors": [{"from": 1, "to": 2}]}}},
+
+    {"id": "roof_south_east", "storey": "roof", "corners": [[3, 0, 2.17], [7.05, 0, 0], [7.05, 3.5, 0], [3, 3.5, 2.17]], "panel": "polycarbonate", "wall": "sandwich", "edge_walls": {"0": true, "2": true, "3": {"wall": "polycarbonate", "doors": [{"from": 1, "to": 2}]}}},
+    {"id": "roof_stairs_1", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
+     "corners": [[2.9, 2, 1.5], [0, 2, 1.5], [0, 3, 1.4], [2.9, 3, 1.4]]},
+    {"id": "roof_stairs_2", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
+     "corners": [[2.9, 1, 2.17], [0, 1, 1.5], [0, 2, 1.5], [2.9, 2, 2.17]]},
     {"id": "roof_bath", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
-     "edge_walls": {"2": null},
+     "edge_walls": {"3": true},
      "corners": [[2.95, -0.65, 0], [7.05, -0.65, 0], [6.05, 0, 0.56259], [2.95, 0, 0.56259]]},
     {"id": "roof_corner", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
-     "edge_walls": {"2": null},
+     "edge_walls": {"1": true},
      "corners": [[7.05, -0.65, 0], [6.05, 0, 0.56259], [7.05, 0, 0]]}
   ],
 
@@ -130,7 +139,7 @@
   ],
 
   "tanks": [
-    {"id": "tank_rain", "storey": "ground", "name": "Rainwater_Tank", "rect": [0.05, 3.2, 1, 4.45], "height": 1.5}
+    {"id": "tank_rain", "storey": "ground", "name": "Rainwater_Tank", "rect": [-0.4, 3.2, 1, 4.45], "height": 1.5}
   ],
 
   "septic_tanks": [
@@ -142,12 +151,15 @@
 
   "pipes": [
     {"id": "pipe_collect", "storey": "roof", "name": "Roof_Edge_Gutter", "diameter": 0.1, "predefined": "GUTTER",
-     "description": "Collects the run-off from the cut edge at x = 3 and leads it to the tank; stands in for an open gutter",
-     "path": [[2.94, 0, 8.2], [2.94, 3.4, 8.17], [-0.1, 3.4, 6.37]]},
-    {"id": "pipe_feed", "storey": "ground", "name": "Rain_Downpipe", "diameter": 0.1, "path": [[-0.1, 3.4, 6.37], [-0.1, 3.4, 1.4], [0.3, 3.4, 1.4]]},
-    {"id": "pipe_gutter_overflow", "storey": "roof", "name": "Gutter_Overflow_South", "diameter": 0.1,
-     "description": "Takes only the excess: its inlet is raised above the gutter floor. Discharges south, to the street side",
-     "path": [[2.94, 0, 8.22], [2.94, -0.1, 8.22], [2.6, -0.1, 8.22], [2.6, -0.1, 0.3], [2.6, -0.5, 0.3]]},
-    {"id": "pipe_overflow", "storey": "ground", "name": "Tank_Overflow", "diameter": 0.1, "path": [[0.5, 3.2, 1.2], [0.5, -0.3, 1.2]]}
+     "description": "Collects the run-off from the north-west and leads it to the tank; stands in for an open gutter",
+     "path": [[-0.53, 7, 5.95], [-0.53, 3.48, 5.9], [0, 3.48, 5.85], [3, 3.48, 5.95]]},
+    {"id": "pipe_feed", "storey": "ground", "name": "Rain_Downpipe", "diameter": 0.2,
+	 "path": [[0, 3, 7.3], [0, 3.4, 5.85], [0, 3.4, 1.5]]},
+    {"id": "pipe_stairs", "storey": "roof", "name": "Gutter_Stairs", "diameter": 0.1,
+     "description": "Collects the run-off from roof_stairs_1 and roof_stairs_2, and leads it to the downpipe",
+     "path": [[3, 3, 7.35], [0, 3, 7.3], [0, 1, 7.45]]},
+    {"id": "pipe_overflow", "storey": "ground", "name": "Tank_Overflow", "diameter": 0.2, "path": [[-0.1, 3.2, 1.3], [-0.1, -0.3, 1.3]]},
+    {"id": "pipe_toilet_1", "storey": "ground", "name": "Bath_Flush", "diameter": 0.1, "path": [[4.5, -0.3, 3.0], [4.5, -0.3, 2.6], [3.5, -0.3, 2.5]]},
+    {"id": "pipe_toilet_2", "storey": "ground", "name": "Toilet_Flush", "diameter": 0.1, "path": [[3.5, -0.3, 3.0], [3.5, -0.3, 2.5], [3.5, 1.3, 2.45], [0.9, 1.3, 0.8]]}
   ]
 }

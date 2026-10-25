@@ -703,6 +703,20 @@
       "Location": [3.008, 2, 6.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.5, "Height": 2.17
     },
     {
+      "id": "pset_roof_stairs_1", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
+    },
+    {
+      "id": "roof_stairs_1", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_stairs_1"], "PredefinedType": "SHED_ROOF",
+      "Name": "roof_stairs_1", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[2.9, 2, 1.5], [0, 2, 1.5], [0, 3, 1.4], [2.9, 3, 1.4]]
+    },
+    {
+      "id": "pset_roof_stairs_2", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
+    },
+    {
+      "id": "roof_stairs_2", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_stairs_2"], "PredefinedType": "SHED_ROOF",
+      "Name": "roof_stairs_2", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[2.9, 1, 2.17], [0, 1, 1.5], [0, 2, 1.5], [2.9, 2, 2.17]]
+    },
+    {
       "id": "pset_roof_bath", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
     },
     {
@@ -726,7 +740,7 @@
     },
     {
       "id": "tank_rain", "type": "IfcTank", "ContainedIn": "storey_ground", "PredefinedType": "STORAGE",
-      "Name": "Rainwater_Tank", "Location": [0.0, 0.0, 0.0], "OuterCurve": [[0.05, 3.2], [1, 3.2], [1, 4.45], [0.05, 4.45]], "Height": 1.5
+      "Name": "Rainwater_Tank", "Location": [0.0, 0.0, 0.0], "OuterCurve": [[-0.4, 3.2], [1, 3.2], [1, 4.45], [-0.4, 4.45]], "Height": 1.5
     },
     {
       "id": "pset_septic_tank", "type": "IfcPropertySet", "Name": "Custom_SepticLayout", "HasProperties": {"InnerWidth": 1.0, "InnerLength": 2.0, "InnerHeight": 1.5, "ChamberLengths": "1.0 m / 0.5 m / 0.5 m", "InnerFloorBelowGround": 0.6, "CoverTopAboveGround": 1.05}
@@ -769,39 +783,55 @@
     },
     {
       "id": "pipe_collect_1", "type": "IfcPipeSegment", "ContainedIn": "storey_roof", "PredefinedType": "GUTTER",
-      "Name": "Roof_Edge_Gutter", "Description": "Collects the run-off from the cut edge at x = 3 and leads it to the tank; stands in for an open gutter", "Location": [2.94, 0.0, 8.2], "Direction": [0.0, 0.99996, -0.00882], "Length": 3.40013, "Diameter": 0.1
+      "Name": "Roof_Edge_Gutter", "Description": "Collects the run-off from the north-west and leads it to the tank; stands in for an open gutter", "Location": [-0.53, 7.0, 5.95], "Direction": [0.0, -0.9999, -0.0142], "Length": 3.52036, "Diameter": 0.1
     },
     {
       "id": "pipe_collect_2", "type": "IfcPipeSegment", "ContainedIn": "storey_roof", "PredefinedType": "GUTTER",
-      "Name": "Roof_Edge_Gutter", "Description": "Collects the run-off from the cut edge at x = 3 and leads it to the tank; stands in for an open gutter", "Location": [2.94, 3.4, 8.17], "Direction": [-0.86048, 0.0, -0.50949], "Length": 3.53293, "Diameter": 0.1
+      "Name": "Roof_Edge_Gutter", "Description": "Collects the run-off from the north-west and leads it to the tank; stands in for an open gutter", "Location": [-0.53, 3.48, 5.9], "Direction": [0.99558, 0.0, -0.09392], "Length": 0.53235, "Diameter": 0.1
+    },
+    {
+      "id": "pipe_collect_3", "type": "IfcPipeSegment", "ContainedIn": "storey_roof", "PredefinedType": "GUTTER",
+      "Name": "Roof_Edge_Gutter", "Description": "Collects the run-off from the north-west and leads it to the tank; stands in for an open gutter", "Location": [0.0, 3.48, 5.85], "Direction": [0.99944, 0.0, 0.03331], "Length": 3.00167, "Diameter": 0.1
     },
     {
       "id": "pipe_feed_1", "type": "IfcPipeSegment", "ContainedIn": "storey_ground", "PredefinedType": "RIGIDSEGMENT",
-      "Name": "Rain_Downpipe", "Location": [-0.1, 3.4, 6.37], "Direction": [0.0, 0.0, -1.0], "Length": 4.97, "Diameter": 0.1
+      "Name": "Rain_Downpipe", "Location": [0.0, 3.0, 7.3], "Direction": [0.0, 0.26593, -0.96399], "Length": 1.50416, "Diameter": 0.2
     },
     {
       "id": "pipe_feed_2", "type": "IfcPipeSegment", "ContainedIn": "storey_ground", "PredefinedType": "RIGIDSEGMENT",
-      "Name": "Rain_Downpipe", "Location": [-0.1, 3.4, 1.4], "Direction": [1.0, 0.0, 0.0], "Length": 0.4, "Diameter": 0.1
+      "Name": "Rain_Downpipe", "Location": [0.0, 3.4, 5.85], "Direction": [0.0, 0.0, -1.0], "Length": 4.35, "Diameter": 0.2
     },
     {
-      "id": "pipe_gutter_overflow_1", "type": "IfcPipeSegment", "ContainedIn": "storey_roof", "PredefinedType": "RIGIDSEGMENT",
-      "Name": "Gutter_Overflow_South", "Description": "Takes only the excess: its inlet is raised above the gutter floor. Discharges south, to the street side", "Location": [2.94, 0.0, 8.22], "Direction": [0.0, -1.0, 0.0], "Length": 0.1, "Diameter": 0.1
+      "id": "pipe_stairs_1", "type": "IfcPipeSegment", "ContainedIn": "storey_roof", "PredefinedType": "RIGIDSEGMENT",
+      "Name": "Gutter_Stairs", "Description": "Collects the run-off from roof_stairs_1 and roof_stairs_2, and leads it to the downpipe", "Location": [3.0, 3.0, 7.35], "Direction": [-0.99986, 0.0, -0.01666], "Length": 3.00042, "Diameter": 0.1
     },
     {
-      "id": "pipe_gutter_overflow_2", "type": "IfcPipeSegment", "ContainedIn": "storey_roof", "PredefinedType": "RIGIDSEGMENT",
-      "Name": "Gutter_Overflow_South", "Description": "Takes only the excess: its inlet is raised above the gutter floor. Discharges south, to the street side", "Location": [2.94, -0.1, 8.22], "Direction": [-1.0, 0.0, 0.0], "Length": 0.34, "Diameter": 0.1
-    },
-    {
-      "id": "pipe_gutter_overflow_3", "type": "IfcPipeSegment", "ContainedIn": "storey_roof", "PredefinedType": "RIGIDSEGMENT",
-      "Name": "Gutter_Overflow_South", "Description": "Takes only the excess: its inlet is raised above the gutter floor. Discharges south, to the street side", "Location": [2.6, -0.1, 8.22], "Direction": [0.0, 0.0, -1.0], "Length": 7.92, "Diameter": 0.1
-    },
-    {
-      "id": "pipe_gutter_overflow_4", "type": "IfcPipeSegment", "ContainedIn": "storey_roof", "PredefinedType": "RIGIDSEGMENT",
-      "Name": "Gutter_Overflow_South", "Description": "Takes only the excess: its inlet is raised above the gutter floor. Discharges south, to the street side", "Location": [2.6, -0.1, 0.3], "Direction": [0.0, -1.0, 0.0], "Length": 0.4, "Diameter": 0.1
+      "id": "pipe_stairs_2", "type": "IfcPipeSegment", "ContainedIn": "storey_roof", "PredefinedType": "RIGIDSEGMENT",
+      "Name": "Gutter_Stairs", "Description": "Collects the run-off from roof_stairs_1 and roof_stairs_2, and leads it to the downpipe", "Location": [0.0, 3.0, 7.3], "Direction": [0.0, -0.9972, 0.07479], "Length": 2.00562, "Diameter": 0.1
     },
     {
       "id": "pipe_overflow_1", "type": "IfcPipeSegment", "ContainedIn": "storey_ground", "PredefinedType": "RIGIDSEGMENT",
-      "Name": "Tank_Overflow", "Location": [0.5, 3.2, 1.2], "Direction": [0.0, -1.0, 0.0], "Length": 3.5, "Diameter": 0.1
+      "Name": "Tank_Overflow", "Location": [-0.1, 3.2, 1.3], "Direction": [0.0, -1.0, 0.0], "Length": 3.5, "Diameter": 0.2
+    },
+    {
+      "id": "pipe_toilet_1_1", "type": "IfcPipeSegment", "ContainedIn": "storey_ground", "PredefinedType": "RIGIDSEGMENT",
+      "Name": "Bath_Flush", "Location": [4.5, -0.3, 3.0], "Direction": [0.0, 0.0, -1.0], "Length": 0.4, "Diameter": 0.1
+    },
+    {
+      "id": "pipe_toilet_1_2", "type": "IfcPipeSegment", "ContainedIn": "storey_ground", "PredefinedType": "RIGIDSEGMENT",
+      "Name": "Bath_Flush", "Location": [4.5, -0.3, 2.6], "Direction": [-0.99504, 0.0, -0.0995], "Length": 1.00499, "Diameter": 0.1
+    },
+    {
+      "id": "pipe_toilet_2_1", "type": "IfcPipeSegment", "ContainedIn": "storey_ground", "PredefinedType": "RIGIDSEGMENT",
+      "Name": "Toilet_Flush", "Location": [3.5, -0.3, 3.0], "Direction": [0.0, 0.0, -1.0], "Length": 0.5, "Diameter": 0.1
+    },
+    {
+      "id": "pipe_toilet_2_2", "type": "IfcPipeSegment", "ContainedIn": "storey_ground", "PredefinedType": "RIGIDSEGMENT",
+      "Name": "Toilet_Flush", "Location": [3.5, -0.3, 2.5], "Direction": [0.0, 0.99951, -0.03123], "Length": 1.60078, "Diameter": 0.1
+    },
+    {
+      "id": "pipe_toilet_2_3", "type": "IfcPipeSegment", "ContainedIn": "storey_ground", "PredefinedType": "RIGIDSEGMENT",
+      "Name": "Toilet_Flush", "Location": [3.5, 1.3, 2.45], "Direction": [-0.84433, 0.0, -0.53582], "Length": 3.07937, "Diameter": 0.1
     }
   ]
 }

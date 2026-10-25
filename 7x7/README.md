@@ -57,7 +57,7 @@ The first 7 treads of `stair_1`'s first flight are packed solid (`solid: 7` on t
 
 ## Roof
 
-The roof is nine parts, each its own `IfcRoof` with one sloped panel over 3 or 4 corners `[x, y, z]`, where z is the rise above that roof's eaves. There is no parapet: the eaves are at the roof slab (z = 6.0), and the peak is 2.17 m above it (z = 8.17). The roof rests on the knee walls (see below) and overhangs them on the low sides. The corners are written as built: the roof edges reach 0.05 m past the grid line (x = -0.55, y = 7.05, x = 7.05), flush with the outer face of the first-floor AAC walls. Roof walls are light: steel sandwich panel (`SteelSandwich_50`) for infill, and steel-framed polycarbonate (`PolycarbonateFramed_16`) under the peak and along the x = 3 edge, so daylight reaches the deck.
+The roof is eleven parts, each its own `IfcRoof` with one sloped panel over 3 or 4 corners `[x, y, z]`, where z is the rise above that roof's eaves. There is no parapet: the eaves are at the roof slab (z = 6.0), and the peak is 2.17 m above it (z = 8.17). The roof rests on the knee walls (see below) and overhangs them on the low sides. The corners are written as built: the roof edges reach 0.05 m past the grid line (x = -0.55, y = 7.05, x = 7.05), flush with the outer face of the first-floor AAC walls. Roof walls are light: steel sandwich panel (`SteelSandwich_50`) for infill, and steel-framed polycarbonate (`PolycarbonateFramed_16`) under the peak and along the x = 3 edge, so daylight reaches the deck.
 
 The north half has four slopes. The peak at (3, 3.5), 2.17 m above the eaves, sits on the high edge of `roof_south_east` (x = 3). The north slope is split at x = 3 so the west half can stop at y = 4.5; the strip west of x = 3 and south of y = 4.5 is taken by the low roofs below:
 - `roof_north_east` (polycarbonate): corners (7.05, 7.05), (3, 7.05) and the peak. About 31°.
@@ -71,16 +71,17 @@ The strip over the cantilevered room, y 3.5 to 4.5:
 
 The south:
 - `roof_south_east` (polycarbonate): a lean-to over x 3 to 7.05, y 0 to 3.5, high on the west (2.17 m, the same elevation as the peak, which sits at its north-west corner) and sloping down to the east. About 28°. Its high edge is a 2.17 m polycarbonate wall along x = 3 with a door opening at y 1-2 where the stair lands (2.1 m high, so only 0.07 m of lintel above it; the door leaf is not modelled).
+- `roof_stairs_1` and `roof_stairs_2` (polycarbonate): two bare shed roofs over the stair, west of x = 2.9, with no walls. `roof_stairs_2` (y 1 to 2) rises from 1.5 m at x = 0 to 2.17 m at x = 2.9; `roof_stairs_1` (y 2 to 3) is level along x at 1.5 m, falling to 1.4 m at y = 3.
 - `roof_bath` (polycarbonate): the lean-to over the bathroom and toilet, y -0.65 to 0, rising to the north to 0.56259 m, the height of `roof_south_east` at (6, 0), so the two close at the corner.
 - `roof_corner` (polycarbonate): the triangle (7.05, -0.65), (6.05, 0), (7.05, 0) that fills the south-east corner next to `roof_bath`.
 
 Walls (none at the eaves; `edge_walls` and the hips below):
-- Every sloped edge that is raised above its eaves gets a wall up to the roof surface, in the roof's `wall` type unless `edge_walls` says otherwise. Where another roof meets the edge there is no wall below that roof's surface, so only the gap above the lower roof is closed. A sloped edge that is not axis-aligned must be shared with another roof (the hip lines).
-- The wall under the south edge of `roof_west` is polycarbonate. `roof_east` and `roof_south_east` are one continuous slope along y = 3.5, so no wall stands between them.
-- `roof_south_east` also gets a wall along its south edge, above `roof_bath`.
+- A wall is opt-in: only a sloped edge named in `edge_walls` gets one, up to the roof surface, in the roof's `wall` type unless the entry overrides it. A roof with no `edge_walls` (the stair roofs) has none. Where another roof meets the edge there is no wall below that roof's surface, so only the gap above the lower roof is closed. A sloped edge that is not axis-aligned must be shared with another roof (the hip lines).
+- The wall under the south edge of `roof_west` is polycarbonate (`edge_walls` `"1"`). `roof_east` and `roof_south_east` are one continuous slope along y = 3.5, so no wall stands between them.
+- `roof_south_east` also gets a wall along its south edge, above `roof_bath` (edges 0 and 2).
 - Corner heights shared by neighbouring roofs must agree to about 1e-9, or the generator makes a sliver wall (and can fail). `roof_slant` and `roof_west_3` therefore use 0.43907887324, not a rounded value.
 
-Not yet checked: the gutter and overflow pipes (`pipe_collect`, `pipe_gutter_overflow`) were laid out against an older roof and have not been moved to this one. The roof is now 0.5 m lower than in the parapet version, so they need a fresh look.
+The gutters are laid out in the Rainwater section.
 
 ### Knee walls
 
@@ -106,19 +107,15 @@ The roof has no parapet. Where it comes down to the low edges it rests on knee w
 ## Rainwater
 
 `tank_rain` is a 1.5 m tall rainwater tank in the north-west corner of the open ground-floor area, inside the brick walls
-(x 0.05–1, y 3.2–4.45, kept 0.2 m clear of the septic tank to its south). It is modelled as a solid box, so the interior is not drawn. Its top is level with the stair landing's top (z = 1.5).
+(x -0.4 to 1, y 3.2–4.45, kept 0.2 m clear of the septic tank to its south). It is modelled as a solid box, so the interior is not drawn. Its top is level with the stair landing's top (z = 1.5).
 Below the first-floor room slab it is closed over; its southern 0.3 m (y 3.2–3.5) is under the open void.
 
-- `pipe_collect` (a `GUTTER`): a 100 mm channel that collects the water running off the cut edge at x = 3. It hangs on the west face of
-  the x = 3 wall, just under the roof edge (z 8.2 at y = 0, falling slightly to 8.17 at y = 3.4), runs north to y = 3.4, then turns west and
-  follows the sloped roof edge above the infill wall at y = 3.5, down to the corner at x = −0.1 (z 6.37).
-- `pipe_feed`: the 100 mm downpipe from that corner at (x −0.1, y 3.4), down to z = 1.4, then through the brick wall into the tank. Normal
-  rain goes this way.
-- `pipe_gutter_overflow`: the excess in a very heavy rain. It leaves the south end of the gutter from an inlet raised above the gutter floor,
-  steps out to x = 2.6, runs down the south face, and discharges to the south, street side, at z = 0.3, y = −0.5. It sits 0.3 m west of the
-  H-beam column at (3, 0), so the column does not stand in its path.
-- `pipe_overflow`: a 100 mm pipe at z = 1.2 from the tank's south face, running along x = 0.5 under the stair landing (whose underside
-  is at 1.4) and out through the south wall to y = −0.3. It passes over the septic tank's cover (top at z 1.05) with about 0.1 m to spare. The tank holds about 1.4 m³ below it.
+The gutters form a network that drains to one downpipe, so the lowest point of a gutter need not be at its end:
+
+- `pipe_collect` (a `GUTTER`, 100 mm): collects the run-off from the north-west. It runs from (-0.53, 7) south along the west edge to y = 3.48, then east to x = 3. It is lowest in the middle, at (0, 3.48, 5.85), and drains towards the downpipe from both ends.
+- `pipe_stairs` (a gutter, 100 mm): collects from `roof_stairs_1` and `roof_stairs_2`, from (3, 3) west to (0, 3) and from (0, 1) north to (0, 3), draining to the downpipe at (0, 3, 7.3).
+- `pipe_feed`: the 200 mm downpipe from (0, 3, 7.3), past the low point of `pipe_collect`, to the tank at z = 1.5. Normal rain goes this way. The diameters of the downpipe and overflow are provisional.
+- `pipe_overflow`: a 200 mm pipe at z = 1.3 from the tank's south face, along x = -0.1 and out to y = -0.3.
 
 The pipes and the gutter are solid round pipes, and the gutter stands in for an open one (its type is `GUTTER`).
 
@@ -144,7 +141,7 @@ Not yet modelled, with the intent:
 - Control hole, at least 40 cm across, in the south chamber (y 0.5–1.5), for instance y 0.55–0.95, so it lies south of the landing (which starts at y = 1) and needs no hinged panel. Use a solid gas-tight lid on a collar, not a grate, which would vent gas and odour.
 - Landing grate: serrated steel, bearing bars at least 3×25 mm, pitch 30×100 mm (or tighter, 20×50), hot-dip galvanized, removable saddle clips.
 - Vent pipe for the methane, straight up along the column that carries the stair.
-- Toilet inlet: pipes under the first-floor slab, turning north and running under the stair into the south chamber.
+- Toilet drains (prototype, `pipe_toilet_1` and `pipe_toilet_2`, 100 mm): the seats stand at (4.5, -0.3) and (3.5, -0.3), z 3.0. Each drops straight down with no s-trap. The bath drain falls from 2.6 to 2.5 along y = -0.3 and joins the toilet drain at (3.5, -0.3, 2.5). That runs north to y = 1.3, almost level (2.45) so it clears the 2.1 m garage door, then west at y = 1.3 with a steep fall of 1.65 m over 2.6 m (about 32°) to the south chamber, ending at (0.9, 1.3, 0.8): 0.1 m inside the east wall's inner face, with its crown just under the cover. Maximising the fall is deliberate; a slope that steep may leave solids behind and may need easing. Still open: the trap, vent and the openings through the walls.
 - Openings in the partitions between chambers.
 
 ## Open points
@@ -164,13 +161,11 @@ Structure
 
 Openings
 - The door leaf at the stair top is not modelled, only the opening. The posts and header around it come from the steel frame.
-- The pipes through the brick walls (`pipe_feed`, `pipe_overflow`) have no openings cut in them.
+- The pipes through the brick walls (`pipe_feed`, `pipe_overflow`) and the toilet drain through the septic tank's east wall have no openings cut in them.
 
 Water
-- Gutters exist only on the x = 3 cut edge. The main roof's north and east eaves and its west eave north of y = 3.5 have none, and `roof_bath`
+- Gutters exist only over the north-west and the stair roofs. The main roof's north and east eaves have none, and `roof_bath`
   still sheds water west into the void, onto the stair.
-- The gutter on x = 3 hangs directly over the columns at (3, 0) and (3, 2), so a leak would run down onto them. It needs flashing and a
-  drip edge, and the column tops need protection.
 - The tank needs a lid or screen at its southern end (y 3.2–3.5), which is open to the void.
 - With the roof and walls closed, the grate floor under them stays dry apart from wind-driven rain through the stair door (sill and door seals).
 
@@ -184,7 +179,7 @@ Water
     edge. For a `polygon`, `side` is the direction the edge faces and the door goes on the edge that contains its span.
     Default height is 2.1 m, with a lintel above.
   - `open`: `{side, from, to}`; that stretch of the edge gets no wall. Needed on both rooms that share the edge.
-- `roofs`: one entry per roof, each its own `IfcRoof` with one sloped panel: `id`, `storey`, `corners` (3 or 4 points `[x, y, z]`, z = rise above the eaves; a fourth point must lie in the plane of the first three), optional `panel` (`metal` or `polycarbonate`), `wall` (`brick`, `aac`, `sandwich` or `polycarbonate`; the default type of the roof's walls), `wall_height` (raises the eaves), `parapet` (edge numbers that get a wall of `wall_height`), `edge_walls` (per edge number: `{wall, doors}` overrides the type or adds `{from, to}` openings, `null` leaves the edge open).
+- `roofs`: one entry per roof, each its own `IfcRoof` with one sloped panel: `id`, `storey`, `corners` (3 or 4 points `[x, y, z]`, z = rise above the eaves; a fourth point must lie in the plane of the first three), optional `panel` (`metal` or `polycarbonate`), `wall` (`brick`, `aac`, `sandwich` or `polycarbonate`; the default type of the roof's walls), `wall_height` (raises the eaves), `parapet` (edge numbers that get a wall of `wall_height`), `edge_walls` (per edge number, opt-in: `{wall, doors}` overrides the type or adds `{from, to}` openings, `true` for the roof's own wall type; an edge not listed has no wall).
 - `knee_walls`: `storey`, `columns` (the storey whose columns carry the posts), `section` (`width`, `depth`, `thickness` of the hollow section) and `runs`: `{id, axis, at, from, to, roofs, on_beam, tall_posts}`, a line `axis` = `x` or `y` at coordinate `at`, between `from` and `to`, under the listed roofs. `on_beam` is an optional list of `[x, y]` points on the line where a post stands on a beam; `tall_posts` an optional list of `[x, y, height]` that overrides a post's height. The generator fails if the roof is not level along a run.
 - `walls`: loose wall runs, `{storey, from, to, wall}`.
 - `tanks`: `id`, `storey`, `name`, `rect`, `height`, optional `z`.

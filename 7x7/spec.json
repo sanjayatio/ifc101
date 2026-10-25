@@ -4,8 +4,11 @@
   "storeys": ["ground", "first", "roof"],
 
   "slabs": [
-    {"id": "slab_ground", "storey": "ground", "name": "Ground_Slab", "type": "floor_200", "z": 0.0,
-     "polygon": [[-0.5, 0], [7, 0], [7, 7], [-0.5, 7]]},
+    {"id": "slab_garage", "storey": "ground", "name": "Ground_Slab", "type": "floor_200", "z": 0.0,
+     "polygon": [[3, 0], [7, 0], [7, 7], [3, 7]]},
+ 
+    {"id": "slab_watch", "storey": "ground", "name": "Watch_Slab", "type": "floor_200", "z": 0.0,
+     "polygon": [[-0.5, 4.5], [-0.5, 7], [3, 7], [3, 4.5]]},
     {"id": "slab_toilet", "storey": "first", "name": "Toilet_Slab", "type": "floor_100", 
      "polygon": [[3, -0.6], [4, -0.6], [4, 1], [3, 1]]},
     {"id": "slab_bath", "storey": "first", "name": "Bath_Slab", "type": "floor_100", 
@@ -16,8 +19,10 @@
      "polygon": [[3, 3.5], [4, 3.5], [4, 1], [3, 1]]},
     {"id": "slab_hall", "storey": "first", "name": "Hall_Slab", "type": "floor_100", "steel_grate": true,
      "polygon": [[3, 7], [7, 7], [7, -0.6], [6, -0.6], [6, 2], [4, 2], [4, 3.5], [3, 3.5]]},
+    {"id": "slab_cover", "storey": "roof", "name": "Roof_Cover_Slab", "type": "floor_100", "steel_grate": true,
+     "polygon": [[6, 0], [3, 0], [3, 2], [6, 2]]},
     {"id": "slab_roof", "storey": "roof", "name": "Roof_Floor_Slab", "type": "floor_100", "steel_grate": true,
-     "polygon": [[-0.5, 7], [7, 7], [7, 0], [3, 0], [3, 3.5], [-0.5, 3.5]]}
+     "polygon": [[-0.5, 7], [7, 7], [7, 0], [6, 0], [6, 2], [3, 2], [3, 3.5], [-0.5, 3.5]]}
   ],
 
   "roofs": [
@@ -96,7 +101,7 @@
   "stairs": [
     {"id": "stair_1", "storey": "ground",
      "flights": [
-       {"start": [3.0, 2.5, 0.0], "direction": [-1, 0], "rise": 1.5, "run": 2.0},
+       {"start": [3.0, 2.5, 0.0], "direction": [-1, 0], "rise": 1.5, "run": 2.0, "solid": 7},
        {"start": [1.0, 1.5, 1.5], "direction": [1, 0], "rise": 1.5, "run": 2.0}
      ],
      "landings": [{"z": 1.4, "polygon": [[0, 1], [1, 1], [1, 3], [0, 3]]}]},
@@ -109,7 +114,14 @@
   ],
 
   "tanks": [
-    {"id": "tank_rain", "storey": "ground", "name": "Rainwater_Tank", "rect": [0.05, 3, 1, 4.45], "height": 1.5}
+    {"id": "tank_rain", "storey": "ground", "name": "Rainwater_Tank", "rect": [0.05, 3.2, 1, 4.45], "height": 1.5}
+  ],
+
+  "septic_tanks": [
+    {"id": "septic_tank", "storey": "ground", "name": "Septic_Tank", "outer": [-0.2, 0.3, 1.2, 3],
+     "description": "Chambers 1.0 / 0.5 / 0.5 m clear, south to north; the toilet inlet enters the south chamber",
+     "wall": 0.2, "partition": 0.15, "base": 0.2, "cover": 0.15,
+     "chambers": [1.0, 0.5, 0.5], "floor_z": -0.6, "inner_height": 1.5}
   ],
 
   "pipes": [
@@ -120,6 +132,6 @@
     {"id": "pipe_gutter_overflow", "storey": "roof", "name": "Gutter_Overflow_South", "diameter": 0.1,
      "description": "Takes only the excess: its inlet is raised above the gutter floor. Discharges south, to the street side",
      "path": [[2.94, 0, 8.22], [2.94, -0.1, 8.22], [2.6, -0.1, 8.22], [2.6, -0.1, 0.3], [2.6, -0.5, 0.3]]},
-    {"id": "pipe_overflow", "storey": "ground", "name": "Tank_Overflow", "diameter": 0.1, "path": [[0.5, 3, 1.2], [0.5, -0.3, 1.2]]}
+    {"id": "pipe_overflow", "storey": "ground", "name": "Tank_Overflow", "diameter": 0.1, "path": [[0.5, 3.2, 1.2], [0.5, -0.3, 1.2]]}
   ]
 }

@@ -17,6 +17,7 @@ SLAB_TYPES = {"floor_100": "slab_type_floor_100", "floor_200": "slab_type_floor_
 COLUMN_TYPE, COLUMN_SIZE = "column_type_hbeam_150x150", 0.15
 KNEE_POST_TYPE, KNEE_RAIL_TYPE = "column_type_knee_post", "beam_type_knee_rail"
 DOOR_HEIGHT = 2.1
+SEPTIC_CONCRETE = "Reinforced Concrete K-250"
 
 
 def r(v):
@@ -94,10 +95,38 @@ class Design:
         add(id="wall_type_polycarbonate_framed", type="IfcWallType", Name="PolycarbonateFramed_16", PredefinedType="ELEMENTEDWALL",
             Description="Steel-framed wall glazed with polycarbonate, so daylight reaches the roof deck",
             MaterialLayers=[{"Material": "Polycarbonate Multiwall", "LayerThickness": 0.016}], HasPropertySets=["pset_wall_polycarbonate_frame"])
+        self.septic_types()
         add(id="slab_type_floor_100", type="IfcSlabType", Name="Floor_100", PredefinedType="FLOOR", MaterialLayers=[{"LayerThickness": 0.1}])
         add(id="slab_type_floor_200", type="IfcSlabType", Name="Floor_200", PredefinedType="FLOOR", MaterialLayers=[{"LayerThickness": 0.2}])
         add(id="slab_type_landing_100", type="IfcSlabType", Name="Landing_100", PredefinedType="LANDING", MaterialLayers=[{"LayerThickness": 0.1}])
         add(id="stair_flight_type_steel", type="IfcStairFlightType", Name="SteelFlight", PredefinedType="STRAIGHT", HasPropertySets=["pset_stair_flight"])
+
+    def septic_types(self):
+        """Concrete wall and slab types for every septic tank, one per thickness, sharing the corrosion-protection property set."""
+        tanks = self.spec.get("septic_tanks", [])
+        if not tanks:
+            return
+        self.add(id="pset_septic_concrete", type="IfcPropertySet", Name="Custom_SepticTank",
+                 Description="Wet, sulfide-rich service: the walls must not seep and the steel must stay covered",
+                 HasProperties={"ConcreteQuality": "K-250 (f'c 21 MPa)", "ConcreteCoverInner": "50 mm (anti-corrosion)", "ConcreteCoverOuter": "30 mm",
+                                "InternalCoating": "Coal tar epoxy / bitumen, 3 coats", "CementType": "PPC / High Sulfate Resistance (Type HS)",
+                                "Reinforcement": "Double layer deformed bar, D10 at 150 mm max", "Status": "Candidate"})
+        layers = lambda t: [{"Material": SEPTIC_CONCRETE, "LayerThickness": t}]
+        for mm in sorted({round(t[key] * 1000) for t in tanks for key in ("wall", "partition")}):
+            self.add(id=self.septic_wall_type(mm), type="IfcWallType", Name=f"SepticConcrete_{mm}", PredefinedType="STANDARD",
+                     MaterialLayers=layers(mm / 1000.0), HasPropertySets=["pset_septic_concrete"])
+        for key, predefined in (("base", "BASESLAB"), ("cover", "ROOF")):
+            for mm in sorted({round(t[key] * 1000) for t in tanks}):
+                self.add(id=self.septic_slab_type(key, mm), type="IfcSlabType", Name=f"Septic{key.capitalize()}_{mm}", PredefinedType=predefined,
+                         MaterialLayers=layers(mm / 1000.0), HasPropertySets=["pset_septic_concrete"])
+
+    @staticmethod
+    def septic_wall_type(mm):
+        return f"wall_type_septic_{mm}"
+
+    @staticmethod
+    def septic_slab_type(key, mm):
+        return f"slab_type_septic_{key}_{mm}"
 
     # ---- slabs ----------------------------------------------------------------------------
     def slabs(self):
@@ -191,7 +220,8 @@ class Design:
             for i, f in enumerate(stair["flights"], 1):
                 dx, dy = f["direction"]
                 self.add(id=f"{sid}_flight_{i}", type="IfcStairFlight", PredefinedType="STRAIGHT", Decomposes=sid, IsTypedBy="stair_flight_type_steel",
-                         Location=[f["start"][0], f["start"][1], r(z0 + f["start"][2])], RefDirection=[float(dx), float(dy), 0.0], Rise=f["rise"], Run=f["run"])
+                         Location=[f["start"][0], f["start"][1], r(z0 + f["start"][2])], RefDirection=[float(dx), float(dy), 0.0], Rise=f["rise"], Run=f["run"],
+                         SolidTreads=f.get("solid"))
             for i, land in enumerate(stair.get("landings", []), 1):
                 self.add(id=f"{sid}_landing_{i}", type="IfcSlab", IsTypedBy="slab_type_landing_100", Decomposes=sid,
                          Location=[0.0, 0.0, r(z0 + land["z"])], OuterCurve=land["polygon"])
@@ -203,6 +233,46 @@ class Design:
             self.add(id=tank["id"], type="IfcTank", PredefinedType="STORAGE", ContainedIn=self.storey_id(tank["storey"]), Name=tank.get("name", tank["id"]),
                      Location=[0.0, 0.0, tank.get("z", self.elevation(tank["storey"]))], OuterCurve=[[x0, y0], [x1, y0], [x1, y1], [x0, y1]],
                      Height=tank["height"])
+
+    def septic_tanks(self):
+        """A buried tank in chambers along y, south to north. `outer` is [x0, y0, x1, y1] to the outer faces and must equal the sum of the
+        outer walls, `chambers` (clear lengths) and the partitions between them. `floor_z` is the top of the base slab, `inner_height` the clear
+        height above it; the cover slab sits on the walls. Everything aggregates into one IfcTank that has no shape of its own."""
+        for tank in self.spec.get("septic_tanks", []):
+            sid, storey = tank["id"], tank["storey"]
+            x0, y0, x1, y1 = tank["outer"]
+            wall, part, base, cover = tank["wall"], tank["partition"], tank["base"], tank["cover"]
+            chambers, floor, height = tank["chambers"], tank["floor_z"], tank["inner_height"]
+            length = 2 * wall + sum(chambers) + part * (len(chambers) - 1)
+            assert abs((y1 - y0) - length) < 1e-6, f"{sid}: the outer length is {y1 - y0} m but walls, chambers and partitions add up to {length} m"
+            ground, top = self.elevation(storey), r(floor + height)
+            outline = [[x0, y0], [x1, y0], [x1, y1], [x0, y1]]
+            self.add(id=f"pset_{sid}", type="IfcPropertySet", Name="Custom_SepticLayout",
+                     HasProperties={"InnerWidth": r(x1 - x0 - 2 * wall), "InnerLength": r(sum(chambers)), "InnerHeight": height,
+                                    "ChamberLengths": " / ".join(f"{c} m" for c in chambers),
+                                    "InnerFloorBelowGround": r(ground - floor), "CoverTopAboveGround": r(top + cover - ground)})
+            self.add(id=sid, type="IfcTank", PredefinedType="STORAGE", ContainedIn=self.storey_id(storey), Name=tank.get("name", sid),
+                     Description=tank.get("description"), HasPropertySets=[f"pset_{sid}"])
+
+            def wall_node(name, thickness, orient, fixed, a, b):
+                node = dict(id=f"{sid}_{name}", type="IfcWall", IsTypedBy=self.septic_wall_type(round(thickness * 1000)), Decomposes=sid)
+                node["Location"] = [r(a), r(fixed), floor] if orient == "x" else [r(fixed), r(a), floor]
+                if orient == "y":
+                    node["RefDirection"] = [0.0, 1.0, 0.0]
+                self.nodes.append({**node, "Length": r(b - a), "Height": height})
+
+            wall_node("wall_west", wall, "y", x0 + wall / 2.0, y0, y1)  # the long walls own the corners
+            wall_node("wall_east", wall, "y", x1 - wall / 2.0, y0, y1)
+            wall_node("wall_south", wall, "x", y0 + wall / 2.0, x0 + wall, x1 - wall)
+            wall_node("wall_north", wall, "x", y1 - wall / 2.0, x0 + wall, x1 - wall)
+            cursor = y0 + wall
+            for i, clear in enumerate(chambers[:-1], 1):
+                cursor += clear
+                wall_node(f"partition_{i}", part, "x", cursor + part / 2.0, x0 + wall, x1 - wall)
+                cursor += part
+            for name, key, z in (("base", "base", floor - base), ("cover", "cover", top)):
+                self.add(id=f"{sid}_{name}", type="IfcSlab", IsTypedBy=self.septic_slab_type(key, round(tank[key] * 1000)), Decomposes=sid,
+                         Location=[0.0, 0.0, r(z)], OuterCurve=outline)
 
     def pipes(self):
         for pipe in self.spec.get("pipes", []):
@@ -441,7 +511,7 @@ class Design:
 
     def build(self):
         self.header()
-        for step in (self.slabs, self.stairs, self.walls, self.columns, self.beams, self.knee_walls, self.roofs, self.tanks, self.pipes):
+        for step in (self.slabs, self.stairs, self.walls, self.columns, self.beams, self.knee_walls, self.roofs, self.tanks, self.septic_tanks, self.pipes):
             step()
         return self.nodes
 

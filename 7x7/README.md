@@ -23,7 +23,7 @@ Storey height is 3 m (`ground` at z = 0, `first` at z = 3, `roof` at z = 6). Coo
 | first | `hall` | polygon, same outline as `slab_hall` | AAC | door south, x 3–4 (the notch edge at y 3.5) |
 
 Floors on the first storey are 100 mm slabs. `slab_first` and `slab_hall` are steel grate;
-the others are solid.
+the others are solid. On the ground storey there is no slab under the open stair area (x -0.5–3, y 0–4.5): `slab_garage` covers x 3–7 and `slab_watch` x -0.5–3, y 4.5–7.
 
 `slab_roof` (steel grate, 100 mm, top at z = 6) is the floor under the roof. It follows the first-storey outline and
 leaves the stair void open (x 0–3, y 1–3.5, and x 0–2.4, y 0–1). The strip x 2.4–3, y 0–1 outside the roof's x = 3 wall is covered by `roof_2`.
@@ -33,6 +33,8 @@ leaves the stair void open (x 0–3, y 1–3.5, and x 0–2.4, y 0–1). The str
 The U-shaped steel stair sits in the void at the west end, x 0–3, y 1–3.5. `stair_1` rises from the ground to the
 first floor and `stair_2` repeats it from the first floor to the roof deck. Each has two flights of 1.5 m rise and
 2 m run around a landing at z + 1.4.
+
+The first 7 treads of `stair_1`'s first flight are packed solid (`solid: 7` on the flight): blocks from the ground up to each tread, stopping at x = 1.25, 0.05 m short of the septic tank's east face (see Septic tank). The eighth tread stays a steel plate.
 
 ## Structure
 
@@ -80,8 +82,8 @@ The roof has no parapet. Where it comes down to the low edges it rests on knee w
 ## Rainwater
 
 `tank_rain` is a 1.5 m tall rainwater tank in the north-west corner of the open ground-floor area, inside the brick walls
-(x 0.05–1, y 3–4.45). It is modelled as a solid box, so the interior is not drawn. Its top is level with the stair landing's top (z = 1.5).
-Below the first-floor room slab it is closed over; its southern 0.5 m (y 3–3.5) is under the open void.
+(x 0.05–1, y 3.2–4.45, kept 0.2 m clear of the septic tank to its south). It is modelled as a solid box, so the interior is not drawn. Its top is level with the stair landing's top (z = 1.5).
+Below the first-floor room slab it is closed over; its southern 0.3 m (y 3.2–3.5) is under the open void.
 
 - `pipe_collect` (a `GUTTER`): a 100 mm channel that collects the water running off the cut edge at x = 3. It hangs on the west face of
   the x = 3 wall, just under the roof edge (z 8.2 at y = 0, falling slightly to 8.17 at y = 3.4), runs north to y = 3.4, then turns west and
@@ -92,11 +94,41 @@ Below the first-floor room slab it is closed over; its southern 0.5 m (y 3–3.5
   steps out to x = 2.6, runs down the south face, and discharges to the south, street side, at z = 0.3, y = −0.5. It sits 0.3 m west of the
   H-beam column at (3, 0), so the column does not stand in its path.
 - `pipe_overflow`: a 100 mm pipe at z = 1.2 from the tank's south face, running along x = 0.5 under the stair landing (whose underside
-  is at 1.4) and out through the south wall to y = −0.3. The tank holds about 1.6 m³ below it.
+  is at 1.4) and out through the south wall to y = −0.3. It passes over the septic tank's cover (top at z 1.05) with about 0.1 m to spare. The tank holds about 1.4 m³ below it.
 
 The pipes and the gutter are solid round pipes, and the gutter stands in for an open one (its type is `GUTTER`).
 
+## Septic tank
+
+`septic_tank` (`septic_tanks` in `spec.json`) is a buried reinforced-concrete tank in the open ground-floor area, west of the stair. Its outer footprint is x −0.2 to 1.2, y 0.3 to 3.0 (2.7 × 1.4 m), with the long side along y.
+
+| Part | Size |
+|---|---|
+| Chambers, south to north | 1.0 / 0.5 / 0.5 m clear (2:1:1); inner 2.0 × 1.0 × 1.5 m |
+| Outer walls / partitions | 0.2 m / 0.15 m |
+| Base slab | 0.2 m, top at z −0.6 |
+| Cover slab | 0.15 m, z 0.9 to 1.05 |
+
+- The outer length is 0.2 + 1.0 + 0.15 + 0.5 + 0.15 + 0.5 + 0.2 = 2.7 m; the generator fails if `outer` and these parts disagree. The inner dimensions come first, the walls and reinforcement are added around them.
+- Position: the north face at y = 3.0 is exactly 1.5 m from the (0, 4.5) column, which is what fixes it; the (3, 2) and (3, 0) columns are 1.80 and 1.82 m away. `tank_rain` starts at y 3.2 to clear it.
+- Depth: the inner floor is 0.6 m below ground and the cover top 1.05 m above it, leaving about 0.35 m under the stair landing (z 1.4).
+- It is one `IfcTank` with no shape of its own; the walls and slabs aggregate into it. Their types carry a `Custom_SepticTank` property set: K-250 concrete (f'c 21 MPa), 50 mm inner and 30 mm outer cover, coal tar epoxy or bitumen coating in 3 coats, PPC / high-sulfate-resistance cement, double-layer deformed bar D10 at 150 mm at most, status Candidate. `Custom_SepticLayout` on the tank records the derived depths.
+- The solid flight of `stair_1` stands against the east wall, which then acts as a retaining wall: it has to be checked for fill pressure with the tank empty and for liquid pressure with it full.
+
+Not yet modelled, with the intent:
+- Cover slope: about 2 % (28 mm across the width), falling away from the house so water does not pool. The cover is flat; unequal wall heights are the simple way to model it.
+- Control hole, at least 40 cm across, in the south chamber (y 0.5–1.5), for instance y 0.55–0.95, so it lies south of the landing (which starts at y = 1) and needs no hinged panel. Use a solid gas-tight lid on a collar, not a grate, which would vent gas and odour.
+- Landing grate: serrated steel, bearing bars at least 3×25 mm, pitch 30×100 mm (or tighter, 20×50), hot-dip galvanized, removable saddle clips.
+- Vent pipe for the methane, straight up along the column that carries the stair.
+- Toilet inlet: pipes under the first-floor slab, turning north and running under the stair into the south chamber.
+- Openings in the partitions between chambers.
+
 ## Open points
+
+Septic tank
+- The landing (x 0–1, y 1–3) lies wholly over the tank. The tank walls should not carry it: they are liquid-retaining members, would tie the stair's settlement to the tank's, and are attacked by sulfide from inside. It needs independent steel supports on their own footings: the west edge bearing on the ground brick wall at x = −0.5 (if that wall is load-bearing), and the east edge on the solid flight, which means extending the landing to about x 1.3. The `stair_2` landing, at z 4.4 directly above, needs a route to the ground too. A structural engineer has to check all of it.
+- The eighth tread of `stair_1`'s first flight is a plate cantilevering over the tank's wall and cover. The last tread top (z 1.2) and the landing top (z 1.5) are further apart than the riser limit; this predates the tank but matters once the landing height is settled against the tank top.
+- The fill stops 0.05 m short of the tank wall; shifting the flight start 0.05 m west closes it.
 
 Structure
 - Roof level has only the knee-wall posts and rails. The x = 3 wall needs a steel ring beam on top, tied down to the columns, and the
@@ -115,7 +147,7 @@ Water
   still sheds water west into the void, onto the stair.
 - The gutter on x = 3 hangs directly over the columns at (3, 0) and (3, 2), so a leak would run down onto them. It needs flashing and a
   drip edge, and the column tops need protection.
-- The tank needs a lid or screen at its southern end (y 3–3.5), which is open to the void.
+- The tank needs a lid or screen at its southern end (y 3.2–3.5), which is open to the void.
 - With the roof and walls closed, the grate floor under them stays dry apart from wind-driven rain through the stair door (sill and door seals).
 
 ## `spec.json` reference
@@ -132,9 +164,10 @@ Water
 - `knee_walls`: `storey`, `columns` (the storey whose columns carry the posts), `section` (`width`, `depth`, `thickness` of the hollow section) and `runs`: `{id, axis, at, from, to, roofs}`, a line `axis` = `x` or `y` at coordinate `at`, between `from` and `to`, under the listed roofs. The generator fails if the roof is not level along a run.
 - `walls`: loose wall runs, `{storey, from, to, wall}`.
 - `tanks`: `id`, `storey`, `name`, `rect`, `height`, optional `z`.
+- `septic_tanks`: `id`, `storey`, `name`, `outer` (`[x0, y0, x1, y1]` to the outer faces), `wall`, `partition`, `base`, `cover` (thicknesses), `chambers` (clear lengths along y, south to north), `floor_z` (top of the base slab), `inner_height`, optional `description`. The outer length must equal the walls, chambers and partitions added up.
 - `pipes`: `id`, `storey`, `name`, `diameter`, `path` (a list of `[x, y, z]` points; each straight stretch becomes a pipe segment).
 - `beams`: one block or a list of blocks (one per storey): `storey`, `main` and `secondary` (`{axis, at, spans}`), optional `sections` (`main` / `secondary`: `WF_200x100`, `WF_150x75`, `WF_125x60` or `WF_100x50`).
 - `columns`: groups of `{storey, at, rotation}`; `rotation` 90 turns the H section so its flanges face x.
-- `stairs`: see `spec.json`.
+- `stairs`: see `spec.json`. A flight may set `solid`: the number of treads, counted from its start, packed solid from the flight's start level up.
 
 Room `name` is a label only; it doesn't reach the generated file.

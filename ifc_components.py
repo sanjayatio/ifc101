@@ -104,7 +104,10 @@ def build_slab(scene, node, placement):
 
 
 def build_tank(scene, node, placement):
-    """Solid box of the outline's shape, `Height` tall; `Location.z` is its base. The hollow interior is not modelled."""
+    """Solid box of the outline's shape, `Height` tall; `Location.z` is its base. The hollow interior is not modelled.
+    A tank without an `OuterCurve` is a container only: its walls and slabs aggregate into it."""
+    if "OuterCurve" not in node:
+        return _product(scene, node, placement)
     model = scene.model
     solid = extrude_up(model, _outline_profile(model, node["OuterCurve"]), node["Height"])
     return _product(scene, node, placement, body_shape(model, scene.context, "SweptSolid", [solid]))
@@ -165,18 +168,22 @@ def _flight_steps(rise, rh_min, rh_max):
 
 def build_stair_flight(scene, node, placement):
     """`Rise` and `Run` are the flight's total height and horizontal length; the riser count, `RiserHeight`
-    and `TreadLength` follow from them and the type's `RiserHeightMin` / `RiserHeightMax`."""
+    and `TreadLength` follow from them and the type's `RiserHeightMin` / `RiserHeightMax`.
+    The first `SolidTreads` treads are packed solid: a block from the flight's start level up to the tread, not a plate."""
     model = scene.model
     props = _properties(scene, _type_of(scene, node))
     w, t = props["Width"], props["TreadThickness"]
     risers = _flight_steps(node["Rise"], props["RiserHeightMin"], props["RiserHeightMax"])
     treads_n = risers - 1
     rh, td = node["Rise"] / risers, node["Run"] / treads_n
-    treads = []
+    solid, treads = node.get("SolidTreads", 0), []
     for i in range(treads_n):
         sp = model.create_entity("IfcRectangleProfileDef", ProfileType="AREA",
             Position=model.create_entity("IfcAxis2Placement2D", Location=point(model, td / 2.0, 0.0)), XDim=td, YDim=w)
-        treads.append(extrude_up(model, sp, t, location=(i * td, 0.0, i * rh)))
+        if i < solid:
+            treads.append(extrude_up(model, sp, i * rh + t, location=(i * td, 0.0, 0.0)))
+        else:
+            treads.append(extrude_up(model, sp, t, location=(i * td, 0.0, i * rh)))
     return _product(scene, node, placement, body_shape(model, scene.context, "SweptSolid", treads),
         NumberOfRisers=risers, NumberOfTreads=treads_n, RiserHeight=rh, TreadLength=td)
 

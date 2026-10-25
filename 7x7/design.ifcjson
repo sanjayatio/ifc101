@@ -85,6 +85,25 @@
       "Name": "PolycarbonateFramed_16", "Description": "Steel-framed wall glazed with polycarbonate, so daylight reaches the roof deck", "MaterialLayers": [{"Material": "Polycarbonate Multiwall", "LayerThickness": 0.016}]
     },
     {
+      "id": "pset_septic_concrete", "type": "IfcPropertySet", "Name": "Custom_SepticTank", "Description": "Wet, sulfide-rich service: the walls must not seep and the steel must stay covered", "HasProperties": {"ConcreteQuality": "K-250 (f'c 21 MPa)", "ConcreteCoverInner": "50 mm (anti-corrosion)", "ConcreteCoverOuter": "30 mm", "InternalCoating": "Coal tar epoxy / bitumen, 3 coats", "CementType": "PPC / High Sulfate Resistance (Type HS)", "Reinforcement": "Double layer deformed bar, D10 at 150 mm max", "Status": "Candidate"}
+    },
+    {
+      "id": "wall_type_septic_150", "type": "IfcWallType", "HasPropertySets": ["pset_septic_concrete"], "PredefinedType": "STANDARD",
+      "Name": "SepticConcrete_150", "MaterialLayers": [{"Material": "Reinforced Concrete K-250", "LayerThickness": 0.15}]
+    },
+    {
+      "id": "wall_type_septic_200", "type": "IfcWallType", "HasPropertySets": ["pset_septic_concrete"], "PredefinedType": "STANDARD",
+      "Name": "SepticConcrete_200", "MaterialLayers": [{"Material": "Reinforced Concrete K-250", "LayerThickness": 0.2}]
+    },
+    {
+      "id": "slab_type_septic_base_200", "type": "IfcSlabType", "HasPropertySets": ["pset_septic_concrete"], "PredefinedType": "BASESLAB",
+      "Name": "SepticBase_200", "MaterialLayers": [{"Material": "Reinforced Concrete K-250", "LayerThickness": 0.2}]
+    },
+    {
+      "id": "slab_type_septic_cover_150", "type": "IfcSlabType", "HasPropertySets": ["pset_septic_concrete"], "PredefinedType": "ROOF",
+      "Name": "SepticCover_150", "MaterialLayers": [{"Material": "Reinforced Concrete K-250", "LayerThickness": 0.15}]
+    },
+    {
       "id": "slab_type_floor_100", "type": "IfcSlabType", "PredefinedType": "FLOOR",
       "Name": "Floor_100", "MaterialLayers": [{"LayerThickness": 0.1}]
     },
@@ -101,8 +120,12 @@
       "Name": "SteelFlight"
     },
     {
-      "id": "slab_ground", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_200", "ContainedIn": "storey_ground",
-      "Name": "Ground_Slab", "Location": [0.0, 0.0, 0.0], "OuterCurve": [[-0.5, 0], [7, 0], [7, 7], [-0.5, 7]]
+      "id": "slab_garage", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_200", "ContainedIn": "storey_ground",
+      "Name": "Ground_Slab", "Location": [0.0, 0.0, 0.0], "OuterCurve": [[3, 0], [7, 0], [7, 7], [3, 7]]
+    },
+    {
+      "id": "slab_watch", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_200", "ContainedIn": "storey_ground",
+      "Name": "Watch_Slab", "Location": [0.0, 0.0, 0.0], "OuterCurve": [[-0.5, 4.5], [-0.5, 7], [3, 7], [3, 4.5]]
     },
     {
       "id": "slab_toilet", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100", "ContainedIn": "storey_first",
@@ -125,15 +148,19 @@
       "Name": "Hall_Slab", "Location": [0.0, 0.0, 2.9], "OuterCurve": [[3, 7], [7, 7], [7, -0.6], [6, -0.6], [6, 2], [4, 2], [4, 3.5], [3, 3.5]]
     },
     {
+      "id": "slab_cover", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_slab_steel"],
+      "Name": "Roof_Cover_Slab", "Location": [0.0, 0.0, 5.9], "OuterCurve": [[6, 0], [3, 0], [3, 2], [6, 2]]
+    },
+    {
       "id": "slab_roof", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_slab_steel"],
-      "Name": "Roof_Floor_Slab", "Location": [0.0, 0.0, 5.9], "OuterCurve": [[-0.5, 7], [7, 7], [7, 0], [3, 0], [3, 3.5], [-0.5, 3.5]]
+      "Name": "Roof_Floor_Slab", "Location": [0.0, 0.0, 5.9], "OuterCurve": [[-0.5, 7], [7, 7], [7, 0], [6, 0], [6, 2], [3, 2], [3, 3.5], [-0.5, 3.5]]
     },
     {
       "id": "stair_1", "type": "IfcStair", "ContainedIn": "storey_ground", "PredefinedType": "TWO_STRAIGHT_RUN_STAIR"
     },
     {
       "id": "stair_1_flight_1", "type": "IfcStairFlight", "IsTypedBy": "stair_flight_type_steel", "Decomposes": "stair_1", "PredefinedType": "STRAIGHT",
-      "Location": [3.0, 2.5, 0.0], "RefDirection": [-1.0, 0.0, 0.0], "Rise": 1.5, "Run": 2.0
+      "Location": [3.0, 2.5, 0.0], "RefDirection": [-1.0, 0.0, 0.0], "Rise": 1.5, "Run": 2.0, "SolidTreads": 7
     },
     {
       "id": "stair_1_flight_2", "type": "IfcStairFlight", "IsTypedBy": "stair_flight_type_steel", "Decomposes": "stair_1", "PredefinedType": "STRAIGHT",
@@ -611,7 +638,46 @@
     },
     {
       "id": "tank_rain", "type": "IfcTank", "ContainedIn": "storey_ground", "PredefinedType": "STORAGE",
-      "Name": "Rainwater_Tank", "Location": [0.0, 0.0, 0.0], "OuterCurve": [[0.05, 3], [1, 3], [1, 4.45], [0.05, 4.45]], "Height": 1.5
+      "Name": "Rainwater_Tank", "Location": [0.0, 0.0, 0.0], "OuterCurve": [[0.05, 3.2], [1, 3.2], [1, 4.45], [0.05, 4.45]], "Height": 1.5
+    },
+    {
+      "id": "pset_septic_tank", "type": "IfcPropertySet", "Name": "Custom_SepticLayout", "HasProperties": {"InnerWidth": 1.0, "InnerLength": 2.0, "InnerHeight": 1.5, "ChamberLengths": "1.0 m / 0.5 m / 0.5 m", "InnerFloorBelowGround": 0.6, "CoverTopAboveGround": 1.05}
+    },
+    {
+      "id": "septic_tank", "type": "IfcTank", "ContainedIn": "storey_ground", "HasPropertySets": ["pset_septic_tank"], "PredefinedType": "STORAGE",
+      "Name": "Septic_Tank", "Description": "Chambers 1.0 / 0.5 / 0.5 m clear, south to north; the toilet inlet enters the south chamber"
+    },
+    {
+      "id": "septic_tank_wall_west", "type": "IfcWall", "IsTypedBy": "wall_type_septic_200", "Decomposes": "septic_tank",
+      "Location": [-0.1, 0.3, -0.6], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.7, "Height": 1.5
+    },
+    {
+      "id": "septic_tank_wall_east", "type": "IfcWall", "IsTypedBy": "wall_type_septic_200", "Decomposes": "septic_tank",
+      "Location": [1.1, 0.3, -0.6], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.7, "Height": 1.5
+    },
+    {
+      "id": "septic_tank_wall_south", "type": "IfcWall", "IsTypedBy": "wall_type_septic_200", "Decomposes": "septic_tank",
+      "Location": [0.0, 0.4, -0.6], "Length": 1.0, "Height": 1.5
+    },
+    {
+      "id": "septic_tank_wall_north", "type": "IfcWall", "IsTypedBy": "wall_type_septic_200", "Decomposes": "septic_tank",
+      "Location": [0.0, 2.9, -0.6], "Length": 1.0, "Height": 1.5
+    },
+    {
+      "id": "septic_tank_partition_1", "type": "IfcWall", "IsTypedBy": "wall_type_septic_150", "Decomposes": "septic_tank",
+      "Location": [0.0, 1.575, -0.6], "Length": 1.0, "Height": 1.5
+    },
+    {
+      "id": "septic_tank_partition_2", "type": "IfcWall", "IsTypedBy": "wall_type_septic_150", "Decomposes": "septic_tank",
+      "Location": [0.0, 2.225, -0.6], "Length": 1.0, "Height": 1.5
+    },
+    {
+      "id": "septic_tank_base", "type": "IfcSlab", "IsTypedBy": "slab_type_septic_base_200", "Decomposes": "septic_tank",
+      "Location": [0.0, 0.0, -0.8], "OuterCurve": [[-0.2, 0.3], [1.2, 0.3], [1.2, 3], [-0.2, 3]]
+    },
+    {
+      "id": "septic_tank_cover", "type": "IfcSlab", "IsTypedBy": "slab_type_septic_cover_150", "Decomposes": "septic_tank",
+      "Location": [0.0, 0.0, 0.9], "OuterCurve": [[-0.2, 0.3], [1.2, 0.3], [1.2, 3], [-0.2, 3]]
     },
     {
       "id": "pipe_collect_1", "type": "IfcPipeSegment", "ContainedIn": "storey_roof", "PredefinedType": "GUTTER",
@@ -647,7 +713,7 @@
     },
     {
       "id": "pipe_overflow_1", "type": "IfcPipeSegment", "ContainedIn": "storey_ground", "PredefinedType": "RIGIDSEGMENT",
-      "Name": "Tank_Overflow", "Location": [0.5, 3.0, 1.2], "Direction": [0.0, -1.0, 0.0], "Length": 3.3, "Diameter": 0.1
+      "Name": "Tank_Overflow", "Location": [0.5, 3.2, 1.2], "Direction": [0.0, -1.0, 0.0], "Length": 3.5, "Diameter": 0.1
     }
   ]
 }

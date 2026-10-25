@@ -211,13 +211,14 @@ def build_column(scene, node, placement):
 
 def build_beam(scene, node, placement):
     """Section; Location is the start of its underside centreline, running `Length` along local X, or along `Direction` (a unit
-    vector in the x-z plane, for a member that follows a roof slope; its profile depth then stands square to the slope)."""
+    vector in the x-z plane, for a member that follows a roof slope; its profile depth then stands square to the slope). A hip rafter
+    runs off that plane: `Across` is the horizontal direction of its profile width."""
     model = scene.model
     type_node = _type_of(scene, node)
     spec = type_node["Profile"]
     prof = _profile(model, spec, y_offset=_profile_depth(spec) / 2.0)
     # profile X -> world Y, profile Y -> world Z, extrusion (local Z) -> world X
-    position = axis_placement_3d(model, axis=tuple(node.get("Direction", (1.0, 0.0, 0.0))), ref_direction=(0.0, 1.0, 0.0))
+    position = axis_placement_3d(model, axis=tuple(node.get("Direction", (1.0, 0.0, 0.0))), ref_direction=tuple(node.get("Across", (0.0, 1.0, 0.0))))
     solid = model.create_entity("IfcExtrudedAreaSolid", SweptArea=prof, Position=position,
         ExtrudedDirection=direction(model, 0.0, 0.0, 1.0), Depth=node["Length"])
     _style_solid(model, solid, type_node["Material"])

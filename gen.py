@@ -37,6 +37,7 @@ def slug(v):
 class Design:
     def __init__(self, spec):
         self.spec, self.nodes = spec, []
+        self.rafters, self.purlins = set(), []  # laid rafters (by position), and purlins waiting to be merged across roofs
         self.height = spec["storey_height"]
         self.storeys = {name: {"id": f"storey_{name}", "elevation": r(i * self.height)} for i, name in enumerate(spec["storeys"])}
 
@@ -83,7 +84,7 @@ class Design:
             add(id=KNEE_POST_TYPE, type="IfcColumnType", Name=name, Description=description, PredefinedType="COLUMN", Material="Steel_Black", Profile=profile)
             add(id=KNEE_RAIL_TYPE, type="IfcBeamType", Name=name, Description=description, PredefinedType="BEAM", Material="Steel_Black", Profile=profile)
         for roof in self.spec.get("roofs", []):
-            for kind, s in (roof.get("frame") or {}).items():
+            for kind, s in {k: v for k, v in (roof.get("frame") or {}).items() if k in ("rafter", "purlin")}.items():
                 profile = {"type": "IfcRectangleHollowProfileDef", "XDim": s["width"], "YDim": s["depth"], "WallThickness": s["thickness"]}
                 name = "RHS_{}x{}x{:g}".format(round(s["width"] * 1000), round(s["depth"] * 1000), round(s["thickness"] * 1000, 1))
                 add(id=f"beam_type_{kind}_{roof['id']}", type="IfcBeamType", Name=name, PredefinedType="BEAM", Material="Steel_Black", Profile=profile,
@@ -323,6 +324,7 @@ class Design:
                      OuterCurve=[[r(x), r(y), r(z)] for x, y, z in corners], Strips=self.strips(roof))
             self.roof_walls(roof, specs)
             self.roof_frame(roof)
+        self.flush_purlins()
 
     @staticmethod
     def strips(roof):
@@ -338,12 +340,22 @@ class Design:
         assert abs(y - max(c[1] for c in roof["corners"])) < 1e-9, f"{roof['id']}: the cladding widths add up to {r(y - lo)} m, not the roof's span"
         return out
 
+    @staticmethod
+    def fall_axis(roof):
+        """0 when the roof falls along x, 1 when it falls along y: the axis its rafters run along (its purlins run along the other)."""
+        c = roof["corners"]
+        return 0 if abs(Design.surface(roof, c[0][0] + 1.0, c[0][1]) - Design.surface(roof, *c[0][:2])) > 1e-9 else 1
+
     def frame_geometry(self, roof):
-        """Slope of a roof that falls along x: (cos, slope) with slope = dz/dx. The plane must not fall along y."""
-        xs, ys = [c[0] for c in roof["corners"]], [c[1] for c in roof["corners"]]
-        xa, xb, ya, yb = min(xs), max(xs), min(ys), max(ys)
-        assert abs(self.surface(roof, xa, yb) - self.surface(roof, xa, ya)) < 1e-9, f"{roof['id']}: the frame needs a roof that falls along x only"
-        slope = (self.surface(roof, xb, ya) - self.surface(roof, xa, ya)) / (xb - xa)
+        """Slope of a roof that falls along one axis (see `fall_axis`): (cos, slope) with slope = dz per metre along that axis. The plane must not fall along the other."""
+        k = self.fall_axis(roof)
+        pts = [c[:2] for c in roof["corners"]]
+        lo, hi = min(p[k] for p in pts), max(p[k] for p in pts)
+        other = [min(p[1 - k] for p in pts), max(p[1 - k] for p in pts)]
+        def at(a, b):
+            return self.surface(roof, a, b) if k == 0 else self.surface(roof, b, a)
+        assert abs(at(lo, other[1]) - at(lo, other[0])) < 1e-9, f"{roof['id']}: the frame needs a roof that falls along one axis only"
+        slope = (at(hi, other[0]) - at(lo, other[0])) / (hi - lo)
         return 1.0 / math.sqrt(1.0 + slope * slope), slope
 
     def frame_drop(self, roof):
@@ -353,43 +365,135 @@ class Design:
 
     @staticmethod
     def rafter_ys(roof):
-        """y of each rafter: one `edge_inset` in from each side edge, and every `pitch` from the south edge between them."""
-        ys, rafter = [c[1] for c in roof["corners"]], roof["frame"]["rafter"]
-        ya, yb = min(ys), max(ys)
-        inner = [ya + k * rafter["pitch"] for k in range(1, 100) if ya + k * rafter["pitch"] < yb - rafter["edge_inset"] - 1e-9]
-        return [ya + rafter["edge_inset"]] + inner + [yb - rafter["edge_inset"]]
+        """y of each rafter: `lines` are the fixed rafters (the first and last are the start and end, the others e.g. the edges of an opening),
+        and each gap between two lines is split into equal spaces no wider than `max_pitch`, like the treads of a stair."""
+        rafter = roof["frame"]["rafter"]
+        lines = rafter["lines"]
+        ys = []
+        for a, b in zip(lines, lines[1:]):
+            n = math.ceil((b - a) / rafter["max_pitch"] - 1e-9)
+            ys += [a + k * (b - a) / n for k in range(n)]
+        return ys + [lines[-1]]
+
+    @staticmethod
+    def span(roof, along, at):
+        """Extent of the roof's outline along the axis `along` (0 = x, 1 = y) on the line where the other coordinate equals `at`: (lo, hi)."""
+        pts = [(c[0], c[1]) for c in roof["corners"]]
+        k, f = along, 1 - along
+        hits = []
+        for a, b in zip(pts, pts[1:] + pts[:1]):
+            if abs(a[f] - b[f]) < 1e-12:
+                if abs(a[f] - at) < 1e-9:
+                    hits += [a[k], b[k]]
+            elif min(a[f], b[f]) - 1e-9 <= at <= max(a[f], b[f]) + 1e-9:
+                hits.append(a[k] + (at - a[f]) / (b[f] - a[f]) * (b[k] - a[k]))
+        return min(hits), max(hits)
+
+    @staticmethod
+    def hip_line(roof):
+        """The hip rafter's line in plan, from its high corner to its low corner: ((x, y, z), (x, y, z)); the `edge` it follows is shared with a neighbouring roof."""
+        c = roof["corners"]
+        i = roof["frame"]["hip"]["edge"]
+        p, q = c[i], c[(i + 1) % len(c)]
+        return (p, q) if p[2] >= q[2] else (q, p)
 
     def roof_frame(self, roof):
         """Rafters run down the slope under the purlins, which run across it under the panels: panel, purlin, rafter, knee-wall rail.
-        Rafters sit at `pitch` along y (plus one `edge_inset` in from each side edge); purlins are spread evenly from `inset` in from
-        the high edge to `inset` in from the low edge, no further apart than `max_spacing` along the slope."""
+        Rafters sit where `rafter_ys` puts them; purlins are spread evenly from `inset` in from the high edge to `inset` in from the low
+        edge, no further apart than `max_spacing` along the slope, and run across the roof. A rafter that another roof already laid on the
+        shared line is not laid twice. A purlin stops `inset` short of an edge, but runs on to `join_y` (the line shared with the next roof,
+        where it meets the purlin of that roof and the two become one member) and to the hip rafter, if the roof has a `hip`."""
         frame = roof.get("frame")
         if not frame:
             return
         storey, z0 = roof["storey"], self.elevation(roof["storey"])
         cos, slope = self.frame_geometry(roof)
-        sin = -slope * cos
-        xs, ys = [c[0] for c in roof["corners"]], [c[1] for c in roof["corners"]]
-        xa, xb, ya, yb = min(xs), max(xs), min(ys), max(ys)
+        k = self.fall_axis(roof)  # rafters run along axis k, purlins along the other
+        sin = -slope * cos  # the slope's component along the fall axis of the up-normal, whichever way the roof falls
+        dirn = 1 if slope < 0 else -1  # rafters run from the high end towards +k (1) or -k (-1)
+        pts = [c[:2] for c in roof["corners"]]
+        ka, kb = min(p[k] for p in pts), max(p[k] for p in pts)
+        ma, mb = min(p[1 - k] for p in pts), max(p[1 - k] for p in pts)
         rafter, purlin = frame["rafter"], frame["purlin"]
         pd, rd = purlin["depth"], rafter["depth"]
-        normal = (sin, 0.0, cos)  # up, square to the slope
-        x0 = xa + rafter.get("inset", 0.05)
-        for i, y in enumerate(self.rafter_ys(roof)):
+
+        def plan(along, across):
+            """(x, y) of the point `along` the fall axis and `across` it."""
+            return (along, across) if k == 0 else (across, along)
+
+        for i, m in enumerate(self.rafter_ys(roof)):
+            lo_k, hi_k = self.span(roof, k, m)
+            s0 = lo_k + rafter.get("inset", 0.05) if dirn == 1 else hi_k - rafter.get("inset", 0.05)  # a slanted edge (a hip) shortens the rafter
             t = pd + rd  # the rafter's underside lies this far below the panel underside, square to the slope
+            x, y = plan(s0 - t * sin, m)
+            location = [r(x), r(y), r(z0 + self.surface(roof, *plan(s0, m)) - t * cos)]
+            if tuple(location) in self.rafters:  # laid by the roof on the other side of this line
+                continue
+            self.rafters.add(tuple(location))
             node = dict(id=f"{roof['id']}_rafter_{i}", type="IfcBeam", IsTypedBy=f"beam_type_rafter_{roof['id']}", ContainedIn=self.storey_id(storey))
-            node["Location"] = [r(x0 - t * normal[0]), r(y), r(z0 + self.surface(roof, x0, y) - t * normal[2])]
-            node.update(Direction=[round(cos, 9), 0.0, round(slope * cos, 9)], Length=r((xb - x0) / cos))
+            node["Location"] = location
+            node.update(Direction=[round(v, 9) for v in (*plan(dirn * cos, 0.0), -abs(slope) * cos)], Length=r(abs((kb if dirn == 1 else ka) - s0) / cos))
+            if (k, dirn) != (0, 1):
+                node["Across"] = [-float(dirn), 0.0, 0.0] if k == 1 else [0.0, float(dirn), 0.0]  # keeps the profile depth square to the slope, facing up
             self.nodes.append(node)
-        p0, p1 = xa + purlin["inset"], xb - purlin["inset"]
+        join_y, hip = frame.get("join_y"), frame.get("hip")
+        p0, p1 = ka + purlin["inset"], kb - purlin["inset"]
         n = math.ceil((p1 - p0) / cos / purlin["max_spacing"] - 1e-9)
         for i in range(n + 1):
-            xp = p0 + i * (p1 - p0) / n
-            cx, cz = xp - pd / 2.0 * normal[0], z0 + self.surface(roof, xp, ya) - pd / 2.0 * normal[2]  # centre of the purlin, level
-            node = dict(id=f"{roof['id']}_purlin_{i}", type="IfcBeam", IsTypedBy=f"beam_type_purlin_{roof['id']}", ContainedIn=self.storey_id(storey))
-            node["Location"] = [r(cx), r(ya + purlin["inset"]), r(cz - pd / 2.0)]
-            node.update(RefDirection=[0.0, 1.0, 0.0], Length=r(yb - ya - 2 * purlin["inset"]))
-            self.nodes.append(node)
+            sp = p0 + i * (p1 - p0) / n
+            lo, hi = self.span(roof, 1 - k, sp)
+            lo += 0.0 if (join_y is not None and abs(lo - join_y) < 1e-9) or (hip and lo > ma + 1e-9) else purlin["inset"]
+            hi -= 0.0 if (join_y is not None and abs(hi - join_y) < 1e-9) or (hip and hi < mb - 1e-9) else purlin["inset"]
+            if hi - lo <= purlin["width"]:  # a stub where the purlin line barely reaches into the roof's corner
+                continue
+            cs, cz = sp - pd / 2.0 * sin, z0 + self.surface(roof, *plan(sp, ma)) - pd / 2.0 * cos  # centre of the purlin, level
+            x, y = plan(cs, lo)
+            self.purlins.append(dict(id=f"{roof['id']}_purlin_{i}", type="IfcBeam", IsTypedBy=f"beam_type_purlin_{roof['id']}", ContainedIn=self.storey_id(storey),
+                                     Location=[r(x), r(y), r(cz - pd / 2.0)], RefDirection=[float(k == 1), float(k == 0), 0.0], Length=r(hi - lo)))
+        if hip and "laid_by" not in hip:  # `laid_by`: the roof on the other side of the hip has already put a rafter there
+            self.hip_rafter(roof, cos, z0)
+
+    def hip_drop(self, roof):
+        """Vertical distance from the panel underside down to the underside of the hip rafter: the purlin depth, measured square to the slope,
+        and the rafter depth, measured square to the hip (which is steeper in plan than in section, so its vertical depth is `depth / plan`)."""
+        cos, _ = self.frame_geometry(roof)
+        (hx, hy, hz), (ex, ey, ez) = self.hip_line(roof)
+        plan = math.hypot(ex - hx, ey - hy) / math.sqrt((ex - hx) ** 2 + (ey - hy) ** 2 + (ez - hz) ** 2)
+        return roof["frame"]["purlin"]["depth"] / cos + roof["frame"]["rafter"]["depth"] / plan
+
+    def hip_rafter(self, roof, cos, z0):
+        """The diagonal rafter under the hip: the rafter section, from `inset` in from the roof's high edge to the eave. Its top is level with
+        the top of the ordinary rafters, so the purlins that end on it rest on it."""
+        rafter, purlin = roof["frame"]["rafter"], roof["frame"]["purlin"]
+        (hx, hy, _), (ex, ey, _) = self.hip_line(roof)
+        sx = hx + math.copysign(rafter.get("inset", 0.05), ex - hx)
+        sy = hy + (sx - hx) * (ey - hy) / (ex - hx)
+        dx, dy, dz = ex - sx, ey - sy, self.surface(roof, ex, ey) - self.surface(roof, sx, sy)
+        length = math.sqrt(dx * dx + dy * dy + dz * dz)
+        axis = [dx / length, dy / length, dz / length]
+        plan = math.hypot(axis[0], axis[1])
+        across = [-axis[1] / plan, axis[0] / plan, 0.0]  # horizontal, square to the hip
+        under = self.surface(roof, sx, sy) - self.hip_drop(roof)
+        self.nodes.append(dict(id=f"{roof['id']}_rafter_hip", type="IfcBeam", IsTypedBy=f"beam_type_rafter_{roof['id']}", ContainedIn=self.storey_id(roof["storey"]),
+                               Location=[r(sx), r(sy), r(z0 + under)], Direction=[r(c) for c in axis], Across=[r(c) for c in across], Length=r(length)))
+
+    def flush_purlins(self):
+        """Purlins on the same line (same x and level) that touch end to end, i.e. across the line where two roofs meet, become one member."""
+        merged = []
+
+        def key(p):
+            a = 1 if p["RefDirection"][1] else 0  # the axis it runs along; (a, across, level, start)
+            loc = p["Location"]
+            return (a, loc[1 - a], loc[2], loc[a])
+
+        for p in sorted(self.purlins, key=key):
+            last = merged[-1] if merged else None
+            if last and key(last)[:3] == key(p)[:3] and abs(key(last)[3] + last["Length"] - key(p)[3]) < 1e-6:
+                last["Length"] = r(last["Length"] + p["Length"])
+            else:
+                merged.append(p)
+        self.nodes += merged
+        self.purlins = []
 
     @staticmethod
     def edges(roof):
@@ -577,14 +681,28 @@ class Design:
                  Location=[at, r(lo - w / 2.0), r(z0 + top - depth)], RefDirection=[0.0, 1.0, 0.0], Length=r(hi - lo + w))
 
     def rafter_posts(self, run, roof, z0):
-        """No rail: a post under each rafter of `roof` where it crosses the line `at` (axis y), up to the rafter's underside.
-        Each stands on a column or on the roof beam along the line."""
-        assert run["axis"] == "y", f"knee wall {run['id']}: rafter posts are only for a line along y"
-        at = float(run["at"])
-        for y in self.rafter_ys(roof):
-            height = r(self.surface(roof, at, y) - self.frame_drop(roof))
-            self.add(id=f"knee_post_{slug(r(at))}_{slug(r(y))}", type="IfcColumn", IsTypedBy=KNEE_POST_TYPE, ContainedIn=self.storey_id(self.spec["knee_walls"]["storey"]),
-                     Location=[r(at), r(y), z0], Length=height)
+        """No rail: a post under each rafter of `roof` where it crosses the line `at` (axis y or x), up to the rafter's underside; the hip rafter
+        gets one too, where it crosses the line, unless another roof laid it (`laid_by`). Each stands on a column or on the roof beam along the line."""
+        at, k = float(run["at"]), self.fall_axis(roof)
+        assert (run["axis"] == "y") == (k == 0), f"knee wall {run['id']}: rafter posts need a line across the rafters of {roof['id']}"
+
+        def plan(along, across):
+            return (along, across) if k == 0 else (across, along)
+
+        drops = {m: self.frame_drop(roof) for m in self.rafter_ys(roof) if self.span(roof, k, m)[0] <= at <= self.span(roof, k, m)[1]}  # the rafters that reach the line
+        hip = roof["frame"].get("hip")
+        if hip and "laid_by" not in hip:
+            (hx, hy, _), (ex, ey, _) = self.hip_line(roof)
+            h, e = plan(hx, hy), plan(ex, ey)  # (along the rafters, across them)
+            if min(h[0], e[0]) <= at <= max(h[0], e[0]):
+                drops[h[1] + (at - h[0]) * (e[1] - h[1]) / (e[0] - h[0])] = self.hip_drop(roof)
+        for m, drop in drops.items():
+            x, y = plan(at, float(m))
+            pid = f"knee_post_{slug(r(x))}_{slug(r(y))}"
+            if any(n["id"] == pid for n in self.nodes):
+                continue  # a rafter shared with the roof next door, whose run has placed it
+            self.add(id=pid, type="IfcColumn", IsTypedBy=KNEE_POST_TYPE, ContainedIn=self.storey_id(self.spec["knee_walls"]["storey"]),
+                     Location=[r(x), r(y), z0], Length=r(self.surface(roof, x, y) - drop))
 
     # ---- beams: they end on the face of a column, or (secondary) on the web of a main beam ------
     def beam_blocks(self):

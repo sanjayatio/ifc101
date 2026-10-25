@@ -27,15 +27,15 @@
   ],
 
   "roofs": [
-    {"id": "roof_north_east", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
-     "edge_walls": {"1": true},
-      "corners": [[7.05, 7.05, 0], [3, 7.05, 0], [3, 3.5, 2.17]]},
-    {"id": "roof_north_west", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
-     "edge_walls": {"1": true},
-      "corners": [[-0.55, 7.05, 0], [3, 7.05, 0], [3, 4.5, 1.55873]]},
-    {"id": "roof_west", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
-     "edge_walls": {"1": {"wall": "polycarbonate"}},
-     "corners": [[-0.55, 7.05, 0], [-0.55, 4.5, 0], [3, 4.5, 1.55873]]},
+    {"id": "roof_north_east", "storey": "roof", "corners": [[7.05, 7.05, 0], [3, 7.05, 0], [3, 3.5, 2.17]], "panel": "spandek_insulated", "wall": "sandwich", "edge_walls": {"1": true},
+     "frame": {"rafter": {"width": 0.05, "depth": 0.1, "thickness": 0.0023, "lines": [3, 6], "max_pitch": 1.0},
+               "purlin": {"width": 0.04, "depth": 0.06, "thickness": 0.0023, "max_spacing": 0.875, "inset": 0.05}, "hip": {"edge": 2, "laid_by": "roof_east"}}},
+    {"id": "roof_north_west", "storey": "roof", "corners": [[-0.55, 7.05, 0], [3, 7.05, 0], [3, 4.5, 1.55873]], "panel": "spandek_insulated", "wall": "sandwich", "edge_walls": {"1": true},
+     "frame": {"rafter": {"width": 0.05, "depth": 0.1, "thickness": 0.0023, "lines": [1, 3], "max_pitch": 1.0},
+               "purlin": {"width": 0.04, "depth": 0.06, "thickness": 0.0023, "max_spacing": 0.875, "inset": 0.05}, "hip": {"edge": 2}}},
+    {"id": "roof_west", "storey": "roof", "corners": [[-0.55, 7.05, 0], [-0.55, 4.5, 0], [3, 4.5, 1.55873]], "panel": "spandek_insulated", "wall": "sandwich", "edge_walls": {"1": {"wall": "polycarbonate"}},
+     "frame": {"rafter": {"width": 0.05, "depth": 0.1, "thickness": 0.0023, "lines": [4.5, 6], "max_pitch": 1.0},
+               "purlin": {"width": 0.04, "depth": 0.06, "thickness": 0.0023, "max_spacing": 0.875, "inset": 0.05}, "hip": {"edge": 2, "laid_by": "roof_north_west"}}},
     {"id": "roof_slant", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
      "edge_walls": {"1": true, "2": true},
      "corners": [[-0.55, 3.5, 0], [3.0, 3.5, 0], [3.0, 4.5, 0.43907887324], [0.45, 4.5, 0.43907887324]]},
@@ -43,13 +43,15 @@
      "edge_walls": {"1": true},
      "corners": [[-0.55, 3.5, 0], [-0.55, 4.5, 0], [0.45, 4.5, 0.43907887324]]},
 
-    {"id": "roof_east", "storey": "roof", "corners": [[3, 3.5, 2.17], [7.05, 3.5, 0], [7.05, 7.05, 0]], "panel": "polycarbonate", "wall": "sandwich", "edge_walls": {"0": {"wall": "polycarbonate"}}},
+    {"id": "roof_east", "storey": "roof", "corners": [[3, 3.5, 2.17], [7.05, 3.5, 0], [7.05, 7.05, 0]], "panel": "spandek_insulated", "wall": "sandwich", "edge_walls": {"0": {"wall": "polycarbonate"}},
+     "frame": {"rafter": {"width": 0.05, "depth": 0.1, "thickness": 0.0023, "lines": [3.5, 6.13], "max_pitch": 1.0},
+               "purlin": {"width": 0.04, "depth": 0.06, "thickness": 0.0023, "max_spacing": 0.875, "inset": 0.05}, "join_y": 3.5, "hip": {"edge": 2}}},
 
     {"id": "roof_south_east", "storey": "roof", "corners": [[3, 0, 2.17], [7.05, 0, 0], [7.05, 3.5, 0], [3, 3.5, 2.17]], "panel": "spandek_insulated", "wall": "sandwich", "edge_walls": {"0": true, "2": true, "3": {"wall": "polycarbonate", "doors": [{"from": 1, "to": 2}]}},
      "cladding": [{"panel": "spandek_insulated", "width": 0.5}, {"panel": "spandek_transparent", "width": 1}, {"panel": "spandek_insulated", "width": 0.5},
                   {"panel": "spandek_transparent", "width": 1}, {"panel": "spandek_insulated", "width": 0.5}],
-     "frame": {"rafter": {"width": 0.05, "depth": 0.1, "thickness": 0.0023, "pitch": 1.0, "edge_inset": 0.1},
-               "purlin": {"width": 0.04, "depth": 0.06, "thickness": 0.0023, "max_spacing": 0.875, "inset": 0.05}}},
+     "frame": {"rafter": {"width": 0.05, "depth": 0.1, "thickness": 0.0023, "lines": [0.1, 1, 2, 3.5], "max_pitch": 1.0},
+               "purlin": {"width": 0.04, "depth": 0.06, "thickness": 0.0023, "max_spacing": 0.875, "inset": 0.05}, "join_y": 3.5}},
     {"id": "roof_stairs_1", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
      "corners": [[2.9, 2, 1.5], [0, 2, 1.5], [0, 3, 1.4], [2.9, 3, 1.4]]},
     {"id": "roof_stairs_2", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
@@ -66,10 +68,11 @@
     "storey": "roof", "columns": "first", "section": {"width": 0.075, "depth": 0.075, "thickness": 0.003},
     "runs": [
       {"id": "slant", "axis": "x", "at": 4.5, "from": 1, "to": 3, "on_beam": [[0.45, 4.5]], "roofs": ["roof_slant"]},
-      {"id": "north", "axis": "x", "at": 6.5, "from": 3, "to": 6, "on_beam": [[0.2156862745098036, 6.5]], "roofs": ["roof_north_west", "roof_north_east"]},
-      {"id": "west", "axis": "y", "at": 0, "from": 4.5, "to": 6.5, "roofs": ["roof_west"]},
+      {"id": "north_west", "axis": "x", "at": 6.5, "rafter_posts": "roof_north_west"},
+      {"id": "north_east", "axis": "x", "at": 6.5, "rafter_posts": "roof_north_east"},
+      {"id": "west", "axis": "y", "at": 0, "rafter_posts": "roof_west"},
       {"id": "east_se", "axis": "y", "at": 6, "rafter_posts": "roof_south_east"},
-      {"id": "east", "axis": "y", "at": 6, "from": 4.5, "to": 4.5, "on_beam": [[6, 6.126851851851852]], "roofs": ["roof_east"]}
+      {"id": "east", "axis": "y", "at": 6, "rafter_posts": "roof_east"}
     ],
     "supports": [{"id": "south_ridge", "axis": "y", "at": 3, "from": 0, "to": 3.5, "height": 2.17}]
   },

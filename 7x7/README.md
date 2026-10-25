@@ -60,10 +60,10 @@ The first 7 treads of `stair_1`'s first flight are packed solid (`solid: 7` on t
 The roof is eleven parts, each its own `IfcRoof` with one sloped panel over 3 or 4 corners `[x, y, z]`, where z is the rise above that roof's eaves. There is no parapet: the eaves are at the roof slab (z = 6.0), and the peak is 2.17 m above it (z = 8.17). The roof rests on the knee walls (see below) and overhangs them on the low sides. The corners are written as built: the roof edges reach 0.05 m past the grid line (x = -0.55, y = 7.05, x = 7.05), flush with the outer face of the first-floor AAC walls. Roof walls are light: steel sandwich panel (`SteelSandwich_50`) for infill, and steel-framed polycarbonate (`PolycarbonateFramed_16`) under the peak and along the x = 3 edge, so daylight reaches the deck.
 
 The north half has four slopes. The peak at (3, 3.5), 2.17 m above the eaves, sits on the high edge of `roof_south_east` (x = 3). The north slope is split at x = 3 so the west half can stop at y = 4.5; the strip west of x = 3 and south of y = 4.5 is taken by the low roofs below:
-- `roof_north_east` (polycarbonate): corners (7.05, 7.05), (3, 7.05) and the peak. About 31°.
-- `roof_north_west` (polycarbonate): corners (-0.55, 7.05), (3, 7.05) and (3, 4.5), 1.55873 m up. The rise is set so both north slopes have the same height along y = 6.5 (0.3362 m); the north knee wall needs that.
-- `roof_west` (polycarbonate): the west slope, corners (-0.55, 7.05), (-0.55, 4.5) and (3, 4.5). It stops at y = 4.5 instead of reaching the cantilever edge at y = 3.5.
-- `roof_east` (polycarbonate): the east slope, corners (7.05, 3.5), (7.05, 7.05) and the peak. About 28°, continuing the slope of `roof_south_east`.
+- `roof_north_east` (insulated spandek on a rafter and purlin frame, see Roof rework): corners (7.05, 7.05), (3, 7.05) and the peak. About 31°.
+- `roof_north_west` (insulated spandek, framed): corners (-0.55, 7.05), (3, 7.05) and (3, 4.5), 1.55873 m up. The rise is set so both north slopes have the same height along y = 6.5 (0.3362 m), so their posts there have the same height.
+- `roof_west` (insulated spandek, framed): the west slope, corners (-0.55, 7.05), (-0.55, 4.5) and (3, 4.5). It stops at y = 4.5 instead of reaching the cantilever edge at y = 3.5.
+- `roof_east` (insulated spandek, see Roof rework): the east slope, corners (7.05, 3.5), (7.05, 7.05) and the peak. About 28°, continuing the slope of `roof_south_east`.
 
 The strip over the cantilevered room, y 3.5 to 4.5:
 - `roof_slant` (polycarbonate): a shed roof, corners (-0.55, 3.5), (3, 3.5), (3, 4.5) and (0.45, 4.5), rising 0.43908 m to the north. That rise is exactly the height of `roof_west` at (0.45, 4.5), so the corner is closed.
@@ -89,17 +89,18 @@ The roof has no parapet. Where it comes down to the low edges it rests on knee w
 
 | Run | Line | Between | Under | Posts |
 |---|---|---|---|---|
-| `north` | y = 6.5 | x 0.216-6 | `roof_north_west`, `roof_north_east` | columns (3, 6.5), (6, 6.5); on the beam at (0.216, 6.5) |
-| `west` | x = 0 | y 4.5-6.5 | `roof_west` | columns (0, 4.5), (0, 6.5) |
-| `east_se` | x = 6 | y 0-3.5 | `roof_south_east` (rafters) | no rail: one post under each rafter, at y 0.1, 1, 2, 3, 3.4 |
-| `east` | x = 6 | y 4.5-6.13 | `roof_east` | column (6, 4.5); on the beam at (6, 6.127) |
+| `north_west` | y = 6.5 | x 0.216-3 | `roof_north_west` (rafters) | no rail: one post under each rafter, at x 1, 2, 3, and under the hip rafter at x 0.216 |
+| `north_east` | y = 6.5 | x 3-6 | `roof_north_east` (rafters) | no rail: one post under each rafter, at x 3, 4, 5, 6 (the post at x 3 is shared with `north_west`) |
+| `west` | x = 0 | y 4.5-6 | `roof_west` (rafters) | no rail: one post under each rafter, at y 4.5, 5.25, 6 |
+| `east_se` | x = 6 | y 0-3.5 | `roof_south_east` (rafters) | no rail: one post under each rafter, at y 0.1, 1, 2, 2.75, 3.5 |
+| `east` | x = 6 | y 3.5-6.13 | `roof_east` (rafters) | no rail: one post under each rafter that reaches x = 6, at y 4.377, 5.253, and under the hip rafter at y 6.13 (the post at y 3.5 is shared with `east_se`) |
 | `slant` | y = 4.5 | x 0.45-3 | `roof_slant` | column (3, 4.5); on the beam at (0.45, 4.5) |
 
 - A post stands on every first-storey column along the run, from the column top (z = 6.0). Its height is derived from the roof: the roof surface above it less the rail depth. The rail carries the roof ribbing and stops at the face of the rail it meets at a corner. Rails are level, so the roof must be level along a run; the generator fails otherwise.
-- A post can also stand on a roof beam instead of a column (`on_beam`, a list of `[x, y]`). These are at the hips, where the two slopes meet: (6, 6.127) is the hip between `roof_east` and `roof_north_east`, (0.216, 6.5) the hip between `roof_north_west` and `roof_west`, and (0.45, 4.5) the diagonal corner of `roof_slant`. The beams are `beam_roof_y_6_s2`, `beam_roof_x_6_5_m0` and `beam_roof_x_4_5_m0`, whose tops are at z = 6.0.
+- A post can also stand on a roof beam instead of a column (`on_beam`, a list of `[x, y]`). These are at the hips, where the two slopes meet: (0.45, 4.5) the diagonal corner of `roof_slant`, and (0.216, 6.5), the hip between `roof_north_west` and `roof_west`, which carries the hip post of `north_west` (placed by `rafter_posts`, not `on_beam`). The beams are `beam_roof_y_6_s2` (also under the hip post of `east`), `beam_roof_x_6_5_m0` and `beam_roof_x_4_5_m0`, whose tops are at z = 6.0.
 - There is no `bath` knee wall any more. Instead `supports` has `south_ridge`: two posts at (3, 0) and (3, 3.5) with a rail across their tops, along x = 3 at 2.17 m above the roof slab. It carries the high edge of `roof_south_east`. The posts stand on the roof slab level (z = 6.0) and are 0.075 m shorter than the rail top, like the knee-wall posts.
-- Rail heights above the roof slab: `north` 0.336 m, `west` 0.242 m, `east` 0.563 m (`east_se` has no rail: its posts top out at 0.381 m), `slant` 0.439 m. The posts are 0.075 m shorter.
-- `north` no longer uses the corner column (0, 6.5): there the roof is `roof_west` (0.242 m), so that post belongs to `west`, 0.04 m from the start of the `north` rail.
+- Rail heights above the roof slab: `slant` 0.439 m. The posts are 0.075 m shorter. The runs with rafter posts have no rail; their posts stop at the rafter underside: 0.149 m for `north_west` and `north_east` (0.160 m for the hip post), 0.067 m for `west`.
+- The posts of `west` at y = 5.25 and 6 are not on a column. Whether the roof beam along x = 0 carries them has not been checked in the model.
 - Posts and rail are `RHS_75x75x3`, a light hollow section, not H or WF. The size is a placeholder until the roof loads are known.
 - The set-back from the roof edge is the grid distance plus the 0.05 m overhang. Posts on beams are not detailed (no base plate or connection).
 - Not generated yet: the diagonal hip members themselves. The hips are supported only at the points above.
@@ -179,8 +180,8 @@ Water
     edge. For a `polygon`, `side` is the direction the edge faces and the door goes on the edge that contains its span.
     Default height is 2.1 m, with a lintel above.
   - `open`: `{side, from, to}`; that stretch of the edge gets no wall. Needed on both rooms that share the edge.
-- `roofs`: one entry per roof, each its own `IfcRoof` with one sloped panel: `id`, `storey`, `corners` (3 or 4 points `[x, y, z]`, z = rise above the eaves; a fourth point must lie in the plane of the first three), optional `panel` (`metal`, `polycarbonate`, `spandek_insulated` or `spandek_transparent`), `cladding` (`[{panel, width}]`, strips across y from the south edge, widths adding up to the span), `frame` (`rafter` and `purlin`, each `{width, depth, thickness}`; rafter also `pitch` and `edge_inset`, purlin `max_spacing` and `inset`; the roof must fall along x only), `wall` (`brick`, `aac`, `sandwich` or `polycarbonate`; the default type of the roof's walls), `wall_height` (raises the eaves), `parapet` (edge numbers that get a wall of `wall_height`), `edge_walls` (per edge number, opt-in: `{wall, doors}` overrides the type or adds `{from, to}` openings, `true` for the roof's own wall type; an edge not listed has no wall).
-- `knee_walls`: `storey`, `columns` (the storey whose columns carry the posts), `section` (`width`, `depth`, `thickness` of the hollow section) and `supports` and `runs`: `{id, axis, at, from, to, roofs, on_beam, tall_posts}`, a line `axis` = `x` or `y` at coordinate `at`, between `from` and `to`, under the listed roofs. `rafter_posts` is a roof id (axis y only): no rail, a post under each of that roof's rafters on the line. `on_beam` is an optional list of `[x, y]` points on the line where a post stands on a beam; `tall_posts` an optional list of `[x, y, height]` that overrides a post's height. The generator fails if the roof is not level along a run. `supports` is a list of `{id, axis: "y", at, from, to, height}`: a post at each end and a rail across the tops at `height` above the storey floor.
+- `roofs`: one entry per roof, each its own `IfcRoof` with one sloped panel: `id`, `storey`, `corners` (3 or 4 points `[x, y, z]`, z = rise above the eaves; a fourth point must lie in the plane of the first three), optional `panel` (`metal`, `polycarbonate`, `spandek_insulated` or `spandek_transparent`), `cladding` (`[{panel, width}]`, strips across y from the south edge, widths adding up to the span), `frame` (`rafter` and `purlin`, each `{width, depth, thickness}`; rafter also `lines` (coordinate across the slope of the first rafter, the last and any fixed rafter between; ascending) and `max_pitch`, purlin `max_spacing` and `inset`; optional `join_y` (a line shared with the next roof's frame, where purlins run on and merge) and `hip` (`{edge, laid_by}`: a diagonal rafter under that edge; `laid_by` is a roof id that has already laid it); the roof must fall along x only or y only, either way), `wall` (`brick`, `aac`, `sandwich` or `polycarbonate`; the default type of the roof's walls), `wall_height` (raises the eaves), `parapet` (edge numbers that get a wall of `wall_height`), `edge_walls` (per edge number, opt-in: `{wall, doors}` overrides the type or adds `{from, to}` openings, `true` for the roof's own wall type; an edge not listed has no wall).
+- `knee_walls`: `storey`, `columns` (the storey whose columns carry the posts), `section` (`width`, `depth`, `thickness` of the hollow section) and `supports` and `runs`: `{id, axis, at, from, to, roofs, on_beam, tall_posts}`, a line `axis` = `x` or `y` at coordinate `at`, between `from` and `to`, under the listed roofs. `rafter_posts` is a roof id: no rail, a post under each of that roof's rafters on the line (axis y for a roof that falls along x, axis x for one that falls along y). `on_beam` is an optional list of `[x, y]` points on the line where a post stands on a beam; `tall_posts` an optional list of `[x, y, height]` that overrides a post's height. The generator fails if the roof is not level along a run. `supports` is a list of `{id, axis: "y", at, from, to, height}`: a post at each end and a rail across the tops at `height` above the storey floor.
 - `walls`: loose wall runs, `{storey, from, to, wall}`.
 - `tanks`: `id`, `storey`, `name`, `rect`, `height`, optional `z`.
 - `septic_tanks`: `id`, `storey`, `name`, `outer` (`[x0, y0, x1, y1]` to the outer faces), `wall`, `partition`, `base`, `cover` (thicknesses), `chambers` (clear lengths along y, south to north), `floor_z` (top of the base slab), `inner_height`, optional `description`. The outer length must equal the walls, chambers and partitions added up.
@@ -193,7 +194,7 @@ Room `name` is a label only; it doesn't reach the generated file.
 
 ## Roof rework
 
-Pilot on `roof_south_east`: spandek cladding on a rafter and purlin frame. The other roofs are still polycarbonate.
+Pilot on `roof_south_east`: spandek cladding on a rafter and purlin frame. `roof_east`, `roof_north_east`, `roof_north_west` and `roof_west` follow it, for now all insulated spandek with no transparent strips (no `cladding`, so one panel). The remaining roofs (`roof_slant`, `roof_west_3`, the stair and bath roofs) are still polycarbonate.
 
 **Cladding** (`cladding` on the roof): strips side by side across y, each running the full slope (about 4.6 m, so a single sheet of 5 m or more, cut to length). Every sheet is 1 m effective width, so the 0.5 m strips are half-sheets.
 
@@ -211,21 +212,87 @@ The 0.75 m variant (0.5 – 0.75 – 1 – 0.75 – 0.5) was dropped: it would c
 
 | Member | Section | Layout |
 |---|---|---|
-| Rafter | RHS 50×100×2.3 | Down the slope (along x), from x = 3.05 to the eave at x = 7.05. At y = 0.1, 1, 2, 3 and 3.4: 1 m pitch, plus one 0.1 m in from each side edge so they clear the edge walls. |
-| Purlin | RHS 40×60×2.3 | Across the slope (along y), y 0.05–3.45. Seven lines, evenly from x = 3.05 to 7.0, 0.76 m apart along the slope (limit 0.875 m). |
+| Rafter | RHS 50×100×2.3 | Down the slope (along x on `roof_south_east` and `roof_east`; along y on the north roofs; the roof may fall either way), from x = 3.05 to the eave at x = 7.05. `lines` fixes the start, the end and any rafter that must stay put (the edges of the stair door); each gap between two lines is split into equal spaces no wider than `max_pitch` (1 m), the way a stair's treads are. `lines` are coordinates across the slope. `roof_south_east`: lines 0.1, 1, 2, 3.5, so rafters at y = 0.1, 1, 2, 2.75 and 3.5. |
+| Purlin | RHS 40×60×2.3 | Across the slope (along y), starting 0.05 from the south edge. Seven lines, evenly from x = 3.05 to 7.0, 0.76 m apart along the slope (limit 0.875 m). |
 
+- **`roof_east` and `roof_south_east` share the y = 3.5 line.** The rafter on it (`roof_east_rafter_0`) belongs to both: the second roof sees it is already laid and skips it. Both roofs have `join_y: 3.5`, so a purlin runs on to that line without the 0.05 m stop, and the two halves are merged into one member across it (the merged purlin keeps the id of the south half, `roof_south_east_purlin_N`).
+- **`roof_east` is a triangle.** Its `lines` are 3.5 (the shared rafter) and 6.13, where the hip crosses x = 6, so rafters at y = 3.5, 4.377, 5.253 and 6.13 (0.877 m apart). Each starts 0.05 m inside the hip and runs to the eave; the last is 1.13 m long. The `hip` (`edge` 2, from the peak to the corner (7.05, 7.05)) gets a diagonal rafter, `roof_east_rafter_hip`, 5.73 m long, the same section as the other rafters and its top level with theirs. The purlins end on it instead of stopping 0.05 m short, so they rest on it. It also gets a post at x = 6 (on the hip beam), under its underside.
+- **The north and west roofs** are triangles framed the same way, with the rafters under the slope's fall line.
+  - `roof_north_east`: rafters along y at x = 3, 4, 5, 6 (`lines` 3, 6), the first along the x = 3 edge from y = 3.5 to the eave. Purlins run along x and stop on the hip. The hip rafter belongs to `roof_east` (`hip.laid_by`).
+  - `roof_north_west`: rafters at x = 1, 2, 3 (`lines` 1, 3). It lays the hip rafter (3 to the corner at (-0.55, 7.05)), 4.58 m long.
+  - `roof_west`: falls towards -x, so its rafters run from x = 3 down to the eave. `lines` 4.5, 6, so rafters at y = 4.5, 5.25 and 6, the first along the y = 4.5 edge. Its hip is `roof_north_west`'s (`laid_by`).
+  - A hip's `laid_by` names the roof that has already laid the diagonal; the second roof's purlins still stop on it.
 - Rafters are inclined and square to the slope; purlins are level, so their top touches the panel plane to within a few mm. Sections are placeholders until the roof loads are checked.
 - The rafters rest on the `east_se` knee-wall posts at x = 6 and overhang them by 1.05 m (plan) to the eave.
-- **Knee wall.** `east_se` has no rail, only a post under each rafter at x = 6 (`rafter_posts` on the run), five 75×75 posts up to the rafter's underside at z = 6.381 (0.381 m above the roof slab; 0.182 m below the old rail top). They stand on the roof beam along x = 6 and on the column at (6, 2); the one at y = 0.1 stands beside the taller `bath` post at (6, 0). `east` now carries only `roof_east`, from (6, 4.5) to the hip.
+- **Knee wall.** `east_se` has no rail, only a post under each rafter at x = 6 (`rafter_posts` on the run), five 75×75 posts (at y = 0.1, 1, 2, 2.75, 3.5) up to the rafter's underside at z = 6.381 (0.381 m above the roof slab; 0.182 m below the old rail top). They stand on the roof beam along x = 6 and on the column at (6, 2); the one at y = 0.1 stands beside the taller `bath` post at (6, 0). `east` now carries only `roof_east`, from (6, 4.5) to the hip.
 
 **Open**
+- The high ends of the north and west rafters (at the x = 3 edge, or y = 4.5 for `roof_west`) have no support yet either; they need the same ring beam. The posts at y = 6.5 are under the low ends only.
 - The high ends of the rafters (x = 3.05) have no support yet: they need the ring beam on the x = 3 wall. The 2.17 m post at the (3, 0) column (the `bath` run's `tall_posts`) is the natural place to start it.
-- The polycarbonate `roof_east` has no support on its x = 6 line between y = 3.5 and 4.5, now that the rail under it is split off at (6, 3.5).
+- `roof_east`: the high ends of its rafters and of the hip rafter (x = 3.05) are unsupported, like those of `roof_south_east`. Its rafters at y = 4.377 and 5.253 and the hip rafter rest on posts at x = 6; the last rafter (y = 6.13) starts at the hip just east of x = 6, so it has no post of its own and is held by the hip rafter and the purlins.
 - The 1.05 m eave overhang, the stair-door opening (y 1–2, with the rafters at y = 1 and 2 on its edges), and the fixings (clips, screws, sealing of laps) are not designed.
 - Spandek spans and fixing patterns are from the sheet data below, not checked against the supplier's span table.
-- Next: other roofs, once this one is reviewed.
+- The hip rafters are all laid with the depth of the roof that owns them; the purlin ends that rest on a hip of the neighbouring roof can be a few mm off its top. Not checked in a viewer.
+- Next: the remaining polycarbonate roofs, once these are reviewed.
 
 Sheet data (also in `GLOSSARY.md`):
 - Maxlite spandek transparan: effective width 77 cm or 1 m, 0.80 mm, lengths 1–6 m, Rp120,000–290,000 (Shopee).
 - Spandek bening PET 1.2 mm: width 107 cm, effective 100 cm, wave pitch 15 cm, wave width 10 cm, wave height 3 cm, from 3 m long, Rp92,500 (Shopee).
 - Spandek insulasi 0.35 mm: width 1 m, lengths 3–6 m, 2 mm insulation (bubble foil), Rp110,000 (Tokopedia).
+
+## stairs support
+
+### Mendefinisikan koneksi fisik antara Balok/Pelat Lantai dengan Tangga
+```
+ifcfile.createIfcRelConnectsElements(
+    GlobalId=ifc_utils.create_guid(),
+    OwnerHistory=owner_history,
+    Name="Tumpuan Tangga",
+    Description="Hubungan tumpuan struktural antara pelat lantai dan tangga",
+    ConnectionGeometry=None, # Bisa diisi dengan IfcConnectionCurveGeometry jika detail
+    RelatingElement=slab_atau_beam_penopang,
+    RelatedElement=stair_flight_anda
+)
+```
+
+• IfcStructuralPointSupport: Digunakan jika tumpuan tangga bertumpu pada titik tertentu (misalnya ujung kolom atau anchor bolt spesifik).
+• IfcStructuralCurveSupport: Digunakan jika tangga bertumpu sepanjang garis balok penopang atau bordes (landing).
+
+Anda dapat menambahkan logika relasi tumpuan di dalam fungsi kontainer tangga (build_stair) atau setelah objek IfcStairFlight terbentuk. 
+```
+def build_stair(scene, node, placement):
+    """Container only: its flights and landings aggregate into it."""
+    model = scene.model
+    stair_container = _product(scene, node, placement)
+    
+    # KODE TAMBAHAN UNTUK MENDEFINISIKAN TUMPUAN (SUPPORTS)
+    # Memeriksa apakah node data input mendefinisikan ID dari slab penopangnya
+    if "SupportedBy" in node:
+        for support_id in node["SupportedBy"]:
+            # Mengambil referensi entity slab/penopang dari scene data Anda
+            if support_id in scene.entities:
+                supporting_element = scene.entities[support_id]
+                
+                # Membuat relasi tumpuan struktural/koneksi fisik di IFC
+                model.create_entity(
+                    "IfcRelConnectsElements",
+                    GlobalId=guid_for(f"{node['id']}_support_{support_id}"),
+                    Name="Stair Structural Support Connection",
+                    Description="Mendefinisikan tumpuan tangga pada struktur utama bangunan",
+                    RelatingElement=supporting_element,  # Elemen yang menopang (Slab/Beam)
+                    RelatedElement=stair_container      # Elemen yang ditopang (Tangga)
+                )
+                
+    return stair_container
+```
+
+### Contoh representasi node input tangga di file data Anda
+```
+stair_node = {
+    "id": "stair_01",
+    "type": "IfcStair",
+    "Name": "Tangga Utama Blok A",
+    "PredefinedType": "STRAIGHT_RUN_STAIR",
+    "SupportedBy": ["slab_lantai_1", "slab_lantai_2"] # ID pelat beton bawah & atas
+}
+```

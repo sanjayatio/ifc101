@@ -5,13 +5,17 @@ SPEC_NAME, OUTPUT_NAME = "spec.json", "design.ifcjson"
 HEAD_KEYS = ("id", "type", "IsTypedBy", "ContainedIn", "Decomposes", "HasPropertySets", "PredefinedType")
 ONE_LINE = {"IfcProject", "IfcSite", "IfcBuilding", "IfcBuildingStorey", "IfcPropertySet"}
 
-BEAM_TYPES = {"main": ("beam_type_wf_200x100", "WF_200x100", 0.1, 0.2, 0.0055, 0.008),
-              "secondary": ("beam_type_wf_150x75", "WF_150x75", 0.075, 0.15, 0.005, 0.007)}
+BEAM_SECTIONS = {"WF_200x100": ("beam_type_wf_200x100", "WF_200x100", 0.1, 0.2, 0.0055, 0.008),
+                 "WF_150x75": ("beam_type_wf_150x75", "WF_150x75", 0.075, 0.15, 0.005, 0.007),
+                 "WF_125x60": ("beam_type_wf_125x60", "WF_125x60", 0.06, 0.125, 0.006, 0.008),
+                 "WF_100x50": ("beam_type_wf_100x50", "WF_100x50", 0.05, 0.1, 0.005, 0.007)}
+DEFAULT_SECTIONS = {"main": "WF_200x100", "secondary": "WF_150x75"}
 WALL_TYPES = {"brick": "wall_type_brick_100", "aac": "wall_type_aac_100", "sandwich": "wall_type_steel_sandwich_50",
               "polycarbonate": "wall_type_polycarbonate_framed"}
 WALL_THICKNESS = {"brick": 0.1, "aac": 0.1, "sandwich": 0.05, "polycarbonate": 0.016}  # the sum of each type's layers
 SLAB_TYPES = {"floor_100": "slab_type_floor_100", "floor_200": "slab_type_floor_200"}
 COLUMN_TYPE, COLUMN_SIZE = "column_type_hbeam_150x150", 0.15
+KNEE_POST_TYPE, KNEE_RAIL_TYPE = "column_type_knee_post", "beam_type_knee_rail"
 DOOR_HEIGHT = 2.1
 
 
@@ -57,11 +61,20 @@ class Design:
         add(id="pset_stair_flight", type="IfcPropertySet", Name="Custom_StairFlight",
             HasProperties={"Width": 1.0, "TreadThickness": 0.03, "RiserHeightMin": 0.15, "RiserHeightMax": 0.18})
 
-        for tid, name, width, depth, web, flange in BEAM_TYPES.values():
+        used = {BEAM_SECTIONS[name] for block in self.beam_blocks() for name in {**DEFAULT_SECTIONS, **block.get("sections", {})}.values()}
+        for tid, name, width, depth, web, flange in sorted(used):
             add(id=tid, type="IfcBeamType", Name=name, PredefinedType="BEAM", Material="Steel_Black",
                 Profile={"type": "IfcIShapeProfileDef", "OverallWidth": width, "OverallDepth": depth, "WebThickness": web, "FlangeThickness": flange})
         add(id=COLUMN_TYPE, type="IfcColumnType", Name="HBeam_150x150", PredefinedType="COLUMN", Material="Steel_Black",
             Profile={"type": "IfcIShapeProfileDef", "OverallWidth": 0.15, "OverallDepth": 0.15, "WebThickness": 0.007, "FlangeThickness": 0.01})
+        knee = self.spec.get("knee_walls")
+        if knee:
+            s = knee["section"]
+            profile = {"type": "IfcRectangleHollowProfileDef", "XDim": s["width"], "YDim": s["depth"], "WallThickness": s["thickness"]}
+            name = "RHS_{}x{}x{}".format(*(round(s[k] * 1000) for k in ("width", "depth", "thickness")))
+            description = "Light hollow section for the knee wall under the roof edge; carries the roof ribbing, not a primary frame"
+            add(id=KNEE_POST_TYPE, type="IfcColumnType", Name=name, Description=description, PredefinedType="COLUMN", Material="Steel_Black", Profile=profile)
+            add(id=KNEE_RAIL_TYPE, type="IfcBeamType", Name=name, Description=description, PredefinedType="BEAM", Material="Steel_Black", Profile=profile)
         add(id="wall_type_brick_100", type="IfcWallType", Name="RedBrick_100", PredefinedType="STANDARD",
             Description="Ground floor load-bearing red brick masonry", MaterialLayers=[{"Material": "Red Brick", "LayerThickness": 0.1}],
             HasPropertySets=["pset_wall_ground_common", "pset_wall_ground_decision"])
@@ -166,9 +179,10 @@ class Design:
     def columns(self):
         for group in self.spec.get("columns", []):
             storey = group["storey"]
-            for x, y in group["at"]:
+            for x, y in group["at"]:  # `rotation` 90 turns the section so its flanges face x instead of y
                 self.add(id=f"col_{storey}_{slug(x)}_{slug(y)}", type="IfcColumn", IsTypedBy=COLUMN_TYPE, ContainedIn=self.storey_id(storey),
-                         Location=[float(x), float(y), self.elevation(storey)], Length=self.height)
+                         Location=[float(x), float(y), self.elevation(storey)], RefDirection=[0.0, 1.0, 0.0] if group.get("rotation", 0) % 180 == 90 else None,
+                         Length=self.height)
 
     def stairs(self):
         for stair in self.spec.get("stairs", []):
@@ -316,15 +330,84 @@ class Design:
             node.update(Length=r(end - start), Height=r(max(p[1] for p in outline)), Outline=outline)
             self.nodes.append(node)
 
-    # ---- beams: they end on the face of a column, or (secondary) on the web of a main beam ------
-    def beams(self):
-        spec = self.spec.get("beams")
+    # ---- knee walls: light posts on the columns under a roof's low edge, tied by a rail the roof rests on ----
+    @staticmethod
+    def surface(roof, x, y):
+        """Height of the roof panel above the roof slab at plan point (x, y), from the plane through its first three corners."""
+        (xa, ya, za), (xb, yb, zb), (xc, yc, zc) = roof["corners"][:3]
+        ux, uy, uz, vx, vy, vz = xb - xa, yb - ya, zb - za, xc - xa, yc - ya, zc - za
+        nx, ny, nz = uy * vz - uz * vy, uz * vx - ux * vz, ux * vy - uy * vx
+        return roof.get("wall_height", 0.0) + za - (nx * (x - xa) + ny * (y - ya)) / nz
+
+    @staticmethod
+    def covers(roof, x, y, tol=1e-9):
+        """True when plan point (x, y) lies over the roof's outline (the edges count)."""
+        pts = [(c[0], c[1]) for c in roof["corners"]]
+        side = [(bx - ax) * (y - ay) - (by - ay) * (x - ax) for (ax, ay), (bx, by) in zip(pts, pts[1:] + pts[:1])]
+        return all(s >= -tol for s in side) or all(s <= tol for s in side)
+
+    def knee_walls(self):
+        """Each run is a line (`axis` x or y, at `at`, between `from` and `to`) under one or more roofs. A post stands on every column
+        of the `columns` storey along it, as tall as the roof surface above it allows once the rail (the roof rests on it) is counted.
+        The rail ties the posts and stops at the face of a rail laid by an earlier run where two runs meet at a corner."""
+        spec = self.spec.get("knee_walls")
         if not spec:
             return
+        storey, section = spec["storey"], spec["section"]
+        z0, w, depth = self.elevation(storey), section["width"], section["depth"]
+        roofs = {roof["id"]: roof for roof in self.spec.get("roofs", [])}
+        columns = {(float(x), float(y)) for g in self.spec.get("columns", []) if g["storey"] == spec["columns"] for x, y in g["at"]}
+        posts, rails = {}, []  # posts: (x, y) -> height; rails: (axis, at, lo, hi, top)
+        for run in spec["runs"]:
+            axis, at = run["axis"], float(run["at"])
+            k, f = (0, 1) if axis == "x" else (1, 0)  # k: the coordinate along the run, f: the one that stays fixed
+            pts = sorted((c for c in columns if abs(c[f] - at) < 1e-9 and run["from"] - 1e-9 <= c[k] <= run["to"] + 1e-9), key=lambda c: c[k])
+            assert len(pts) >= 2, f"knee wall {run['id']}: fewer than two columns on the line"
+            tops = []
+            for x, y in pts:
+                roof = next((roofs[i] for i in run["roofs"] if self.covers(roofs[i], x, y)), None)
+                assert roof, f"knee wall {run['id']}: no roof over the column at ({x}, {y})"
+                tops.append(self.surface(roof, x, y))
+            assert max(tops) - min(tops) < 1e-6, f"knee wall {run['id']}: the roof is not level along the run, so a straight rail cannot follow it"
+            top, height = r(tops[0]), r(tops[0] - depth)
+            for x, y in pts:
+                if (x, y) in posts:  # a corner shared with an earlier run
+                    assert abs(posts[(x, y)] - height) < 1e-6, f"knee wall {run['id']}: the post at ({x}, {y}) is already placed at another height"
+                    continue
+                posts[(x, y)] = height
+                self.add(id=f"knee_post_{slug(x)}_{slug(y)}", type="IfcColumn", IsTypedBy=KNEE_POST_TYPE, ContainedIn=self.storey_id(storey),
+                         Location=[x, y, z0], Length=height)
+            ends = []
+            for t, sign in ((pts[0][k], -1), (pts[-1][k], 1)):
+                meets = [p for p in rails if p[0] != axis and abs(p[1] - t) < 1e-9 and p[2] - 1e-9 <= at <= p[3] + 1e-9]
+                for p in meets:
+                    assert abs(p[4] - top) < 1e-6, f"knee wall {run['id']}: meets a rail of another height at {t}"
+                ends.append(t - sign * w / 2.0 if meets else t + sign * w / 2.0)
+            lo, hi = ends
+            rails.append((axis, at, lo, hi, top))
+            node = dict(id=f"knee_rail_{run['id']}", type="IfcBeam", IsTypedBy=KNEE_RAIL_TYPE, ContainedIn=self.storey_id(storey))
+            node["Location"] = [r(lo), at, r(z0 + height)] if axis == "x" else [at, r(lo), r(z0 + height)]
+            if axis == "y":
+                node["RefDirection"] = [0.0, 1.0, 0.0]
+            node["Length"] = r(hi - lo)
+            self.nodes.append(node)
+
+    # ---- beams: they end on the face of a column, or (secondary) on the web of a main beam ------
+    def beam_blocks(self):
+        """`beams` is one block, or a list of blocks (one per storey, each with its own layout and optional `sections`)."""
+        spec = self.spec.get("beams") or []
+        return [spec] if isinstance(spec, dict) else spec
+
+    def beams(self):
+        for block in self.beam_blocks():
+            self.beam_block(block)
+
+    def beam_block(self, spec):
         storey = spec["storey"]
         top = self.elevation(storey)
-        depth = {kind: BEAM_TYPES[kind][3] for kind in BEAM_TYPES}
-        web_half = BEAM_TYPES["main"][4] / 2.0
+        sections = {kind: BEAM_SECTIONS[name] for kind, name in {**DEFAULT_SECTIONS, **spec.get("sections", {})}.items()}
+        depth = {kind: sec[3] for kind, sec in sections.items()}
+        web_half = sections["main"][4] / 2.0
         mains = spec.get("main", [])
         column_half = COLUMN_SIZE / 2.0
         columns = {(float(x), float(y)) for g in self.spec.get("columns", []) for x, y in g["at"]}
@@ -349,7 +432,7 @@ class Design:
                     elif kind == "secondary" and meets_main(axis, b, at):
                         b -= web_half
                     z = r(top - depth[kind])
-                    node = dict(id=f"beam_{axis}_{slug(at)}_{kind[0]}{i}", type="IfcBeam", IsTypedBy=BEAM_TYPES[kind][0], ContainedIn=self.storey_id(storey))
+                    node = dict(id=f"beam_{storey}_{axis}_{slug(at)}_{kind[0]}{i}", type="IfcBeam", IsTypedBy=sections[kind][0], ContainedIn=self.storey_id(storey))
                     node["Location"] = [r(a), at, z] if axis == "x" else [at, r(a), z]
                     if axis == "y":
                         node["RefDirection"] = [0.0, 1.0, 0.0]
@@ -358,7 +441,7 @@ class Design:
 
     def build(self):
         self.header()
-        for step in (self.slabs, self.stairs, self.walls, self.columns, self.beams, self.roofs, self.tanks, self.pipes):
+        for step in (self.slabs, self.stairs, self.walls, self.columns, self.beams, self.knee_walls, self.roofs, self.tanks, self.pipes):
             step()
         return self.nodes
 

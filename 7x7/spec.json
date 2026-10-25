@@ -21,17 +21,23 @@
   ],
 
   "roofs": [
-    {"id": "roof_north", "storey": "roof", "corners": [[7.05, 7.05, 0], [-0.55, 7.05, 0], [3, 3.5, 2.17]], "panel": "polycarbonate", "wall": "sandwich", "wall_height": 0.5,
-     "parapet": [0]},
-    {"id": "roof_west", "storey": "roof", "corners": [[-0.55, 7.05, 0], [-0.55, 3.5, 0], [3, 3.5, 2.17]], "panel": "polycarbonate", "wall": "sandwich", "wall_height": 0.5,
-     "parapet": [0], "edge_walls": {"1": {"wall": "polycarbonate"}}},
-    {"id": "roof_east", "storey": "roof", "corners": [[3, 3.5, 2.17], [7.05, 3.5, 0], [7.05, 7.05, 0]], "panel": "polycarbonate", "wall": "sandwich", "wall_height": 0.5,
-     "parapet": [1], "edge_walls": {"0": {"wall": "polycarbonate"}}},
-    {"id": "roof_south_east", "storey": "roof", "corners": [[3, 0, 2.17], [7.05, 0, 0], [7.05, 3.5, 0], [3, 3.5, 2.17]], "panel": "polycarbonate", "wall": "sandwich", "wall_height": 0.5,
-     "parapet": [1], "edge_walls": {"3": {"wall": "polycarbonate", "doors": [{"from": 1, "to": 2}]}}},
+    {"id": "roof_north", "storey": "roof", "corners": [[7.05, 7.05, 0], [-0.55, 7.05, 0], [3, 3.5, 2.17]], "panel": "polycarbonate", "wall": "sandwich"},
+    {"id": "roof_west", "storey": "roof", "corners": [[-0.55, 7.05, 0], [-0.55, 3.5, 0], [3, 3.5, 2.17]], "panel": "polycarbonate", "wall": "sandwich",
+     "edge_walls": {"1": {"wall": "polycarbonate"}}},
+    {"id": "roof_east", "storey": "roof", "corners": [[3, 3.5, 2.17], [7.05, 3.5, 0], [7.05, 7.05, 0]], "panel": "polycarbonate", "wall": "sandwich", "edge_walls": {"0": {"wall": "polycarbonate"}}},
+    {"id": "roof_south_east", "storey": "roof", "corners": [[3, 0, 2.17], [7.05, 0, 0], [7.05, 3.5, 0], [3, 3.5, 2.17]], "panel": "polycarbonate", "wall": "sandwich", "edge_walls": {"3": {"wall": "polycarbonate", "doors": [{"from": 1, "to": 2}]}}},
     {"id": "roof_2", "storey": "roof", "corners": [[2.95, -0.65, 0], [7.05, -0.65, 0], [7.05, 0, 0.17], [2.95, 0, 0.17]], "panel": "metal", "wall": "sandwich",
      "edge_walls": {"2": null}}
   ],
+
+  "knee_walls": {
+    "storey": "roof", "columns": "first", "section": {"width": 0.075, "depth": 0.075, "thickness": 0.003},
+    "runs": [
+      {"id": "north", "axis": "x", "at": 6.5, "from": 0, "to": 6, "roofs": ["roof_north"]},
+      {"id": "west", "axis": "y", "at": 0, "from": 4.5, "to": 6.5, "roofs": ["roof_west"]},
+      {"id": "east", "axis": "y", "at": 6, "from": 0, "to": 4.5, "roofs": ["roof_south_east", "roof_east"]}
+    ]
+  },
 
   "rooms": [
     {"name": "room", "storey": "ground", "rect": [-0.5, 4.5, 3, 7], "wall": "brick", "doors": [{"side": "south", "from": 1, "to": 2}]},
@@ -44,8 +50,47 @@
   ],
 
   "columns": [
-    {"storey": "ground", "at": [[3, 0], [6, 0], [3, 2], [6, 2], [0, 4.5], [3, 4.5], [6, 4.5], [0, 6.5], [3, 6.5], [6, 6.5]]},
-    {"storey": "first", "at": [[3, 0], [6, 0], [3, 2], [6, 2], [0, 4.5], [3, 4.5], [6, 4.5], [0, 6.5], [3, 6.5], [6, 6.5]]}
+    {"storey": "ground", "rotation": 90, "at": [[3, 0], [6, 0], [3, 2], [6, 2], [0, 4.5], [3, 4.5], [6, 4.5], [0, 6.5], [3, 6.5], [6, 6.5]]},
+    {"storey": "first", "rotation": 90, "at": [[3, 0], [6, 0], [3, 2], [6, 2], [0, 4.5], [3, 4.5], [6, 4.5], [0, 6.5], [3, 6.5], [6, 6.5]]}
+  ],
+
+  "beams": [
+    {
+      "storey": "first",
+      "main": [
+        {"axis": "x", "at": 0, "spans": [[3, 6]]},
+        {"axis": "x", "at": 2, "spans": [[3, 6]]},
+        {"axis": "x", "at": 4.5, "spans": [[0, 3], [3, 6]]},
+        {"axis": "x", "at": 6.5, "spans": [[0, 3], [3, 6]]}
+      ],
+      "secondary": [
+        {"axis": "y", "at": 0, "spans": [[4.5, 6.5]]},
+        {"axis": "y", "at": 1, "spans": [[4.5, 6.5]]},
+        {"axis": "y", "at": 2, "spans": [[4.5, 6.5]]},
+        {"axis": "y", "at": 3, "spans": [[0, 2], [2, 4.5], [4.5, 6.5]]},
+        {"axis": "y", "at": 4, "spans": [[0, 2], [2, 4.5], [4.5, 6.5]]},
+        {"axis": "y", "at": 5, "spans": [[0, 2], [2, 4.5], [4.5, 6.5]]},
+        {"axis": "y", "at": 6, "spans": [[0, 2], [2, 4.5], [4.5, 6.5]]}
+      ]
+    },
+    {
+      "storey": "roof", "sections": {"main": "WF_125x60", "secondary": "WF_100x50"},
+      "main": [
+        {"axis": "x", "at": 0, "spans": [[3, 6]]},
+        {"axis": "x", "at": 2, "spans": [[3, 6]]},
+        {"axis": "x", "at": 4.5, "spans": [[0, 3], [3, 6]]},
+        {"axis": "x", "at": 6.5, "spans": [[0, 3], [3, 6]]}
+      ],
+      "secondary": [
+        {"axis": "y", "at": 0, "spans": [[4.5, 6.5]]},
+        {"axis": "y", "at": 1, "spans": [[4.5, 6.5]]},
+        {"axis": "y", "at": 2, "spans": [[4.5, 6.5]]},
+        {"axis": "y", "at": 3, "spans": [[0, 2], [2, 4.5], [4.5, 6.5]]},
+        {"axis": "y", "at": 4, "spans": [[0, 2], [2, 4.5], [4.5, 6.5]]},
+        {"axis": "y", "at": 5, "spans": [[0, 2], [2, 4.5], [4.5, 6.5]]},
+        {"axis": "y", "at": 6, "spans": [[0, 2], [2, 4.5], [4.5, 6.5]]}
+      ]
+    }
   ],
 
   "stairs": [
@@ -76,25 +121,5 @@
      "description": "Takes only the excess: its inlet is raised above the gutter floor. Discharges south, to the street side",
      "path": [[2.94, 0, 8.22], [2.94, -0.1, 8.22], [2.6, -0.1, 8.22], [2.6, -0.1, 0.3], [2.6, -0.5, 0.3]]},
     {"id": "pipe_overflow", "storey": "ground", "name": "Tank_Overflow", "diameter": 0.1, "path": [[0.5, 3, 1.2], [0.5, -0.3, 1.2]]}
-  ],
-
-  "beams": {
-    "storey": "first",
-    "main": [
-      {"axis": "y", "at": 0, "spans": [[4.5, 7]]},
-      {"axis": "y", "at": 3, "spans": [[0, 2], [2, 4.5], [4.5, 7]]},
-      {"axis": "y", "at": 6, "spans": [[0, 2], [2, 4.5], [4.5, 7]]}
-    ],
-    "secondary": [
-      {"axis": "x", "at": 0, "spans": [[2.4, 3], [3, 6]]},
-      {"axis": "x", "at": 1, "spans": [[2.4, 3], [3, 6]]},
-      {"axis": "x", "at": 2, "spans": [[3, 6]]},
-      {"axis": "x", "at": 3, "spans": [[3, 4]]},
-      {"axis": "x", "at": 4, "spans": [[3, 4]]},
-      {"axis": "x", "at": 4.5, "spans": [[0, 3], [3, 6]]},
-      {"axis": "x", "at": 5, "spans": [[0, 3], [3, 4]]},
-      {"axis": "x", "at": 6, "spans": [[0, 3], [3, 4]]},
-      {"axis": "x", "at": 7, "spans": [[0, 3], [3, 6]]}
-    ]
-  }
+  ]
 }

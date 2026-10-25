@@ -75,12 +75,17 @@ All types: `id` **M**, `Name` O, `Description` O, `PredefinedType` **M**, `HasPr
 | `IfcSlabType` | `FLOOR`, `LANDING` (also `ROOF`, `BASESLAB`) | `MaterialLayers` **M** |
 | `IfcStairFlightType` | `STRAIGHT` (also `WINDER`, `SPIRAL`, `CURVED`) | none |
 
-`Profile` (becomes an `IfcMaterialProfileSet` on the type): only `IfcIShapeProfileDef` is supported.
+`Profile` (becomes an `IfcMaterialProfileSet` on the type): `IfcIShapeProfileDef` or `IfcRectangleHollowProfileDef`.
 
 | Key | M/O |
 |---|---|
 | `type` = `IfcIShapeProfileDef` | **M** |
 | `OverallWidth`, `OverallDepth`, `WebThickness`, `FlangeThickness` | **M** (metres) |
+
+| Key | M/O |
+|---|---|
+| `type` = `IfcRectangleHollowProfileDef` | **M** |
+| `XDim` (width), `YDim` (depth), `WallThickness` | **M** (metres) |
 
 `MaterialLayers` (becomes an `IfcMaterialLayerSet`): a list of layers, outermost first.
 
@@ -100,7 +105,7 @@ All of these take `id`, `type`, `Name`, `Location`, `RefDirection`, `Decomposes`
 | `IfcWall` | `Length` **M**, `Height` **M**, `Outline` O (*JSON*) | Thickness comes from the type's layers. `Location` is the start of the wall's centreline, running `Length` along local X. `Outline` is a closed polygon `[[u, z], ...]` in the wall's own plane (u along the wall, z up from `Location.z`) that replaces the rectangle, for gable ends and infill under sloped roofs. |
 | `IfcSlab` | `OuterCurve` **M** | Closed polyline `[[x, y], ...]` (the first point is repeated automatically). Thickness comes from the type. `Location.z` is the slab underside. |
 | `IfcBeam` | `Length` **M** | Section from the type. `Location` is the start of the underside centreline. |
-| `IfcColumn` | `Length` **M** | Section from the type. `Location` is the centre of the base, extruded up. |
+| `IfcColumn` | `Length` **M** | Section from the type. `Location` is the centre of the base, extruded up. `RefDirection` `[0, 1, 0]` turns the section 90°. |
 | `IfcRoof` | `OuterCurve` **M**, `HasPropertySets` **M** (`Custom_Roof`) | One sloped panel over 3 or 4 corners. `OuterCurve` is a list of `[x, y, z]` corners, where z is the rise above the eaves; a fourth corner must lie in the plane of the first three. `PredefinedType` `SHED_ROOF`. `Location.z` is the eave height. A roof that needs several slopes is several `IfcRoof`s sharing corners. |
 | `IfcTank` | `OuterCurve` **M**, `Height` **M** (*JSON*) | `PredefinedType` `STORAGE`. A solid box extruded up from `Location.z`; the interior is not modelled. |
 | `IfcPipeSegment` | `Direction` **M**, `Length` **M**, `Diameter` **M** (*JSON*) | `PredefinedType` `RIGIDSEGMENT` or `GUTTER` (a gutter is still drawn as a round pipe). A straight round pipe that starts at `Location` and runs `Length` along the unit vector `Direction`. |

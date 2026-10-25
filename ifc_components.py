@@ -40,12 +40,19 @@ def _product(scene, node, placement, shape=None, **attrs):
         Description=node.get("Description"), PredefinedType=node.get("PredefinedType"), ObjectPlacement=placement, Representation=shape, **attrs)
 
 
-def _i_profile(model, spec, y_offset=0.0):
+def _profile(model, spec, y_offset=0.0):
+    position = model.create_entity("IfcAxis2Placement2D", Location=point(model, 0.0, y_offset))
+    if spec["type"] == "IfcRectangleHollowProfileDef":
+        return model.create_entity("IfcRectangleHollowProfileDef", ProfileType="AREA", Position=position,
+            XDim=spec["XDim"], YDim=spec["YDim"], WallThickness=spec["WallThickness"])
     assert spec["type"] == "IfcIShapeProfileDef", f"unsupported profile {spec['type']}"
-    return model.create_entity("IfcIShapeProfileDef", ProfileType="AREA",
-        Position=model.create_entity("IfcAxis2Placement2D", Location=point(model, 0.0, y_offset)),
+    return model.create_entity("IfcIShapeProfileDef", ProfileType="AREA", Position=position,
         OverallWidth=spec["OverallWidth"], OverallDepth=spec["OverallDepth"],
         WebThickness=spec["WebThickness"], FlangeThickness=spec["FlangeThickness"])
+
+
+def _profile_depth(spec):
+    return spec["YDim"] if spec["type"] == "IfcRectangleHollowProfileDef" else spec["OverallDepth"]
 
 
 # ---- types ---------------------------------------------------------------------
@@ -64,7 +71,7 @@ def build_profile_type(scene, node):
     """Beam/column type: the section is an IfcMaterialProfileSet shared by every occurrence."""
     model = scene.model
     profile = model.create_entity("IfcMaterialProfile", Name=node.get("Name"), Material=_material(model, node["Material"]),
-        Profile=_i_profile(model, node["Profile"]))
+        Profile=_profile(model, node["Profile"]))
     return _type_object(scene, node, model.create_entity("IfcMaterialProfileSet", Name=node.get("Name"), MaterialProfiles=[profile]))
 
 
@@ -178,7 +185,7 @@ def build_column(scene, node, placement):
     """Vertical section; Location is the centre of its base, extruded up by `Length`."""
     model = scene.model
     type_node = _type_of(scene, node)
-    solid = extrude_up(model, _i_profile(model, type_node["Profile"]), node["Length"])
+    solid = extrude_up(model, _profile(model, type_node["Profile"]), node["Length"])
     _style_solid(model, solid, type_node["Material"])
     return _product(scene, node, placement, body_shape(model, scene.context, "SweptSolid", [solid]))
 
@@ -188,7 +195,7 @@ def build_beam(scene, node, placement):
     model = scene.model
     type_node = _type_of(scene, node)
     spec = type_node["Profile"]
-    prof = _i_profile(model, spec, y_offset=spec["OverallDepth"] / 2.0)
+    prof = _profile(model, spec, y_offset=_profile_depth(spec) / 2.0)
     # profile X -> world Y, profile Y -> world Z, extrusion (local Z) -> world X
     position = axis_placement_3d(model, axis=(1.0, 0.0, 0.0), ref_direction=(0.0, 1.0, 0.0))
     solid = model.create_entity("IfcExtrudedAreaSolid", SweptArea=prof, Position=position,

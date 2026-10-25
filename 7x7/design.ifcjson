@@ -38,16 +38,32 @@
       "id": "pset_stair_flight", "type": "IfcPropertySet", "Name": "Custom_StairFlight", "HasProperties": {"Width": 1.0, "TreadThickness": 0.03, "RiserHeightMin": 0.15, "RiserHeightMax": 0.18}
     },
     {
-      "id": "beam_type_wf_200x100", "type": "IfcBeamType", "PredefinedType": "BEAM",
-      "Name": "WF_200x100", "Material": "Steel_Black", "Profile": {"type": "IfcIShapeProfileDef", "OverallWidth": 0.1, "OverallDepth": 0.2, "WebThickness": 0.0055, "FlangeThickness": 0.008}
+      "id": "beam_type_wf_100x50", "type": "IfcBeamType", "PredefinedType": "BEAM",
+      "Name": "WF_100x50", "Material": "Steel_Black", "Profile": {"type": "IfcIShapeProfileDef", "OverallWidth": 0.05, "OverallDepth": 0.1, "WebThickness": 0.005, "FlangeThickness": 0.007}
+    },
+    {
+      "id": "beam_type_wf_125x60", "type": "IfcBeamType", "PredefinedType": "BEAM",
+      "Name": "WF_125x60", "Material": "Steel_Black", "Profile": {"type": "IfcIShapeProfileDef", "OverallWidth": 0.06, "OverallDepth": 0.125, "WebThickness": 0.006, "FlangeThickness": 0.008}
     },
     {
       "id": "beam_type_wf_150x75", "type": "IfcBeamType", "PredefinedType": "BEAM",
       "Name": "WF_150x75", "Material": "Steel_Black", "Profile": {"type": "IfcIShapeProfileDef", "OverallWidth": 0.075, "OverallDepth": 0.15, "WebThickness": 0.005, "FlangeThickness": 0.007}
     },
     {
+      "id": "beam_type_wf_200x100", "type": "IfcBeamType", "PredefinedType": "BEAM",
+      "Name": "WF_200x100", "Material": "Steel_Black", "Profile": {"type": "IfcIShapeProfileDef", "OverallWidth": 0.1, "OverallDepth": 0.2, "WebThickness": 0.0055, "FlangeThickness": 0.008}
+    },
+    {
       "id": "column_type_hbeam_150x150", "type": "IfcColumnType", "PredefinedType": "COLUMN",
       "Name": "HBeam_150x150", "Material": "Steel_Black", "Profile": {"type": "IfcIShapeProfileDef", "OverallWidth": 0.15, "OverallDepth": 0.15, "WebThickness": 0.007, "FlangeThickness": 0.01}
+    },
+    {
+      "id": "column_type_knee_post", "type": "IfcColumnType", "PredefinedType": "COLUMN",
+      "Name": "RHS_75x75x3", "Description": "Light hollow section for the knee wall under the roof edge; carries the roof ribbing, not a primary frame", "Material": "Steel_Black", "Profile": {"type": "IfcRectangleHollowProfileDef", "XDim": 0.075, "YDim": 0.075, "WallThickness": 0.003}
+    },
+    {
+      "id": "beam_type_knee_rail", "type": "IfcBeamType", "PredefinedType": "BEAM",
+      "Name": "RHS_75x75x3", "Description": "Light hollow section for the knee wall under the roof edge; carries the roof ribbing, not a primary frame", "Material": "Steel_Black", "Profile": {"type": "IfcRectangleHollowProfileDef", "XDim": 0.075, "YDim": 0.075, "WallThickness": 0.003}
     },
     {
       "id": "wall_type_brick_100", "type": "IfcWallType", "HasPropertySets": ["pset_wall_ground_common", "pset_wall_ground_decision"], "PredefinedType": "STANDARD",
@@ -244,235 +260,339 @@
     },
     {
       "id": "col_ground_3_0", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_ground",
-      "Location": [3.0, 0.0, 0.0], "Length": 3.0
+      "Location": [3.0, 0.0, 0.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_ground_6_0", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_ground",
-      "Location": [6.0, 0.0, 0.0], "Length": 3.0
+      "Location": [6.0, 0.0, 0.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_ground_3_2", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_ground",
-      "Location": [3.0, 2.0, 0.0], "Length": 3.0
+      "Location": [3.0, 2.0, 0.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_ground_6_2", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_ground",
-      "Location": [6.0, 2.0, 0.0], "Length": 3.0
+      "Location": [6.0, 2.0, 0.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_ground_0_4_5", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_ground",
-      "Location": [0.0, 4.5, 0.0], "Length": 3.0
+      "Location": [0.0, 4.5, 0.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_ground_3_4_5", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_ground",
-      "Location": [3.0, 4.5, 0.0], "Length": 3.0
+      "Location": [3.0, 4.5, 0.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_ground_6_4_5", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_ground",
-      "Location": [6.0, 4.5, 0.0], "Length": 3.0
+      "Location": [6.0, 4.5, 0.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_ground_0_6_5", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_ground",
-      "Location": [0.0, 6.5, 0.0], "Length": 3.0
+      "Location": [0.0, 6.5, 0.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_ground_3_6_5", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_ground",
-      "Location": [3.0, 6.5, 0.0], "Length": 3.0
+      "Location": [3.0, 6.5, 0.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_ground_6_6_5", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_ground",
-      "Location": [6.0, 6.5, 0.0], "Length": 3.0
+      "Location": [6.0, 6.5, 0.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_first_3_0", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_first",
-      "Location": [3.0, 0.0, 3.0], "Length": 3.0
+      "Location": [3.0, 0.0, 3.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_first_6_0", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_first",
-      "Location": [6.0, 0.0, 3.0], "Length": 3.0
+      "Location": [6.0, 0.0, 3.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_first_3_2", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_first",
-      "Location": [3.0, 2.0, 3.0], "Length": 3.0
+      "Location": [3.0, 2.0, 3.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_first_6_2", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_first",
-      "Location": [6.0, 2.0, 3.0], "Length": 3.0
+      "Location": [6.0, 2.0, 3.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_first_0_4_5", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_first",
-      "Location": [0.0, 4.5, 3.0], "Length": 3.0
+      "Location": [0.0, 4.5, 3.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_first_3_4_5", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_first",
-      "Location": [3.0, 4.5, 3.0], "Length": 3.0
+      "Location": [3.0, 4.5, 3.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_first_6_4_5", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_first",
-      "Location": [6.0, 4.5, 3.0], "Length": 3.0
+      "Location": [6.0, 4.5, 3.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_first_0_6_5", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_first",
-      "Location": [0.0, 6.5, 3.0], "Length": 3.0
+      "Location": [0.0, 6.5, 3.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_first_3_6_5", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_first",
-      "Location": [3.0, 6.5, 3.0], "Length": 3.0
+      "Location": [3.0, 6.5, 3.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
       "id": "col_first_6_6_5", "type": "IfcColumn", "IsTypedBy": "column_type_hbeam_150x150", "ContainedIn": "storey_first",
-      "Location": [6.0, 6.5, 3.0], "Length": 3.0
+      "Location": [6.0, 6.5, 3.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.0
     },
     {
-      "id": "beam_y_0_m0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_200x100", "ContainedIn": "storey_first",
-      "Location": [0, 4.575, 2.8], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.425
+      "id": "beam_first_x_0_m0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_200x100", "ContainedIn": "storey_first",
+      "Location": [3.075, 0, 2.8], "Length": 2.85
     },
     {
-      "id": "beam_y_3_m0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_200x100", "ContainedIn": "storey_first",
-      "Location": [3, 0.075, 2.8], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.85
+      "id": "beam_first_x_2_m0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_200x100", "ContainedIn": "storey_first",
+      "Location": [3.075, 2, 2.8], "Length": 2.85
     },
     {
-      "id": "beam_y_3_m1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_200x100", "ContainedIn": "storey_first",
-      "Location": [3, 2.075, 2.8], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.35
+      "id": "beam_first_x_4_5_m0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_200x100", "ContainedIn": "storey_first",
+      "Location": [0.075, 4.5, 2.8], "Length": 2.85
     },
     {
-      "id": "beam_y_3_m2", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_200x100", "ContainedIn": "storey_first",
-      "Location": [3, 4.575, 2.8], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.425
+      "id": "beam_first_x_4_5_m1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_200x100", "ContainedIn": "storey_first",
+      "Location": [3.075, 4.5, 2.8], "Length": 2.85
     },
     {
-      "id": "beam_y_6_m0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_200x100", "ContainedIn": "storey_first",
-      "Location": [6, 0.075, 2.8], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.85
+      "id": "beam_first_x_6_5_m0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_200x100", "ContainedIn": "storey_first",
+      "Location": [0.075, 6.5, 2.8], "Length": 2.85
     },
     {
-      "id": "beam_y_6_m1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_200x100", "ContainedIn": "storey_first",
-      "Location": [6, 2.075, 2.8], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.35
+      "id": "beam_first_x_6_5_m1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_200x100", "ContainedIn": "storey_first",
+      "Location": [3.075, 6.5, 2.8], "Length": 2.85
     },
     {
-      "id": "beam_y_6_m2", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_200x100", "ContainedIn": "storey_first",
-      "Location": [6, 4.575, 2.8], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.425
+      "id": "beam_first_y_0_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
+      "Location": [0, 4.575, 2.85], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.85
     },
     {
-      "id": "beam_x_0_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
-      "Location": [2.4, 0, 2.85], "Length": 0.525
+      "id": "beam_first_y_1_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
+      "Location": [1, 4.50275, 2.85], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.9945
     },
     {
-      "id": "beam_x_0_s1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
-      "Location": [3.075, 0, 2.85], "Length": 2.85
+      "id": "beam_first_y_2_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
+      "Location": [2, 4.50275, 2.85], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.9945
     },
     {
-      "id": "beam_x_1_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
-      "Location": [2.4, 1, 2.85], "Length": 0.59725
+      "id": "beam_first_y_3_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
+      "Location": [3, 0.075, 2.85], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.85
     },
     {
-      "id": "beam_x_1_s1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
-      "Location": [3.00275, 1, 2.85], "Length": 2.9945
+      "id": "beam_first_y_3_s1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
+      "Location": [3, 2.075, 2.85], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.35
     },
     {
-      "id": "beam_x_2_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
-      "Location": [3.075, 2, 2.85], "Length": 2.85
+      "id": "beam_first_y_3_s2", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
+      "Location": [3, 4.575, 2.85], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.85
     },
     {
-      "id": "beam_x_3_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
-      "Location": [3.00275, 3, 2.85], "Length": 0.99725
+      "id": "beam_first_y_4_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
+      "Location": [4, 0.00275, 2.85], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.9945
     },
     {
-      "id": "beam_x_4_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
-      "Location": [3.00275, 4, 2.85], "Length": 0.99725
+      "id": "beam_first_y_4_s1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
+      "Location": [4, 2.00275, 2.85], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.4945
     },
     {
-      "id": "beam_x_4_5_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
-      "Location": [0.075, 4.5, 2.85], "Length": 2.85
+      "id": "beam_first_y_4_s2", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
+      "Location": [4, 4.50275, 2.85], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.9945
     },
     {
-      "id": "beam_x_4_5_s1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
-      "Location": [3.075, 4.5, 2.85], "Length": 2.85
+      "id": "beam_first_y_5_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
+      "Location": [5, 0.00275, 2.85], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.9945
     },
     {
-      "id": "beam_x_5_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
-      "Location": [0.00275, 5, 2.85], "Length": 2.9945
+      "id": "beam_first_y_5_s1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
+      "Location": [5, 2.00275, 2.85], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.4945
     },
     {
-      "id": "beam_x_5_s1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
-      "Location": [3.00275, 5, 2.85], "Length": 0.99725
+      "id": "beam_first_y_5_s2", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
+      "Location": [5, 4.50275, 2.85], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.9945
     },
     {
-      "id": "beam_x_6_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
-      "Location": [0.00275, 6, 2.85], "Length": 2.9945
+      "id": "beam_first_y_6_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
+      "Location": [6, 0.075, 2.85], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.85
     },
     {
-      "id": "beam_x_6_s1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
-      "Location": [3.00275, 6, 2.85], "Length": 0.99725
+      "id": "beam_first_y_6_s1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
+      "Location": [6, 2.075, 2.85], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.35
     },
     {
-      "id": "beam_x_7_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
-      "Location": [0.00275, 7, 2.85], "Length": 2.9945
+      "id": "beam_first_y_6_s2", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
+      "Location": [6, 4.575, 2.85], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.85
     },
     {
-      "id": "beam_x_7_s1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_150x75", "ContainedIn": "storey_first",
-      "Location": [3.00275, 7, 2.85], "Length": 2.9945
+      "id": "beam_roof_x_0_m0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_125x60", "ContainedIn": "storey_roof",
+      "Location": [3.075, 0, 5.875], "Length": 2.85
+    },
+    {
+      "id": "beam_roof_x_2_m0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_125x60", "ContainedIn": "storey_roof",
+      "Location": [3.075, 2, 5.875], "Length": 2.85
+    },
+    {
+      "id": "beam_roof_x_4_5_m0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_125x60", "ContainedIn": "storey_roof",
+      "Location": [0.075, 4.5, 5.875], "Length": 2.85
+    },
+    {
+      "id": "beam_roof_x_4_5_m1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_125x60", "ContainedIn": "storey_roof",
+      "Location": [3.075, 4.5, 5.875], "Length": 2.85
+    },
+    {
+      "id": "beam_roof_x_6_5_m0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_125x60", "ContainedIn": "storey_roof",
+      "Location": [0.075, 6.5, 5.875], "Length": 2.85
+    },
+    {
+      "id": "beam_roof_x_6_5_m1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_125x60", "ContainedIn": "storey_roof",
+      "Location": [3.075, 6.5, 5.875], "Length": 2.85
+    },
+    {
+      "id": "beam_roof_y_0_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_100x50", "ContainedIn": "storey_roof",
+      "Location": [0, 4.575, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.85
+    },
+    {
+      "id": "beam_roof_y_1_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_100x50", "ContainedIn": "storey_roof",
+      "Location": [1, 4.503, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.994
+    },
+    {
+      "id": "beam_roof_y_2_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_100x50", "ContainedIn": "storey_roof",
+      "Location": [2, 4.503, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.994
+    },
+    {
+      "id": "beam_roof_y_3_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_100x50", "ContainedIn": "storey_roof",
+      "Location": [3, 0.075, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.85
+    },
+    {
+      "id": "beam_roof_y_3_s1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_100x50", "ContainedIn": "storey_roof",
+      "Location": [3, 2.075, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.35
+    },
+    {
+      "id": "beam_roof_y_3_s2", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_100x50", "ContainedIn": "storey_roof",
+      "Location": [3, 4.575, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.85
+    },
+    {
+      "id": "beam_roof_y_4_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_100x50", "ContainedIn": "storey_roof",
+      "Location": [4, 0.003, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.994
+    },
+    {
+      "id": "beam_roof_y_4_s1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_100x50", "ContainedIn": "storey_roof",
+      "Location": [4, 2.003, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.494
+    },
+    {
+      "id": "beam_roof_y_4_s2", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_100x50", "ContainedIn": "storey_roof",
+      "Location": [4, 4.503, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.994
+    },
+    {
+      "id": "beam_roof_y_5_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_100x50", "ContainedIn": "storey_roof",
+      "Location": [5, 0.003, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.994
+    },
+    {
+      "id": "beam_roof_y_5_s1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_100x50", "ContainedIn": "storey_roof",
+      "Location": [5, 2.003, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.494
+    },
+    {
+      "id": "beam_roof_y_5_s2", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_100x50", "ContainedIn": "storey_roof",
+      "Location": [5, 4.503, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.994
+    },
+    {
+      "id": "beam_roof_y_6_s0", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_100x50", "ContainedIn": "storey_roof",
+      "Location": [6, 0.075, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.85
+    },
+    {
+      "id": "beam_roof_y_6_s1", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_100x50", "ContainedIn": "storey_roof",
+      "Location": [6, 2.075, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.35
+    },
+    {
+      "id": "beam_roof_y_6_s2", "type": "IfcBeam", "IsTypedBy": "beam_type_wf_100x50", "ContainedIn": "storey_roof",
+      "Location": [6, 4.575, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.85
+    },
+    {
+      "id": "knee_post_0_0_6_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [0.0, 6.5, 6.0], "Length": 0.2612
+    },
+    {
+      "id": "knee_post_3_0_6_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [3.0, 6.5, 6.0], "Length": 0.2612
+    },
+    {
+      "id": "knee_post_6_0_6_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [6.0, 6.5, 6.0], "Length": 0.2612
+    },
+    {
+      "id": "knee_rail_north", "type": "IfcBeam", "IsTypedBy": "beam_type_knee_rail", "ContainedIn": "storey_roof",
+      "Location": [-0.0375, 6.5, 6.2612], "Length": 6.075
+    },
+    {
+      "id": "knee_post_0_0_4_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [0.0, 4.5, 6.0], "Length": 0.2612
+    },
+    {
+      "id": "knee_rail_west", "type": "IfcBeam", "IsTypedBy": "beam_type_knee_rail", "ContainedIn": "storey_roof",
+      "Location": [0.0, 4.4625, 6.2612], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.0
+    },
+    {
+      "id": "knee_post_6_0_0_0", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [6.0, 0.0, 6.0], "Length": 0.48759
+    },
+    {
+      "id": "knee_post_6_0_2_0", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [6.0, 2.0, 6.0], "Length": 0.48759
+    },
+    {
+      "id": "knee_post_6_0_4_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [6.0, 4.5, 6.0], "Length": 0.48759
+    },
+    {
+      "id": "knee_rail_east", "type": "IfcBeam", "IsTypedBy": "beam_type_knee_rail", "ContainedIn": "storey_roof",
+      "Location": [6.0, -0.0375, 6.48759], "RefDirection": [0.0, 1.0, 0.0], "Length": 4.575
     },
     {
       "id": "pset_roof_north", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
     },
     {
       "id": "roof_north", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_north"], "PredefinedType": "SHED_ROOF",
-      "Name": "roof_north", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.5 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.5], "OuterCurve": [[7.05, 7.05, 0], [-0.55, 7.05, 0], [3, 3.5, 2.17]]
-    },
-    {
-      "id": "wall_roof_north_x7_025_1", "type": "IfcWall", "IsTypedBy": "wall_type_steel_sandwich_50", "ContainedIn": "storey_roof",
-      "Location": [-0.55, 7.025, 6.0], "Length": 7.6, "Height": 0.5
+      "Name": "roof_north", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[7.05, 7.05, 0], [-0.55, 7.05, 0], [3, 3.5, 2.17]]
     },
     {
       "id": "pset_roof_west", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
     },
     {
       "id": "roof_west", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_west"], "PredefinedType": "SHED_ROOF",
-      "Name": "roof_west", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.5 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.5], "OuterCurve": [[-0.55, 7.05, 0], [-0.55, 3.5, 0], [3, 3.5, 2.17]]
-    },
-    {
-      "id": "wall_roof_west_ym0_525_1", "type": "IfcWall", "IsTypedBy": "wall_type_steel_sandwich_50", "ContainedIn": "storey_roof",
-      "Location": [-0.525, 3.5, 6.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.55, "Height": 0.5
+      "Name": "roof_west", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[-0.55, 7.05, 0], [-0.55, 3.5, 0], [3, 3.5, 2.17]]
     },
     {
       "id": "roof_west_wall_1_1", "type": "IfcWall", "IsTypedBy": "wall_type_polycarbonate_framed", "ContainedIn": "storey_roof",
-      "Location": [-0.55, 3.508, 6.0], "Length": 3.55, "Height": 2.67, "Outline": [[0.0, 0.0], [3.55, 0.0], [3.55, 2.67], [0.0, 0.5]]
+      "Location": [-0.55, 3.508, 6.0], "Length": 3.55, "Height": 2.17, "Outline": [[3.55, 0.0], [3.55, 2.17], [0.0, 0.0]]
     },
     {
       "id": "pset_roof_east", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
     },
     {
       "id": "roof_east", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_east"], "PredefinedType": "SHED_ROOF",
-      "Name": "roof_east", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.5 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.5], "OuterCurve": [[3, 3.5, 2.17], [7.05, 3.5, 0], [7.05, 7.05, 0]]
-    },
-    {
-      "id": "wall_roof_east_y7_025_1", "type": "IfcWall", "IsTypedBy": "wall_type_steel_sandwich_50", "ContainedIn": "storey_roof",
-      "Location": [7.025, 3.5, 6.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.55, "Height": 0.5
+      "Name": "roof_east", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[3, 3.5, 2.17], [7.05, 3.5, 0], [7.05, 7.05, 0]]
     },
     {
       "id": "pset_roof_south_east", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
     },
     {
       "id": "roof_south_east", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_south_east"], "PredefinedType": "SHED_ROOF",
-      "Name": "roof_south_east", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.5 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.5], "OuterCurve": [[3, 0, 2.17], [7.05, 0, 0], [7.05, 3.5, 0], [3, 3.5, 2.17]]
-    },
-    {
-      "id": "wall_roof_south_east_y7_025_1", "type": "IfcWall", "IsTypedBy": "wall_type_steel_sandwich_50", "ContainedIn": "storey_roof",
-      "Location": [7.025, 0, 6.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.5, "Height": 0.5
+      "Name": "roof_south_east", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[3, 0, 2.17], [7.05, 0, 0], [7.05, 3.5, 0], [3, 3.5, 2.17]]
     },
     {
       "id": "roof_south_east_wall_0_1", "type": "IfcWall", "IsTypedBy": "wall_type_steel_sandwich_50", "ContainedIn": "storey_roof",
-      "Location": [3, 0.025, 6.0], "Length": 4.05, "Height": 2.67, "Outline": [[0, 0.17], [4.05, 0.17], [4.05, 0.5], [0, 2.67]]
+      "Location": [3, 0.025, 6.0], "Length": 3.73272, "Height": 2.17, "Outline": [[0, 0.17], [3.73272, 0.17], [0, 2.17]]
     },
     {
       "id": "wall_roof_south_east_y3_008_1", "type": "IfcWall", "IsTypedBy": "wall_type_polycarbonate_framed", "ContainedIn": "storey_roof",
-      "Location": [3.008, 0, 6.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 1, "Height": 2.67
+      "Location": [3.008, 0, 6.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 1, "Height": 2.17
     },
     {
       "id": "wall_roof_south_east_y3_008_2", "type": "IfcWall", "IsTypedBy": "wall_type_polycarbonate_framed", "ContainedIn": "storey_roof",
-      "Location": [3.008, 1, 8.1], "RefDirection": [0.0, 1.0, 0.0], "Length": 1, "Height": 0.57
+      "Location": [3.008, 1, 8.1], "RefDirection": [0.0, 1.0, 0.0], "Length": 1, "Height": 0.07
     },
     {
       "id": "wall_roof_south_east_y3_008_3", "type": "IfcWall", "IsTypedBy": "wall_type_polycarbonate_framed", "ContainedIn": "storey_roof",
-      "Location": [3.008, 2, 6.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.5, "Height": 2.67
+      "Location": [3.008, 2, 6.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.5, "Height": 2.17
     },
     {
       "id": "pset_roof_2", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "metal"}

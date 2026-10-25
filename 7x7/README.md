@@ -36,13 +36,14 @@ first floor and `stair_2` repeats it from the first floor to the roof deck. Each
 
 ## Structure
 
-- Columns: H 150×150 at the grid points listed under `columns`, on both storeys.
-- Main beams (WF 200×100) run along y at x = 0, 3, 6.
-- Secondary beams (WF 150×75) run along x. Spans are split wherever they cross a main beam.
+- Columns: H 150×150 at the grid points listed under `columns`, on both storeys, rotated 90° (`rotation`) so the flanges face x: the main beams frame into the flange faces and the secondaries into the web.
+- Main beams (WF 200×100) run along x at y = 0, 2, 4.5, 6.5, split at the x = 3 column (3 m spans).
+- Secondary beams (WF 150×75) run along y at x = 0 to 6. Spans are split wherever they cross a main beam.
+- Roof beams: the same layout under `slab_roof`, at z = 6, with lighter sections: main WF 125×60, secondary WF 100×50. The sections are placeholders until the roof loads are checked.
 
 ## Roof
 
-The roof is five parts, each its own `IfcRoof` with one sloped panel over 3 or 4 corners `[x, y, z]`, where z is the rise above that roof's eaves. The eaves sit on a 0.5 m wall, so they are at z = 6.5, and the total above the roof slab is `wall_height` + z. The corners are written as built: the roof edges that stand on the first-floor AAC walls reach 0.05 m past the grid line (x = -0.55, y = 7.05, x = 7.05), flush with the outer face of those walls. Roof walls are light: steel sandwich panel (`SteelSandwich_50`) for parapets and infill, and steel-framed polycarbonate (`PolycarbonateFramed_16`) under the peak and along the x = 3 edge, so daylight reaches the deck.
+The roof is five parts, each its own `IfcRoof` with one sloped panel over 3 or 4 corners `[x, y, z]`, where z is the rise above that roof's eaves. There is no parapet: the eaves are at the roof slab (z = 6.0), and the peak is 2.17 m above it (z = 8.17). The roof rests on the knee walls (see below) and overhangs them on the low sides. The corners are written as built: the roof edges reach 0.05 m past the grid line (x = -0.55, y = 7.05, x = 7.05), flush with the outer face of the first-floor AAC walls. Roof walls are light: steel sandwich panel (`SteelSandwich_50`) for infill, and steel-framed polycarbonate (`PolycarbonateFramed_16`) under the peak and along the x = 3 edge, so daylight reaches the deck.
 
 The north half is three triangles that meet in one point, the peak at (3, 3.5), 2.17 m above the eaves. The peak sits on the high edge of `roof_south_east` (x = 3), so all four roofs meet there:
 - `roof_north` (polycarbonate): the north slope, corners (7.05, 7.05), (-0.55, 7.05) and the peak. About 32°.
@@ -50,16 +51,31 @@ The north half is three triangles that meet in one point, the peak at (3, 3.5), 
 - `roof_east` (polycarbonate): the east slope, corners (7.05, 3.5), (7.05, 7.05) and the peak. About 28°, continuing the slope of `roof_south_east`.
 
 The south:
-- `roof_south_east` (polycarbonate): a lean-to over x 3 to 7.05, y 0 to 3.5, high on the west (2.17 m, the same elevation as the peak, which sits at its north-west corner) and sloping down to the east. About 28°. Its high edge is a 2.67 m polycarbonate wall along x = 3 with a door opening at y 1-2 where the stair lands (2.1 m high, lintel above; the door leaf is not modelled).
+- `roof_south_east` (polycarbonate): a lean-to over x 3 to 7.05, y 0 to 3.5, high on the west (2.17 m, the same elevation as the peak, which sits at its north-west corner) and sloping down to the east. About 28°. Its high edge is a 2.17 m polycarbonate wall along x = 3 with a door opening at y 1-2 where the stair lands (2.1 m high, so only 0.07 m of lintel above it; the door leaf is not modelled).
 - `roof_2` (metal): the small lean-to over the bathroom and toilet, y -0.65 to 0, sloping down to the south. Height 0.17 m.
 
-Walls (`wall_height` 0.5 m for the five parts above; `roof_2` has none):
-- Parapets (`parapet`, a list of edge numbers; edge i runs from corner i to corner i + 1): only on edges that have a structure under them: north (y = 7.05), east (x = 7.05) and the room's west side (x = -0.55, y 3.5-7.05). Edges facing the void have no wall.
-- Every other edge that is raised above its eaves gets a wall up to the roof surface, in the roof's `wall` type unless `edge_walls` says otherwise. Where another roof meets the edge there is no wall below that roof's surface, so only the gap above the lower roof is closed. A sloped edge that is not axis-aligned must be shared with another roof (the hip lines between the three triangles).
+Walls (none at the eaves; `edge_walls` and the hips below):
+- Every sloped edge that is raised above its eaves gets a wall up to the roof surface, in the roof's `wall` type unless `edge_walls` says otherwise. Where another roof meets the edge there is no wall below that roof's surface, so only the gap above the lower roof is closed. A sloped edge that is not axis-aligned must be shared with another roof (the hip lines between the three triangles).
 - The wall under the south edge of `roof_west` is polycarbonate. `roof_east` and `roof_south_east` are one continuous slope along y = 3.5, so no wall stands between them.
 - `roof_south_east` also gets a wall along its south edge, above `roof_2`.
 
-Not yet checked: the gutter and overflow pipes (`pipe_collect`, `pipe_gutter_overflow`) were laid out against the old roof and have not been moved to the new one.
+Not yet checked: the gutter and overflow pipes (`pipe_collect`, `pipe_gutter_overflow`) were laid out against an older roof and have not been moved to this one. The roof is now 0.5 m lower than in the parapet version, so they need a fresh look.
+
+### Knee walls
+
+The roof has no parapet. Where it comes down to the low edges it rests on knee walls set back from the eaves, built from light posts and a rail instead of a solid wall (`knee_walls` in `spec.json`; the parapet code stays in `gen.py`, unused here). Each run is a line on the first-storey column grid:
+
+| Run | Line | Between | Under | Set back from the eaves |
+|---|---|---|---|---|
+| `north` | y = 6.5 | x 0-6 | `roof_north` | 0.55 m |
+| `west` | x = 0 | y 4.5-6.5 | `roof_west` | 0.55 m |
+| `east` | x = 6 | y 0-4.5 | `roof_south_east`, `roof_east` | 1.05 m |
+
+- The set-backs were asked as 0.5 m (north, west) and 1 m (east) from the low edge. The columns stand on the 7 m grid, so the walls sit on them and the distance to the roof edge, which overhangs the grid by 0.05 m, comes out 0.05 m more.
+- A post stands on every first-storey column along the run, from the column top (z = 6.0). Its height is derived from the roof: the roof surface above it (0.336 m on `north` and `west`, 0.563 m on `east`) less the rail depth. A rail along the posts carries the roof ribbing and stops at the face of the rail it meets at a corner.
+- Posts and rail are `RHS_75x75x3`, a light hollow section, not H or WF. The size is a placeholder until the roof loads are known.
+- `west` and `north` meet at the corner column (0, 6.5), which lies on the hip between `roof_west` and `roof_north`, so both rails are at the same height there.
+- Posts exist only where there are columns. `east` stops at y 4.5, 1.6 m short of the hip with `roof_north`; the roof over y 4.5-6.1 is cantilevered until a support is added there.
 
 ## Rainwater
 
@@ -83,8 +99,9 @@ The pipes and the gutter are solid round pipes, and the gutter stands in for an 
 ## Open points
 
 Structure
-- No columns or beams exist at the roof level yet. The x = 3 wall and the parapets need a steel ring beam on top, tied down to the columns,
-  and the roof needs rafters and purlins.
+- Roof level has only the knee-wall posts and rails. The x = 3 wall needs a steel ring beam on top, tied down to the columns, and the
+  roof needs rafters and purlins. The knee walls need more supports (see Knee walls) and a check of the section.
+- With the roof 0.5 m lower, the door at the stair top has only 0.07 m of lintel above its 2.1 m opening; the wall needs a header or the door a lower height.
 - Wind uplift is the main risk for a light roof this high up and open on the void side. The tie-down from panel to purlin to rafter to ring
   beam to column has to be designed and checked by a structural engineer, using the SNI wind loads for the site.
 - The edges facing the void have no wall or guard rail.
@@ -112,9 +129,12 @@ Water
     Default height is 2.1 m, with a lintel above.
   - `open`: `{side, from, to}`; that stretch of the edge gets no wall. Needed on both rooms that share the edge.
 - `roofs`: one entry per roof, each its own `IfcRoof` with one sloped panel: `id`, `storey`, `corners` (3 or 4 points `[x, y, z]`, z = rise above the eaves; a fourth point must lie in the plane of the first three), optional `panel` (`metal` or `polycarbonate`), `wall` (`brick`, `aac`, `sandwich` or `polycarbonate`; the default type of the roof's walls), `wall_height` (raises the eaves), `parapet` (edge numbers that get a wall of `wall_height`), `edge_walls` (per edge number: `{wall, doors}` overrides the type or adds `{from, to}` openings, `null` leaves the edge open).
+- `knee_walls`: `storey`, `columns` (the storey whose columns carry the posts), `section` (`width`, `depth`, `thickness` of the hollow section) and `runs`: `{id, axis, at, from, to, roofs}`, a line `axis` = `x` or `y` at coordinate `at`, between `from` and `to`, under the listed roofs. The generator fails if the roof is not level along a run.
 - `walls`: loose wall runs, `{storey, from, to, wall}`.
 - `tanks`: `id`, `storey`, `name`, `rect`, `height`, optional `z`.
 - `pipes`: `id`, `storey`, `name`, `diameter`, `path` (a list of `[x, y, z]` points; each straight stretch becomes a pipe segment).
-- `columns`, `stairs`, `beams`: see `spec.json`.
+- `beams`: one block or a list of blocks (one per storey): `storey`, `main` and `secondary` (`{axis, at, spans}`), optional `sections` (`main` / `secondary`: `WF_200x100`, `WF_150x75`, `WF_125x60` or `WF_100x50`).
+- `columns`: groups of `{storey, at, rotation}`; `rotation` 90 turns the H section so its flanges face x.
+- `stairs`: see `spec.json`.
 
 Room `name` is a label only; it doesn't reach the generated file.

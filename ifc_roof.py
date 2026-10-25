@@ -9,70 +9,16 @@ ROOF_MATERIALS = {
 }
 
 
-# ---- panel shapes: each returns a list of (x, y, z) vertices ----------------
+# ---- panel shape ---------------------------------------------------------------
 
-def isosceles_triangle(base_a, base_b, apex):
-    assert math.isclose(math.dist(base_a, apex), math.dist(base_b, apex), rel_tol=1e-6), "apex is not equidistant from base ends"
-    return [base_a, base_b, apex]
-
-
-def right_triangle(corner, leg_a, leg_b):
-    va = [a - c for a, c in zip(leg_a, corner)]
-    vb = [b - c for b, c in zip(leg_b, corner)]
-    assert math.isclose(sum(x * y for x, y in zip(va, vb)), 0.0, abs_tol=1e-6), "legs are not perpendicular"
-    return [corner, leg_a, leg_b]
-
-
-def slanted_rectangle(origin, along, rise):
-    """Rectangle spanning `along` (horizontal edge vector) and `rise` (sloped edge vector, perpendicular to `along`)."""
-    assert math.isclose(sum(x * y for x, y in zip(along, rise)), 0.0, abs_tol=1e-6), "edges are not perpendicular"
-    o = origin
-    return [o, tuple(a + b for a, b in zip(o, along)),
-            tuple(a + b + c for a, b, c in zip(o, along, rise)), tuple(a + b for a, b in zip(o, rise))]
-
-
-def trapezoid(a, b, c, d):
-    return [a, b, c, d]
-
-
-# ---- hip roof layout ---------------------------------------------------------
-
-def roof_height(min_x, max_x, pitch_deg):
-    """Ridge height above the eaves."""
-    return (max_x - min_x) / 2.0 * math.tan(math.radians(pitch_deg))
-
-
-def hip_panels(min_x, min_y, max_x, max_y, pitch_deg, gable=None, west_run=None):
-    """Faces of a hip roof over a rectangle, keyed by side (south = min_y).
-    `gable="south"` turns the south hip into a vertical gable end: the ridge reaches the south edge and that
-    side gets no roof panel (the gable wall closes it).
-    `west_run` (gable only) stops the west slope that far west of the ridge, from the south edge up to where the
-    ridge ends; the north hip keeps its full width."""
-    half = (max_x - min_x) / 2.0
-    h = roof_height(min_x, max_x, pitch_deg)
-    rx = min_x + half
-    sw, se = (min_x, min_y, 0.0), (max_x, min_y, 0.0)
-    ne, nw = (max_x, max_y, 0.0), (min_x, max_y, 0.0)
-    r_s, r_n = (rx, min_y + half, h), (rx, max_y - half, h)
-    if gable == "south":
-        r_s = (rx, min_y, h)
-        west = trapezoid(nw, sw, r_s, r_n)
-        if west_run is not None:
-            xc = rx - west_run
-            zc = (xc - min_x) * math.tan(math.radians(pitch_deg))
-            west = [nw, (min_x, r_n[1], 0.0), (xc, r_n[1], zc), (xc, min_y, zc), r_s, r_n]
-        return {
-            "east":  trapezoid(se, ne, r_n, r_s),
-            "north": isosceles_triangle(ne, nw, r_n),
-            "west":  west,
-        }
-    assert gable is None and west_run is None, f"unsupported gable side {gable}"
-    return {
-        "south": isosceles_triangle(sw, se, r_s),
-        "east":  trapezoid(se, ne, r_n, r_s),
-        "north": isosceles_triangle(ne, nw, r_n),
-        "west":  trapezoid(nw, sw, r_s, r_n),
-    }
+def roof_panel(corners):
+    """The corners (x, y, z) of one sloped panel: 3 or 4 of them, and a fourth must lie in the plane of the first three."""
+    assert len(corners) in (3, 4), "a roof panel has 3 or 4 corners"
+    if len(corners) == 4:
+        n = _normal(corners[:3])
+        off = sum(n[i] * (corners[3][i] - corners[0][i]) for i in range(3))
+        assert abs(off) < 1e-6, f"the 4 corners are not in one plane (off by {off:.4f} m)"
+    return [tuple(float(c) for c in v) for v in corners]
 
 
 # ---- panel solid -------------------------------------------------------------

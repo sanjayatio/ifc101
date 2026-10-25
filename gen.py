@@ -7,7 +7,9 @@ ONE_LINE = {"IfcProject", "IfcSite", "IfcBuilding", "IfcBuildingStorey", "IfcPro
 
 BEAM_TYPES = {"main": ("beam_type_wf_200x100", "WF_200x100", 0.1, 0.2, 0.0055, 0.008),
               "secondary": ("beam_type_wf_150x75", "WF_150x75", 0.075, 0.15, 0.005, 0.007)}
-WALL_TYPES = {"brick": "wall_type_brick_100", "aac": "wall_type_aac_100"}
+WALL_TYPES = {"brick": "wall_type_brick_100", "aac": "wall_type_aac_100", "sandwich": "wall_type_steel_sandwich_50",
+              "polycarbonate": "wall_type_polycarbonate_framed"}
+WALL_THICKNESS = {"brick": 0.1, "aac": 0.1, "sandwich": 0.05, "polycarbonate": 0.016}  # the sum of each type's layers
 SLAB_TYPES = {"floor_100": "slab_type_floor_100", "floor_200": "slab_type_floor_200"}
 COLUMN_TYPE, COLUMN_SIZE = "column_type_hbeam_150x150", 0.15
 DOOR_HEIGHT = 2.1
@@ -28,7 +30,7 @@ class Design:
         self.storeys = {name: {"id": f"storey_{name}", "elevation": r(i * self.height)} for i, name in enumerate(spec["storeys"])}
 
     def add(self, **node):
-        self.nodes.append(node)
+        self.nodes.append({k: v for k, v in node.items() if v is not None})
 
     def elevation(self, storey):
         return self.storeys[storey]["elevation"]
@@ -67,6 +69,18 @@ class Design:
             Description="Lightweight AAC blocks to reduce structural load on upper level",
             MaterialLayers=[{"Material": "Autoclaved Aerated Concrete (AAC)", "LayerThickness": 0.1}],
             HasPropertySets=["pset_wall_first_common", "pset_wall_first_decision"])
+        add(id="pset_wall_polycarbonate_frame", type="IfcPropertySet", Name="Custom_WallFrame",
+            Description="The steel frame carries the load; the polycarbonate sheet is infill only and cannot hold a door",
+            HasProperties={"Frame": "Steel RHS 50x50", "PostSpacingMax": 1.0, "Infill": "Polycarbonate multiwall, 16 mm",
+                           "OpeningFrame": "Steel posts either side of an opening, header above, bolted to the slab and columns",
+                           "JointGap": "Sealed channels; polycarbonate moves 2-3 mm per metre with temperature"})
+        add(id="wall_type_steel_sandwich_50", type="IfcWallType", Name="SteelSandwich_50", PredefinedType="STANDARD",
+            Description="Insulated steel sandwich panel on a light steel frame; light walls at roof level",
+            MaterialLayers=[{"Material": "Steel Sheet", "LayerThickness": 0.0005}, {"Material": "PU Insulation Core", "LayerThickness": 0.049},
+                            {"Material": "Steel Sheet", "LayerThickness": 0.0005}])
+        add(id="wall_type_polycarbonate_framed", type="IfcWallType", Name="PolycarbonateFramed_16", PredefinedType="ELEMENTEDWALL",
+            Description="Steel-framed wall glazed with polycarbonate, so daylight reaches the roof deck",
+            MaterialLayers=[{"Material": "Polycarbonate Multiwall", "LayerThickness": 0.016}], HasPropertySets=["pset_wall_polycarbonate_frame"])
         add(id="slab_type_floor_100", type="IfcSlabType", Name="Floor_100", PredefinedType="FLOOR", MaterialLayers=[{"LayerThickness": 0.1}])
         add(id="slab_type_floor_200", type="IfcSlabType", Name="Floor_200", PredefinedType="FLOOR", MaterialLayers=[{"LayerThickness": 0.2}])
         add(id="slab_type_landing_100", type="IfcSlabType", Name="Landing_100", PredefinedType="LANDING", MaterialLayers=[{"LayerThickness": 0.1}])
@@ -129,7 +143,7 @@ class Design:
             for a, b, openings in merged:
                 self.wall_run(storey, orient, fixed, material, a, b, sorted(set(openings)))
 
-    def wall_run(self, storey, orient, fixed, material, a, b, openings, height=None):
+    def wall_run(self, storey, orient, fixed, material, a, b, openings, height=None, owner=None):
         z, height, n = self.elevation(storey), height or self.height, 0
         cursor, pieces = a, []
         for o0, o1, oh in openings:
@@ -139,7 +153,7 @@ class Design:
         pieces += [(cursor, b, z, height)] if b > cursor + 1e-9 else []
         for p0, p1, pz, ph in pieces:
             n += 1
-            node = dict(id=f"wall_{storey}_{orient}{slug(fixed)}_{n}", type="IfcWall", IsTypedBy=WALL_TYPES[material], ContainedIn=self.storey_id(storey))
+            node = dict(id=f"wall_{owner or storey}_{orient}{slug(fixed)}_{n}", type="IfcWall", IsTypedBy=WALL_TYPES[material], ContainedIn=self.storey_id(storey))
             if orient == "x":
                 node["Location"] = [r(p0), fixed, r(pz)]
             else:
@@ -168,41 +182,139 @@ class Design:
                 self.add(id=f"{sid}_landing_{i}", type="IfcSlab", IsTypedBy="slab_type_landing_100", Decomposes=sid,
                          Location=[0.0, 0.0, r(z0 + land["z"])], OuterCurve=land["polygon"])
 
-    # ---- roofs: a hip over a rectangle, optionally with a south gable and a west slope cut short ---
+    # ---- rainwater: a tank and the pipes that feed and drain it -----------------------------
+    def tanks(self):
+        for tank in self.spec.get("tanks", []):
+            x0, y0, x1, y1 = tank["rect"]
+            self.add(id=tank["id"], type="IfcTank", PredefinedType="STORAGE", ContainedIn=self.storey_id(tank["storey"]), Name=tank.get("name", tank["id"]),
+                     Location=[0.0, 0.0, tank.get("z", self.elevation(tank["storey"]))], OuterCurve=[[x0, y0], [x1, y0], [x1, y1], [x0, y1]],
+                     Height=tank["height"])
+
+    def pipes(self):
+        for pipe in self.spec.get("pipes", []):
+            for i, (a, b) in enumerate(zip(pipe["path"], pipe["path"][1:]), 1):  # one segment per straight stretch
+                length = math.dist(a, b)
+                self.add(id=f"{pipe['id']}_{i}", type="IfcPipeSegment", PredefinedType=pipe.get("predefined", "RIGIDSEGMENT"), ContainedIn=self.storey_id(pipe["storey"]),
+                         Name=pipe.get("name", pipe["id"]), Description=pipe.get("description"), Location=[float(c) for c in a], Direction=[r((q - p) / length) for p, q in zip(a, b)],
+                         Length=r(length), Diameter=pipe.get("diameter", 0.1))
+
+    # ---- roofs: each roof is one sloped panel over 3 or 4 corners [x, y, z]; z is the rise above its eaves ---
     def roofs(self):
-        for roof in self.spec.get("roofs", []):
-            x0, y0, x1, y1 = roof["rect"]
-            storey, pitch, gable = roof["storey"], roof.get("pitch", 30), roof.get("gable")
-            wall, rise, west_run = roof.get("wall", "aac"), roof.get("wall_height", 0.0), roof.get("west_run")
-            tan, z0 = math.tan(math.radians(pitch)), self.elevation(storey)
-            props = {"PitchAngle": pitch, "PanelMaterial_Default": roof.get("panel", "polycarbonate")}
-            if gable:
-                props["GableSide"] = gable.capitalize()
-            if west_run is not None:
-                props["WestRun"] = west_run
-            pset = f"pset_{roof['id']}_hip"
-            self.add(id=pset, type="IfcPropertySet", Name="Custom_HipRoof", HasProperties=props)
-            self.add(id=roof["id"], type="IfcRoof", PredefinedType="HIP_ROOF", ContainedIn=self.storey_id(storey), HasPropertySets=[pset],
-                     Location=[0.0, 0.0, r(z0 + rise)], OuterCurve=[[x0, y0], [x1, y0], [x1, y1], [x0, y1]])
+        specs = self.spec.get("roofs", [])
+        for roof in specs:
+            corners = roof["corners"]
+            assert len(corners) in (3, 4), f"{roof['id']}: a roof has 3 or 4 corners"
+            storey, rise = roof["storey"], roof.get("wall_height", 0.0)
+            pset = f"pset_{roof['id']}"
+            self.add(id=pset, type="IfcPropertySet", Name="Custom_Roof", HasProperties={"PanelMaterial_Default": roof.get("panel", "polycarbonate")})
+            self.add(id=roof["id"], type="IfcRoof", Name=roof["id"], PredefinedType="SHED_ROOF", ContainedIn=self.storey_id(storey),
+                     Description=f"One sloped panel; the corner z is the rise above the eaves, which stand {rise} m above the roof slab, on the walls below",
+                     HasPropertySets=[pset], Location=[0.0, 0.0, r(self.elevation(storey) + rise)],
+                     OuterCurve=[[r(x), r(y), r(z)] for x, y, z in corners])
+            self.roof_walls(roof, specs)
 
-            for (xa, ya), (xb, yb) in roof.get("parapet", []):  # walls under the eaves, on edges that have support
-                orient, fixed, a, b = ("x", ya, min(xa, xb), max(xa, xb)) if ya == yb else ("y", xa, min(ya, yb), max(ya, yb))
-                self.wall_run(storey, orient, fixed, wall, a, b, [], height=rise)
+    @staticmethod
+    def edges(roof):
+        c = roof["corners"]
+        return [(tuple(c[i]), tuple(c[(i + 1) % len(c)])) for i in range(len(c))]
 
-            half = (x1 - x0) / 2.0
-            rx, ridge_end, peak = x0 + half, y1 - half, half * tan
-            if gable:
-                assert gable == "south", f"unsupported gable side {gable}"
-                gx = roof.get("gable_from", x0)  # the gable wall only stands where something carries it
-                eave = lambda x: rise + (min(x, rx) - x0) * tan
-                self.add(id=f"{roof['id']}_gable_south", type="IfcWall", IsTypedBy=WALL_TYPES[wall],
-                         ContainedIn=self.storey_id(storey), Location=[gx, y0, z0], Length=r(x1 - gx), Height=r(rise + peak),
-                         Outline=[[0, 0], [r(x1 - gx), 0], [r(x1 - gx), rise], [r(rx - gx), r(rise + peak)], [0, r(eave(gx))]])
-            if west_run is not None:  # the cut slope leaves a sloped gap above the room's south wall, closed by an infill wall
-                xc = rx - west_run
-                self.add(id=f"{roof['id']}_infill_west", type="IfcWall", IsTypedBy=WALL_TYPES[wall],
-                         ContainedIn=self.storey_id(storey), Location=[x0, ridge_end, z0], Length=r(xc - x0), Height=r(rise + (xc - x0) * tan),
-                         Outline=[[0, 0], [r(xc - x0), 0], [r(xc - x0), r(rise + (xc - x0) * tan)], [0, rise]])
+    @staticmethod
+    def inset(roof, orient, fixed, thickness):
+        """Centreline of a wall whose outer face is flush with the roof edge at `fixed`: half a thickness towards the roof's middle."""
+        centre = sum(c[1 if orient == "x" else 0] for c in roof["corners"]) / len(roof["corners"])
+        return r(fixed + (thickness / 2.0 if centre > fixed else -thickness / 2.0))
+
+    def roof_walls(self, roof, specs):
+        """Parapets under the eaves (`parapet`: edge numbers), and a wall under every sloped edge, up to the roof surface.
+        Edge i runs from corner i to corner i + 1. Where another roof meets an edge there is no wall below that roof's surface."""
+        storey, rise, material = roof["storey"], roof.get("wall_height", 0.0), roof.get("wall", "aac")
+        z0 = self.elevation(storey)
+        edges = self.edges(roof)
+        for i in roof.get("parapet", []):
+            (xa, ya, _), (xb, yb, _) = edges[i]
+            orient, fixed, a, b = ("x", ya, min(xa, xb), max(xa, xb)) if ya == yb else ("y", xa, min(ya, yb), max(ya, yb))
+            self.wall_run(storey, orient, self.inset(roof, orient, fixed, WALL_THICKNESS[material]), material, a, b, [], height=rise, owner=roof["id"])
+        others = [(o, e) for o in specs if o is not roof and o["storey"] == storey for e in self.edges(o)]
+        for i, (A, B) in enumerate(edges):
+            if A[:2] == B[:2] or (A[2] == 0 and B[2] == 0):
+                continue  # the eaves line: only the parapets stand there
+            axis_aligned = A[1] == B[1] or A[0] == B[0]
+            if not axis_aligned:
+                assert any({tuple(map(r, A)), tuple(map(r, B))} == {tuple(map(r, P)), tuple(map(r, Q))} for _, (P, Q) in others), \
+                    f"{roof['id']}: the sloped edge {i} needs the neighbouring roof's edge to meet it"
+                continue  # a hip or valley between two slopes needs no wall
+            choice = roof.get("edge_walls", {}).get(str(i), {})
+            if choice is None:
+                continue
+            self.edge_wall(roof, i, A, B, z0, rise, choice.get("wall", material), choice.get("doors", []), others)
+
+    def edge_wall(self, roof, i, A, B, z0, rise, material, doors, others):
+        orient = "x" if A[1] == B[1] else "y"
+        k, f = (0, 1) if orient == "x" else (1, 0)  # k: the coordinate along the edge, f: the one that stays fixed
+        (ua, za), (ub, zb), fixed = (A[k], A[2]), (B[k], B[2]), A[f]
+        if ua > ub:
+            (ua, za), (ub, zb) = (ub, zb), (ua, za)
+
+        top = lambda u: rise + za + (zb - za) * (u - ua) / (ub - ua)
+        covers = []  # (from, to, surface height) of each roof edge lying on this edge's line
+        for o, (P, Q) in others:
+            if P[f] != fixed or Q[f] != fixed or (P[k] == Q[k]):
+                continue
+            (pa, pz), (pb, pz2) = ((P[k], P[2]), (Q[k], Q[2])) if P[k] < Q[k] else ((Q[k], Q[2]), (P[k], P[2]))
+            lo, hi = max(pa, ua), min(pb, ub)
+            if hi - lo > 1e-9:
+                orise = o.get("wall_height", 0.0)
+                covers.append((lo, hi, (lambda u, pa=pa, pz=pz, pb=pb, pz2=pz2, orise=orise: orise + pz + (pz2 - pz) * (u - pa) / (pb - pa))))
+        tw = WALL_THICKNESS[material]
+        centre = self.inset(roof, orient, fixed, tw)
+        if doors:
+            assert not covers and za == zb, f"{roof['id']}: doors only fit in a level wall that no other roof touches"
+            self.wall_run(roof["storey"], orient, centre, material, ua, ub, [(d["from"], d["to"], d.get("height", DOOR_HEIGHT)) for d in doors],
+                          height=r(rise + za), owner=roof["id"])
+            return
+
+        xs = {ua, ub} | {v for a, b, _ in covers for v in (a, b)}
+        for a, b, g in covers:  # where the slope crosses the surface of a neighbour
+            inside = sorted(v for v in xs if a <= v <= b)
+            for p, q in zip(inside, inside[1:]):
+                d0, d1 = top(p) - g(p), top(q) - g(q)
+                if d0 * d1 < -1e-12:
+                    xs.add(p + (q - p) * d0 / (d0 - d1))
+        xs = sorted(xs)
+
+        def below(u0, u1):  # the neighbour surface under the stretch u0..u1, or None
+            mid = (u0 + u1) / 2.0
+            found = [g for a, b, g in covers if a <= mid <= b]
+            return max(found, key=lambda g: g(mid)) if found else None
+
+        runs, run = [], []  # a run is a list of (u0, lower0, u1, lower1) that join up
+        for u0, u1 in zip(xs, xs[1:]):
+            g = below(u0, u1)
+            l0, l1 = (g(u0), g(u1)) if g else (0.0, 0.0)
+            if top(u0) - l0 < 1e-9 and top(u1) - l1 < 1e-9:  # nothing above the neighbour here
+                if run:
+                    runs.append(run)
+                run = []
+                continue
+            l0, l1 = min(l0, top(u0)), min(l1, top(u1))
+            if run and abs(run[-1][3] - l0) > 1e-9:
+                runs.append(run)
+                run = []
+            run.append((u0, l0, u1, l1))
+        if run:
+            runs.append(run)
+        for n, run in enumerate(runs, 1):
+            start, end = run[0][0], run[-1][2]
+            lower = [[r(run[0][0] - start), r(run[0][1])]] + [[r(s[2] - start), r(s[3])] for s in run]
+            upper = [[r(run[0][0] - start), r(top(run[0][0]))]] + [[r(s[2] - start), r(top(s[2]))] for s in run]
+            outline = lower + upper[::-1]
+            outline = [p for j, p in enumerate(outline) if p != outline[j - 1]]
+            node = dict(id=f"{roof['id']}_wall_{i}_{n}", type="IfcWall", IsTypedBy=WALL_TYPES[material], ContainedIn=self.storey_id(roof["storey"]))
+            node["Location"] = [r(start), centre, z0] if orient == "x" else [centre, r(start), z0]
+            if orient == "y":
+                node["RefDirection"] = [0.0, 1.0, 0.0]
+            node.update(Length=r(end - start), Height=r(max(p[1] for p in outline)), Outline=outline)
+            self.nodes.append(node)
 
     # ---- beams: they end on the face of a column, or (secondary) on the web of a main beam ------
     def beams(self):
@@ -246,7 +358,7 @@ class Design:
 
     def build(self):
         self.header()
-        for step in (self.slabs, self.stairs, self.walls, self.columns, self.beams, self.roofs):
+        for step in (self.slabs, self.stairs, self.walls, self.columns, self.beams, self.roofs, self.tanks, self.pipes):
             step()
         return self.nodes
 

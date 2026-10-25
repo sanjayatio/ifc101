@@ -57,8 +57,8 @@ Units and geometric contexts are supplied by the IFC template (metres, degrees).
 | `Description` | O | |
 | `HasProperties` | **M** | Object of `name: value`. Each entry is an `IfcPropertySingleValue` (`Name` **M**, `NominalValue` O). JSON booleans, numbers and strings become `IfcBoolean`, `IfcReal` and `IfcLabel`. |
 
-Any set is carried into the IFC model as given. The generator also **reads** these two sets, so the properties are required where an element uses them:
-- `Custom_HipRoof` (on an `IfcRoof`): `PitchAngle` (degrees, default 30) and `PanelMaterial_<Side>` / `PanelMaterial_Default` (`metal` or `polycarbonate`; sides are `South`, `East`, `North`, `West`). Optional `GableSide` (`South`) replaces that side's hip with a vertical gable end: the ridge runs to that edge and the side gets no panel. Optional `WestRun` (metres, needs `GableSide`) stops the west slope that far west of the ridge, from the south edge to where the ridge ends.
+Any set is carried into the IFC model as given (for instance `Custom_WallFrame`, which describes the steel frame behind a polycarbonate wall). The generator also **reads** these two sets, so the properties are required where an element uses them:
+- `Custom_Roof` (on an `IfcRoof`): `PanelMaterial_Default` (`metal` or `polycarbonate`), the material of the roof's panel.
 - `Custom_StairFlight` (on an `IfcStairFlightType`): `Width`, `TreadThickness`, `RiserHeightMin`, `RiserHeightMax` (metres).
 
 ---
@@ -71,7 +71,7 @@ All types: `id` **M**, `Name` O, `Description` O, `PredefinedType` **M**, `HasPr
 |---|---|---|
 | `IfcBeamType` | `BEAM` (also `JOIST`, `LINTEL`, `T_BEAM`, ...) | `Profile` **M**, `Material` **M** |
 | `IfcColumnType` | `COLUMN` (also `PILASTER`) | `Profile` **M**, `Material` **M** |
-| `IfcWallType` | `STANDARD` (also `PARTITIONING`, `SHEAR`, `PARAPET`, ...) | `MaterialLayers` **M** |
+| `IfcWallType` | `STANDARD`, `ELEMENTEDWALL` (framed wall with infill; also `PARTITIONING`, `SHEAR`, `PARAPET`, ...) | `MaterialLayers` **M** |
 | `IfcSlabType` | `FLOOR`, `LANDING` (also `ROOF`, `BASESLAB`) | `MaterialLayers` **M** |
 | `IfcStairFlightType` | `STRAIGHT` (also `WINDER`, `SPIRAL`, `CURVED`) | none |
 
@@ -101,7 +101,9 @@ All of these take `id`, `type`, `Name`, `Location`, `RefDirection`, `Decomposes`
 | `IfcSlab` | `OuterCurve` **M** | Closed polyline `[[x, y], ...]` (the first point is repeated automatically). Thickness comes from the type. `Location.z` is the slab underside. |
 | `IfcBeam` | `Length` **M** | Section from the type. `Location` is the start of the underside centreline. |
 | `IfcColumn` | `Length` **M** | Section from the type. `Location` is the centre of the base, extruded up. |
-| `IfcRoof` | `OuterCurve` **M**, `HasPropertySets` **M** (`Custom_HipRoof`) | `PredefinedType` `HIP_ROOF`. `Location.z` is the eave height. Only the bounding rectangle of `OuterCurve` is used. Panels are generated and aggregated into the roof. |
+| `IfcRoof` | `OuterCurve` **M**, `HasPropertySets` **M** (`Custom_Roof`) | One sloped panel over 3 or 4 corners. `OuterCurve` is a list of `[x, y, z]` corners, where z is the rise above the eaves; a fourth corner must lie in the plane of the first three. `PredefinedType` `SHED_ROOF`. `Location.z` is the eave height. A roof that needs several slopes is several `IfcRoof`s sharing corners. |
+| `IfcTank` | `OuterCurve` **M**, `Height` **M** (*JSON*) | `PredefinedType` `STORAGE`. A solid box extruded up from `Location.z`; the interior is not modelled. |
+| `IfcPipeSegment` | `Direction` **M**, `Length` **M**, `Diameter` **M** (*JSON*) | `PredefinedType` `RIGIDSEGMENT` or `GUTTER` (a gutter is still drawn as a round pipe). A straight round pipe that starts at `Location` and runs `Length` along the unit vector `Direction`. |
 | `IfcStair` | none | Container only (no geometry). `PredefinedType` e.g. `TWO_STRAIGHT_RUN_STAIR`. Its flights and landing slabs `Decomposes` into it. |
 | `IfcStairFlight` | `Rise` **M**, `Run` **M** (*JSON*) | `Rise` is the total height gained, `Run` the horizontal length (metres). The generator derives the `IfcStairFlight` attributes `NumberOfRisers`, `NumberOfTreads`, `RiserHeight` and `TreadLength` from them: risers = `ceil(Rise / RiserHeightMax)` (fewest steps), `RiserHeight` = `Rise / risers`, treads = risers − 1, `TreadLength` = `Run / treads`. It fails if `RiserHeight` would fall below `RiserHeightMin`. `Width`, `TreadThickness`, `RiserHeightMin` and `RiserHeightMax` come from the type's `Custom_StairFlight`. `Location` is the centre of the flight's width at its lower start. The flight runs `NumberOfTreads × TreadLength` along `RefDirection`, and the width spreads equally to both sides. The top of the flight is at `Location.z + NumberOfRisers × RiserHeight`, which is where the next landing's top surface should be. |
 

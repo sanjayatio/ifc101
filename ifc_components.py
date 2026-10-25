@@ -1,5 +1,5 @@
 import math
-from ifc_roof import hip_panels, build_panel
+from ifc_roof import roof_panel, build_panel
 from ifc_utils import (guid_for, point, direction, extrude_up, body_shape,
                        axis_placement_3d, get_material, plain_material, assign_material, style_item)
 
@@ -37,7 +37,7 @@ def _style_solid(model, solid, material_name):
 
 def _product(scene, node, placement, shape=None, **attrs):
     return scene.model.create_entity(node["type"], GlobalId=guid_for(node["id"]), Name=node.get("Name"),
-        PredefinedType=node.get("PredefinedType"), ObjectPlacement=placement, Representation=shape, **attrs)
+        Description=node.get("Description"), PredefinedType=node.get("PredefinedType"), ObjectPlacement=placement, Representation=shape, **attrs)
 
 
 def _i_profile(model, spec, y_offset=0.0):
@@ -82,33 +82,46 @@ def build_plain_type(scene, node):
 
 # ---- occurrences ---------------------------------------------------------------
 
-def build_slab(scene, node, placement):
-    model = scene.model
-    pts = [list(p) for p in node["OuterCurve"]]
+def _outline_profile(model, outline):
+    pts = [list(p) for p in outline]
     if pts[0] != pts[-1]:
         pts.append(pts[0])
     ifc_pts = [point(model, float(p[0]), float(p[1])) for p in pts]
-    prof = model.create_entity("IfcArbitraryClosedProfileDef", ProfileType="AREA", OuterCurve=model.create_entity("IfcPolyline", Points=ifc_pts))
-    solid = extrude_up(model, prof, _thickness(_type_of(scene, node)))
+    return model.create_entity("IfcArbitraryClosedProfileDef", ProfileType="AREA", OuterCurve=model.create_entity("IfcPolyline", Points=ifc_pts))
+
+
+def build_slab(scene, node, placement):
+    model = scene.model
+    solid = extrude_up(model, _outline_profile(model, node["OuterCurve"]), _thickness(_type_of(scene, node)))
+    return _product(scene, node, placement, body_shape(model, scene.context, "SweptSolid", [solid]))
+
+
+def build_tank(scene, node, placement):
+    """Solid box of the outline's shape, `Height` tall; `Location.z` is its base. The hollow interior is not modelled."""
+    model = scene.model
+    solid = extrude_up(model, _outline_profile(model, node["OuterCurve"]), node["Height"])
+    return _product(scene, node, placement, body_shape(model, scene.context, "SweptSolid", [solid]))
+
+
+def build_pipe_segment(scene, node, placement):
+    """Straight round pipe: starts at `Location`, runs `Length` along the unit vector `Direction`."""
+    model = scene.model
+    dx, dy, dz = node["Direction"]
+    ref = (-dy, dx, 0.0) if abs(dz) < 0.9 else (1.0, 0.0, 0.0)  # any vector across the pipe
+    prof = model.create_entity("IfcCircleProfileDef", ProfileType="AREA", Radius=node["Diameter"] / 2.0)
+    solid = model.create_entity("IfcExtrudedAreaSolid", SweptArea=prof, Position=axis_placement_3d(model, axis=(dx, dy, dz), ref_direction=ref),
+        ExtrudedDirection=direction(model, 0.0, 0.0, 1.0), Depth=node["Length"])
     return _product(scene, node, placement, body_shape(model, scene.context, "SweptSolid", [solid]))
 
 
 def build_roof(scene, node, placement):
-    """Hip roof assembled from per-side panels. Pitch and per-side panel materials come from the
-    roof's property set (`PitchAngle`, `PanelMaterial_<Side>` / `PanelMaterial_Default`)."""
+    """One sloped panel over the 3 or 4 corners of `OuterCurve`, each (x, y, z) with z the rise above the eaves (`Location.z`).
+    The panel material comes from the roof's property set (`PanelMaterial_Default`)."""
     model = scene.model
-    pts = node["OuterCurve"]
-    xs, ys = [float(p[0]) for p in pts], [float(p[1]) for p in pts]
-    props = _properties(scene, node)
-    gable = props.get("GableSide")
-    panels = hip_panels(min(xs), min(ys), max(xs), max(ys), float(props.get("PitchAngle", 30.0)),
-                        gable.lower() if gable else None, props.get("WestRun"))
-    default = props.get("PanelMaterial_Default", "polycarbonate")
-
+    verts = roof_panel(node["OuterCurve"])
+    material_name = _properties(scene, node).get("PanelMaterial_Default", "polycarbonate")
     roof = _product(scene, node, placement)
-    for side, verts in panels.items():
-        material_name = props.get(f"PanelMaterial_{side.capitalize()}", default)
-        build_panel(model, scene.context, placement, roof, f"{node['id']}_{side}", verts, material_name)
+    build_panel(model, scene.context, placement, roof, node["id"], verts, material_name)
     return roof
 
 
@@ -192,6 +205,8 @@ BUILDERS = {
     "IfcStair": build_stair,
     "IfcStairFlight": build_stair_flight,
     "IfcRoof": build_roof,
+    "IfcTank": build_tank,
+    "IfcPipeSegment": build_pipe_segment,
 }
 
 TYPE_BUILDERS = {

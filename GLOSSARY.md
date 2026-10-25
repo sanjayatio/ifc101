@@ -82,7 +82,7 @@ Dimensions in metres unless noted.
 | **KalsiFloor** (fibre cement board) | Rejected | Brittle: it cracks or breaks suddenly instead of bending like a metal plate. |
 | **Diamond steel plate** (checker plate) | Decided | Solid slab for the roof-level cover and room slabs, chosen for privacy. Raised pattern gives grip. It can rust if water is trapped on it, e.g. under carpet. |
 | **Packed dirt** | Decided | Cheap ground slab for the garage. |
-| **Raised tile** | Decided | Tile on pedestals for the `slab_watch` floor; the gap lets water drain below. |
+| **Raised tile** | Superseded | Tile on pedestals for the `slab_watch` floor; replaced by tiles laid on lean concrete. |
 | **Waterproofed steel deck** | Decided | Toilet and bath slabs. Steel plate with a sealed waterproof membrane; lighter than concrete, which matters on the toilet cantilever. |
 | **Steel grate** | Decided | Floor base for upper storeys. Secondary overlay panels go on top. |
 | **Red brick** | Decided | Ground-floor walls. They are load-bearing. Heavy, with a density of about 1,600–2,000 kg/m³. |

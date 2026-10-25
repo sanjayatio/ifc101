@@ -116,6 +116,10 @@
       "Name": "Floor_100_diamond_plate", "MaterialLayers": [{"Material": "Diamond Steel Plate", "LayerThickness": 0.1}]
     },
     {
+      "id": "slab_type_floor_100_lean_concrete_tiled", "type": "IfcSlabType", "PredefinedType": "FLOOR",
+      "Name": "Floor_100_lean_concrete_tiled", "MaterialLayers": [{"Material": "Lean Concrete + Wiremesh M5", "LayerThickness": 0.08}, {"Material": "Floor Tile", "LayerThickness": 0.02}]
+    },
+    {
       "id": "slab_type_floor_100_steel_deck", "type": "IfcSlabType", "PredefinedType": "FLOOR",
       "Name": "Floor_100_steel_deck", "MaterialLayers": [{"Material": "Waterproofed Steel Deck", "LayerThickness": 0.1}]
     },
@@ -124,12 +128,8 @@
       "Name": "Floor_100_tbd", "MaterialLayers": [{"Material": "TBD (diamond plate or other)", "LayerThickness": 0.1}]
     },
     {
-      "id": "slab_type_floor_200_packed_dirt", "type": "IfcSlabType", "PredefinedType": "FLOOR",
-      "Name": "Floor_200_packed_dirt", "MaterialLayers": [{"Material": "Packed Dirt", "LayerThickness": 0.2}]
-    },
-    {
-      "id": "slab_type_floor_200_raised_tile", "type": "IfcSlabType", "PredefinedType": "FLOOR",
-      "Name": "Floor_200_raised_tile", "MaterialLayers": [{"Material": "Raised Tile", "LayerThickness": 0.2}]
+      "id": "slab_type_floor_80_lean_concrete", "type": "IfcSlabType", "PredefinedType": "FLOOR",
+      "Name": "Floor_80_lean_concrete", "MaterialLayers": [{"Material": "Lean Concrete + Wiremesh M5", "LayerThickness": 0.08}]
     },
     {
       "id": "slab_type_floor_100", "type": "IfcSlabType", "PredefinedType": "FLOOR",
@@ -148,11 +148,11 @@
       "Name": "SteelFlight"
     },
     {
-      "id": "slab_garage", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_200_packed_dirt", "ContainedIn": "storey_ground",
+      "id": "slab_garage", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_80_lean_concrete", "ContainedIn": "storey_ground",
       "Name": "Ground_Slab", "Location": [0.0, 0.0, 0.0], "OuterCurve": [[3, 0], [7, 0], [7, 7], [3, 7]]
     },
     {
-      "id": "slab_watch", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_200_raised_tile", "ContainedIn": "storey_ground",
+      "id": "slab_watch", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100_lean_concrete_tiled", "ContainedIn": "storey_ground",
       "Name": "Watch_Slab", "Location": [0.0, 0.0, 0.0], "OuterCurve": [[-0.5, 4.5], [-0.5, 7], [3, 7], [3, 4.5]]
     },
     {

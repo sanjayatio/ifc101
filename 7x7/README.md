@@ -31,8 +31,8 @@ Each slab can set a `material`, which becomes its own slab type and a surface co
 
 | Slab | Material | Colour | Status | Notes |
 |---|---|---|---|---|
-| `slab_garage` | Packed dirt | brown | Decided | Or any other cheap fill. |
-| `slab_watch` | Raised tile | terracotta | Decided | Tile on pedestals, so the 200 mm build-up is mostly air. |
+| `slab_garage` | Lean concrete with wiremesh M5, 80 mm | grey | Decided | Thickness is 80 mm (`floor_80`), down from the 200 mm packed-dirt fill. |
+| `slab_watch` | Lean concrete with wiremesh M5, 80 mm, with tiles on top | terracotta | Decided | Same concrete as `slab_garage` plus a 20 mm tile and adhesive layer (assumed), 100 mm in all. Replaces the raised tile on pedestals. |
 | `slab_room` | TBD | amber | Open | Diamond steel plate is a candidate, but a carpet on it would hold spilled water and promote rust. Other options: grate with a tile or vinyl overlay, or a sealed deck. |
 | `slab_toilet`, `slab_bath` | Waterproofed steel deck | teal | Decided | One material for both. Chosen over concrete, which at 100 mm is about 240 kg/m² and heavy on the toilet cantilever. Needs a sealed membrane and upstands at the walls. |
 | `slab_cover`, `slab_room_roof` | Diamond steel plate | blue-grey | Decided | Solid, for privacy. |
@@ -172,7 +172,7 @@ Water
 
 ## `spec.json` reference
 
-- `slabs`: `id`, `storey`, `name`, `type` (`floor_100` or `floor_200`), `polygon`, optional `material` (`packed_dirt`, `raised_tile`, `diamond_plate`, `steel_deck` or `tbd`), optional `steel_grate`, optional `z`.
+- `slabs`: `id`, `storey`, `name`, `type` (`floor_80`, `floor_100` or `floor_200`), `polygon`, optional `material` (`lean_concrete`, `lean_concrete_tiled`, `diamond_plate`, `steel_deck` or `tbd`), optional `steel_grate`, optional `z`.
 - `rooms`: walls built around an outline. Walls shared between rooms are merged into one run.
   - `rect`: `[x0, y0, x1, y1]`, or `polygon`: an axis-aligned outline given as a point list.
   - `wall`: `brick` or `aac` (`sandwich` and `polycarbonate` also exist, used on the roof).

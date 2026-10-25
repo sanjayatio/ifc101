@@ -6,7 +6,7 @@ from ifc_utils import (guid_for, point, direction, extrude_up, body_shape,
 # Materials that carry a surface style; any other material name becomes a plain IfcMaterial.
 STYLED_MATERIALS = {"Steel_Black": (0.0, 0.0, 0.0),
                     # slab finishes, one colour each so the materials can be told apart in the viewer
-                    "Packed Dirt": (0.45, 0.32, 0.20), "Raised Tile": (0.78, 0.45, 0.30), "Diamond Steel Plate": (0.35, 0.42, 0.52),
+                    "Lean Concrete + Wiremesh M5": (0.62, 0.62, 0.60), "Floor Tile": (0.78, 0.45, 0.30), "Diamond Steel Plate": (0.35, 0.42, 0.52),
                     "Waterproofed Steel Deck": (0.30, 0.62, 0.60), "TBD (diamond plate or other)": (0.95, 0.75, 0.25)}
 
 

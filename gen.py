@@ -13,10 +13,13 @@ DEFAULT_SECTIONS = {"main": "WF_200x100", "secondary": "WF_150x75"}
 WALL_TYPES = {"brick": "wall_type_brick_100", "aac": "wall_type_aac_100", "sandwich": "wall_type_steel_sandwich_50",
               "polycarbonate": "wall_type_polycarbonate_framed"}
 WALL_THICKNESS = {"brick": 0.1, "aac": 0.1, "sandwich": 0.05, "polycarbonate": 0.016}  # the sum of each type's layers
-SLAB_TYPES = {"floor_100": "slab_type_floor_100", "floor_200": "slab_type_floor_200"}
 # Slab finish key (`material` in spec.json) -> (IfcMaterial name, colour is set in ifc_components.STYLED_MATERIALS)
-SLAB_MATERIALS = {"packed_dirt": "Packed Dirt", "raised_tile": "Raised Tile", "diamond_plate": "Diamond Steel Plate",
-                  "steel_deck": "Waterproofed Steel Deck", "tbd": "TBD (diamond plate or other)"}
+LEAN_CONCRETE = "Lean Concrete + Wiremesh M5"
+SLAB_MATERIALS = {"lean_concrete": [(LEAN_CONCRETE, 0.08)], "lean_concrete_tiled": [(LEAN_CONCRETE, 0.08), ("Floor Tile", 0.02)],
+                  "diamond_plate": [("Diamond Steel Plate", 0.1)], "steel_deck": [("Waterproofed Steel Deck", 0.1)],
+                  "tbd": [("TBD (diamond plate or other)", 0.1)]}
+SLAB_THICKNESS = {"floor_80": 0.08, "floor_100": 0.1, "floor_200": 0.2}
+SLAB_TYPES = {k: f"slab_type_{k}" for k in SLAB_THICKNESS}
 COLUMN_TYPE, COLUMN_SIZE = "column_type_hbeam_150x150", 0.15
 KNEE_POST_TYPE, KNEE_RAIL_TYPE = "column_type_knee_post", "beam_type_knee_rail"
 DOOR_HEIGHT = 2.1
@@ -116,7 +119,7 @@ class Design:
         used = sorted({(s.get("type", "floor_100"), s["material"]) for s in self.spec.get("slabs", []) if "material" in s})
         for kind, material in used:
             self.add(id=self.slab_material_type(kind, material), type="IfcSlabType", Name=f"{kind.capitalize()}_{material}", PredefinedType="FLOOR",
-                     MaterialLayers=[{"Material": SLAB_MATERIALS[material], "LayerThickness": 0.2 if kind == "floor_200" else 0.1}])
+                     MaterialLayers=[{"Material": m, "LayerThickness": t} for m, t in SLAB_MATERIALS[material]])
 
     @staticmethod
     def slab_material_type(kind, material):
@@ -152,8 +155,8 @@ class Design:
     # ---- slabs ----------------------------------------------------------------------------
     def slabs(self):
         for s in self.spec.get("slabs", []):
-            thickness = 0.2 if s.get("type", "floor_100") == "floor_200" else 0.1
             kind = s.get("type", "floor_100")
+            thickness = SLAB_THICKNESS[kind]
             type_id = self.slab_material_type(kind, s["material"]) if "material" in s else SLAB_TYPES[kind]
             node = dict(id=s["id"], type="IfcSlab", IsTypedBy=type_id, ContainedIn=self.storey_id(s["storey"]))
             if s.get("steel_grate"):

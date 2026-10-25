@@ -561,6 +561,20 @@ class Design:
                 node["RefDirection"] = [0.0, 1.0, 0.0]
             node["Length"] = r(hi - lo)
             self.nodes.append(node)
+        for support in spec.get("supports", []):
+            self.knee_support(support, spec, z0)
+
+    def knee_support(self, support, spec, z0):
+        """A free-standing frame under a high roof edge: a post at each end of the line (axis y only) standing on the `storey` floor, and a rail
+        across their tops at `height` above it. It uses the knee-wall section."""
+        assert support["axis"] == "y", f"knee support {support['id']}: only a line along y is supported"
+        at, depth, w = float(support["at"]), spec["section"]["depth"], spec["section"]["width"]
+        top, lo, hi = support["height"], float(support["from"]), float(support["to"])
+        for y in (lo, hi):
+            self.add(id=f"knee_post_{slug(r(at))}_{slug(r(y))}", type="IfcColumn", IsTypedBy=KNEE_POST_TYPE, ContainedIn=self.storey_id(spec["storey"]),
+                     Location=[r(at), r(y), z0], Length=r(top - depth))
+        self.add(id=f"knee_rail_{support['id']}", type="IfcBeam", IsTypedBy=KNEE_RAIL_TYPE, ContainedIn=self.storey_id(spec["storey"]),
+                 Location=[at, r(lo - w / 2.0), r(z0 + top - depth)], RefDirection=[0.0, 1.0, 0.0], Length=r(hi - lo + w))
 
     def rafter_posts(self, run, roof, z0):
         """No rail: a post under each rafter of `roof` where it crosses the line `at` (axis y), up to the rafter's underside.

@@ -67,11 +67,11 @@
     "runs": [
       {"id": "slant", "axis": "x", "at": 4.5, "from": 1, "to": 3, "on_beam": [[0.45, 4.5]], "roofs": ["roof_slant"]},
       {"id": "north", "axis": "x", "at": 6.5, "from": 3, "to": 6, "on_beam": [[0.2156862745098036, 6.5]], "roofs": ["roof_north_west", "roof_north_east"]},
-      {"id": "bath", "axis": "x", "at": 0, "from": 3, "to": 6, "roofs": ["roof_bath"], "tall_posts": [[3, 0, 2.17]]},
       {"id": "west", "axis": "y", "at": 0, "from": 4.5, "to": 6.5, "roofs": ["roof_west"]},
       {"id": "east_se", "axis": "y", "at": 6, "rafter_posts": "roof_south_east"},
       {"id": "east", "axis": "y", "at": 6, "from": 4.5, "to": 4.5, "on_beam": [[6, 6.126851851851852]], "roofs": ["roof_east"]}
-    ]
+    ],
+    "supports": [{"id": "south_ridge", "axis": "y", "at": 3, "from": 0, "to": 3.5, "height": 2.17}]
   },
 
   "rooms": [

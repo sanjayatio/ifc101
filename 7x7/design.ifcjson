@@ -594,18 +594,6 @@
       "Location": [0.17819, 6.5, 6.2612], "Length": 5.85931
     },
     {
-      "id": "knee_post_3_0_0_0", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
-      "Location": [3.0, 0.0, 6.0], "Length": 2.17
-    },
-    {
-      "id": "knee_post_6_0_0_0", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
-      "Location": [6.0, 0.0, 6.0], "Length": 0.48759
-    },
-    {
-      "id": "knee_rail_bath", "type": "IfcBeam", "IsTypedBy": "beam_type_knee_rail", "ContainedIn": "storey_roof",
-      "Location": [2.9625, 0.0, 6.48759], "Length": 3.075
-    },
-    {
       "id": "knee_post_0_0_4_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
       "Location": [0.0, 4.5, 6.0], "Length": 0.16649
     },
@@ -648,6 +636,18 @@
     {
       "id": "knee_rail_east", "type": "IfcBeam", "IsTypedBy": "beam_type_knee_rail", "ContainedIn": "storey_roof",
       "Location": [6.0, 4.4625, 6.48759], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.70185
+    },
+    {
+      "id": "knee_post_3_0_0_0", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [3.0, 0.0, 6.0], "Length": 2.095
+    },
+    {
+      "id": "knee_post_3_0_3_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [3.0, 3.5, 6.0], "Length": 2.095
+    },
+    {
+      "id": "knee_rail_south_ridge", "type": "IfcBeam", "IsTypedBy": "beam_type_knee_rail", "ContainedIn": "storey_roof",
+      "Location": [3.0, -0.0375, 8.095], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.575
     },
     {
       "id": "pset_roof_north_east", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}

@@ -173,7 +173,7 @@
     },
     {
       "id": "slab_room_roof", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100_diamond_plate", "ContainedIn": "storey_roof",
-      "Name": "Roof_Room_Slab", "Location": [0.0, 0.0, 5.9], "OuterCurve": [[-0.5, 7], [3, 7], [3, 3.5], [-0.5, 3.5]]
+      "Name": "Roof_Room_Slab", "Location": [0.0, 0.0, 5.9], "OuterCurve": [[-0.5, 7], [3, 7], [3, 4.5], [-0.5, 4.5]]
     },
     {
       "id": "slab_roof", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_slab_steel"],
@@ -558,8 +558,20 @@
       "Location": [6, 4.575, 5.9], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.85
     },
     {
-      "id": "knee_post_0_0_6_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
-      "Location": [0.0, 6.5, 6.0], "Length": 0.2612
+      "id": "knee_post_0_45_4_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [0.45, 4.5, 6.0], "Length": 0.36408
+    },
+    {
+      "id": "knee_post_3_0_4_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [3.0, 4.5, 6.0], "Length": 0.36408
+    },
+    {
+      "id": "knee_rail_slant", "type": "IfcBeam", "IsTypedBy": "beam_type_knee_rail", "ContainedIn": "storey_roof",
+      "Location": [0.4125, 4.5, 6.36408], "Length": 2.625
+    },
+    {
+      "id": "knee_post_0_21569_6_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [0.21569, 6.5, 6.0], "Length": 0.2612
     },
     {
       "id": "knee_post_3_0_6_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
@@ -571,19 +583,31 @@
     },
     {
       "id": "knee_rail_north", "type": "IfcBeam", "IsTypedBy": "beam_type_knee_rail", "ContainedIn": "storey_roof",
-      "Location": [-0.0375, 6.5, 6.2612], "Length": 6.075
+      "Location": [0.17819, 6.5, 6.2612], "Length": 5.85931
     },
     {
-      "id": "knee_post_0_0_4_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
-      "Location": [0.0, 4.5, 6.0], "Length": 0.2612
-    },
-    {
-      "id": "knee_rail_west", "type": "IfcBeam", "IsTypedBy": "beam_type_knee_rail", "ContainedIn": "storey_roof",
-      "Location": [0.0, 4.4625, 6.2612], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.0
+      "id": "knee_post_3_0_0_0", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [3.0, 0.0, 6.0], "Length": 2.17
     },
     {
       "id": "knee_post_6_0_0_0", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
       "Location": [6.0, 0.0, 6.0], "Length": 0.48759
+    },
+    {
+      "id": "knee_rail_bath", "type": "IfcBeam", "IsTypedBy": "beam_type_knee_rail", "ContainedIn": "storey_roof",
+      "Location": [2.9625, 0.0, 6.48759], "Length": 3.075
+    },
+    {
+      "id": "knee_post_0_0_4_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [0.0, 4.5, 6.0], "Length": 0.16649
+    },
+    {
+      "id": "knee_post_0_0_6_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [0.0, 6.5, 6.0], "Length": 0.16649
+    },
+    {
+      "id": "knee_rail_west", "type": "IfcBeam", "IsTypedBy": "beam_type_knee_rail", "ContainedIn": "storey_roof",
+      "Location": [0.0, 4.4625, 6.16649], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.075
     },
     {
       "id": "knee_post_6_0_2_0", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
@@ -594,26 +618,59 @@
       "Location": [6.0, 4.5, 6.0], "Length": 0.48759
     },
     {
+      "id": "knee_post_6_0_6_12685", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [6.0, 6.12685, 6.0], "Length": 0.48759
+    },
+    {
       "id": "knee_rail_east", "type": "IfcBeam", "IsTypedBy": "beam_type_knee_rail", "ContainedIn": "storey_roof",
-      "Location": [6.0, -0.0375, 6.48759], "RefDirection": [0.0, 1.0, 0.0], "Length": 4.575
+      "Location": [6.0, 0.0375, 6.48759], "RefDirection": [0.0, 1.0, 0.0], "Length": 6.12685
     },
     {
-      "id": "pset_roof_north", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
+      "id": "pset_roof_north_east", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
     },
     {
-      "id": "roof_north", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_north"], "PredefinedType": "SHED_ROOF",
-      "Name": "roof_north", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[7.05, 7.05, 0], [-0.55, 7.05, 0], [3, 3.5, 2.17]]
+      "id": "roof_north_east", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_north_east"], "PredefinedType": "SHED_ROOF",
+      "Name": "roof_north_east", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[7.05, 7.05, 0], [3, 7.05, 0], [3, 3.5, 2.17]]
+    },
+    {
+      "id": "roof_north_east_wall_1_1", "type": "IfcWall", "IsTypedBy": "wall_type_steel_sandwich_50", "ContainedIn": "storey_roof",
+      "Location": [3.025, 3.5, 6.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.0, "Height": 2.17, "Outline": [[0.0, 0.0], [1.0, 0.43908], [1.0, 1.55873], [0.0, 2.17]]
+    },
+    {
+      "id": "roof_north_east_wall_1_2", "type": "IfcWall", "IsTypedBy": "wall_type_steel_sandwich_50", "ContainedIn": "storey_roof",
+      "Location": [3.025, 4.5, 6.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.55, "Height": 1.55873, "Outline": [[2.55, 0.0], [0.0, 1.55873]]
+    },
+    {
+      "id": "pset_roof_north_west", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
+    },
+    {
+      "id": "roof_north_west", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_north_west"], "PredefinedType": "SHED_ROOF",
+      "Name": "roof_north_west", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[-0.55, 7.05, 0], [3, 7.05, 0], [3, 4.5, 1.55873]]
     },
     {
       "id": "pset_roof_west", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
     },
     {
       "id": "roof_west", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_west"], "PredefinedType": "SHED_ROOF",
-      "Name": "roof_west", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[-0.55, 7.05, 0], [-0.55, 3.5, 0], [3, 3.5, 2.17]]
+      "Name": "roof_west", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[-0.55, 7.05, 0], [-0.55, 4.5, 0], [3, 4.5, 1.55873]]
     },
     {
       "id": "roof_west_wall_1_1", "type": "IfcWall", "IsTypedBy": "wall_type_polycarbonate_framed", "ContainedIn": "storey_roof",
-      "Location": [-0.55, 3.508, 6.0], "Length": 3.55, "Height": 2.17, "Outline": [[3.55, 0.0], [3.55, 2.17], [0.0, 0.0]]
+      "Location": [0.45, 4.508, 6.0], "Length": 2.55, "Height": 1.55873, "Outline": [[2.55, 0.43908], [2.55, 1.55873], [0.0, 0.43908]]
+    },
+    {
+      "id": "pset_roof_slant", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
+    },
+    {
+      "id": "roof_slant", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_slant"], "PredefinedType": "SHED_ROOF",
+      "Name": "roof_slant", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[-0.55, 3.5, 0], [3.0, 3.5, 0], [3.0, 4.5, 0.43908], [0.45, 4.5, 0.43908]]
+    },
+    {
+      "id": "pset_roof_west_3", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
+    },
+    {
+      "id": "roof_west_3", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_west_3"], "PredefinedType": "SHED_ROOF",
+      "Name": "roof_west_3", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[-0.55, 3.5, 0], [-0.55, 4.5, 0], [0.45, 4.5, 0.43908]]
     },
     {
       "id": "pset_roof_east", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
@@ -631,7 +688,7 @@
     },
     {
       "id": "roof_south_east_wall_0_1", "type": "IfcWall", "IsTypedBy": "wall_type_steel_sandwich_50", "ContainedIn": "storey_roof",
-      "Location": [3, 0.025, 6.0], "Length": 3.73272, "Height": 2.17, "Outline": [[0, 0.17], [3.73272, 0.17], [0, 2.17]]
+      "Location": [3, 0.025, 6.0], "Length": 3.0, "Height": 2.17, "Outline": [[0, 0.56259], [3.0, 0.56259], [0, 2.17]]
     },
     {
       "id": "wall_roof_south_east_y3_008_1", "type": "IfcWall", "IsTypedBy": "wall_type_polycarbonate_framed", "ContainedIn": "storey_roof",
@@ -646,19 +703,26 @@
       "Location": [3.008, 2, 6.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.5, "Height": 2.17
     },
     {
-      "id": "pset_roof_2", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "metal"}
+      "id": "pset_roof_bath", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
     },
     {
-      "id": "roof_2", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_2"], "PredefinedType": "SHED_ROOF",
-      "Name": "roof_2", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[2.95, -0.65, 0], [7.05, -0.65, 0], [7.05, 0, 0.17], [2.95, 0, 0.17]]
+      "id": "roof_bath", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_bath"], "PredefinedType": "SHED_ROOF",
+      "Name": "roof_bath", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[2.95, -0.65, 0], [7.05, -0.65, 0], [6.05, 0, 0.56259], [2.95, 0, 0.56259]]
     },
     {
-      "id": "roof_2_wall_1_1", "type": "IfcWall", "IsTypedBy": "wall_type_steel_sandwich_50", "ContainedIn": "storey_roof",
-      "Location": [7.025, -0.65, 6.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 0.65, "Height": 0.17, "Outline": [[0.65, 0.0], [0.65, 0.17], [0.0, 0.0]]
+      "id": "roof_bath_wall_3_1", "type": "IfcWall", "IsTypedBy": "wall_type_steel_sandwich_50", "ContainedIn": "storey_roof",
+      "Location": [2.975, -0.65, 6.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 0.65, "Height": 0.56259, "Outline": [[0.65, 0.0], [0.65, 0.56259], [0.0, 0.0]]
     },
     {
-      "id": "roof_2_wall_3_1", "type": "IfcWall", "IsTypedBy": "wall_type_steel_sandwich_50", "ContainedIn": "storey_roof",
-      "Location": [2.975, -0.65, 6.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 0.65, "Height": 0.17, "Outline": [[0.65, 0.0], [0.65, 0.17], [0.0, 0.0]]
+      "id": "pset_roof_corner", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
+    },
+    {
+      "id": "roof_corner", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_corner"], "PredefinedType": "SHED_ROOF",
+      "Name": "roof_corner", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[7.05, -0.65, 0], [6.05, 0, 0.56259], [7.05, 0, 0]]
+    },
+    {
+      "id": "roof_corner_wall_1_1", "type": "IfcWall", "IsTypedBy": "wall_type_steel_sandwich_50", "ContainedIn": "storey_roof",
+      "Location": [6.05, -0.025, 6.0], "Length": 1.0, "Height": 0.56259, "Outline": [[0.0, 0.5358], [1.0, 0.0], [0.0, 0.56259]]
     },
     {
       "id": "tank_rain", "type": "IfcTank", "ContainedIn": "storey_ground", "PredefinedType": "STORAGE",

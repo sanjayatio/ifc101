@@ -449,6 +449,7 @@ class Design:
             axis, at = run["axis"], float(run["at"])
             k, f = (0, 1) if axis == "x" else (1, 0)  # k: the coordinate along the run, f: the one that stays fixed
             pts = sorted((c for c in columns if abs(c[f] - at) < 1e-9 and run["from"] - 1e-9 <= c[k] <= run["to"] + 1e-9), key=lambda c: c[k])
+            pts = sorted(pts + [(float(x), float(y)) for x, y in run.get("on_beam", [])], key=lambda c: c[k])  # posts that stand on a beam, between columns
             assert len(pts) >= 2, f"knee wall {run['id']}: fewer than two columns on the line"
             tops = []
             for x, y in pts:
@@ -457,13 +458,14 @@ class Design:
                 tops.append(self.surface(roof, x, y))
             assert max(tops) - min(tops) < 1e-6, f"knee wall {run['id']}: the roof is not level along the run, so a straight rail cannot follow it"
             top, height = r(tops[0]), r(tops[0] - depth)
+            tall = {(float(x), float(y)): h for x, y, h in run.get("tall_posts", [])}  # posts that carry something higher than the rail, e.g. a roof corner
             for x, y in pts:
                 if (x, y) in posts:  # a corner shared with an earlier run
                     assert abs(posts[(x, y)] - height) < 1e-6, f"knee wall {run['id']}: the post at ({x}, {y}) is already placed at another height"
                     continue
                 posts[(x, y)] = height
-                self.add(id=f"knee_post_{slug(x)}_{slug(y)}", type="IfcColumn", IsTypedBy=KNEE_POST_TYPE, ContainedIn=self.storey_id(storey),
-                         Location=[x, y, z0], Length=height)
+                self.add(id=f"knee_post_{slug(r(x))}_{slug(r(y))}", type="IfcColumn", IsTypedBy=KNEE_POST_TYPE, ContainedIn=self.storey_id(storey),
+                         Location=[r(x), r(y), z0], Length=tall.get((x, y), height))
             ends = []
             for t, sign in ((pts[0][k], -1), (pts[-1][k], 1)):
                 meets = [p for p in rails if p[0] != axis and abs(p[1] - t) < 1e-9 and p[2] - 1e-9 <= at <= p[3] + 1e-9]

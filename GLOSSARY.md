@@ -32,13 +32,13 @@ Dimensions in metres unless noted.
 | **Roof deck** | The floor under the roof (`slab_roof`), reached by the stair. |
 | **Pitch** | The roof slope, as an angle from horizontal. Here 28° to 32°, set by each roof's corners. |
 | **Eave** | The lower edge of a roof slope, where water runs off. Here at z = 6.5, on top of the roof walls. |
-| **Ridge / peak** | The top line where two slopes meet. Here the corner shared by `roof_north`, `roof_west` and `roof_east`, at (3, 3.5), also the north-west corner of `roof_south_east`. |
+| **Ridge / peak** | The top line where two slopes meet. Here the corner shared by `roof_north_east`, `roof_east` and `roof_south_east`, at (3, 3.5). |
 | **Hip roof** | A roof that slopes down on all sides, so its ends are sloped too. |
 | **Gable** | The vertical, triangular end wall under a roof's slopes. None in this design: the triangular gap under each slope is closed by an infill wall. |
-| **Lean-to / shed roof** | A roof with a single slope, leaning against a taller wall. Here `roof_south_east` (high on the west, over the stair landing) and `roof_2` (over the toilet and bathroom strip). |
-| **Hip end** | A sloped end of a roof, in place of a gable. Here the three triangles `roof_north`, `roof_west` and `roof_east`. |
+| **Lean-to / shed roof** | A roof with a single slope, leaning against a taller wall. Here `roof_south_east` (high on the west, over the stair landing) `roof_bath` (over the toilet and bathroom strip) and `roof_slant` (over the cantilevered room). |
+| **Hip end** | A sloped end of a roof, in place of a gable. Here the triangles `roof_north_east`, `roof_north_west`, `roof_west` and `roof_east`. |
 | **Parapet** | A short wall at the roof edge that the eaves sit on. It raises the eaves, so adds headroom. Supported by the generator (`parapet`), not used in the 7x7 design. |
-| **Knee wall** | A short support set back from the eaves that the roof slope rests on, with the roof overhanging past it. Here light posts on the columns plus a rail (`knee_walls`), not a solid wall. |
+| **Knee wall** | A short support set back from the eaves that the roof slope rests on, with the roof overhanging past it. Here light posts, on the columns or on a roof beam at a hip, plus a rail (`knee_walls`), not a solid wall. |
 | **Infill wall** | A wall that closes the gap between a structure and a sloped roof edge. It carries only itself. |
 | **Overhang** | Roof projecting past its last support. It has a long lever arm against wind suction, so the roof is cut at x = 3 to avoid one. |
 | **Uplift** | Upward wind suction on a roof. An open or lightweight roof can be torn off, so every connection has to hold it down. |

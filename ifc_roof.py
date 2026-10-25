@@ -6,7 +6,24 @@ from ifc_utils import (new_guid, point, create_face, add_to_storey, aggregate, i
 ROOF_MATERIALS = {
     "metal":         ((0.62, 0.65, 0.68), 0.0, 0.03),
     "polycarbonate": ((0.70, 0.88, 0.95), 0.6, 0.01),
+    # spandek: trapezoidal sheet, 30 mm wave height is the panel thickness
+    "spandek_insulated":   ((0.55, 0.60, 0.66), 0.0, 0.03),
+    "spandek_transparent": ((0.80, 0.93, 0.98), 0.6, 0.03),
 }
+
+
+def clip_strip(verts, y0, y1):
+    """The part of the panel polygon `verts` with y0 <= y <= y1 (Sutherland-Hodgman on the two y half-planes)."""
+    for keep, bound in ((lambda y: y >= y0 - 1e-12, y0), (lambda y: y <= y1 + 1e-12, y1)):
+        out = []
+        for a, b in zip(verts, verts[1:] + verts[:1]):
+            if keep(a[1]):
+                out.append(a)
+            if keep(a[1]) != keep(b[1]):
+                t = (bound - a[1]) / (b[1] - a[1])
+                out.append(tuple(a[i] + t * (b[i] - a[i]) for i in range(3)))
+        verts = out
+    return verts
 
 
 # ---- panel shape ---------------------------------------------------------------

@@ -66,6 +66,14 @@
       "Name": "RHS_75x75x3", "Description": "Light hollow section for the knee wall under the roof edge; carries the roof ribbing, not a primary frame", "Material": "Steel_Black", "Profile": {"type": "IfcRectangleHollowProfileDef", "XDim": 0.075, "YDim": 0.075, "WallThickness": 0.003}
     },
     {
+      "id": "beam_type_rafter_roof_south_east", "type": "IfcBeamType", "PredefinedType": "BEAM",
+      "Name": "RHS_50x100x2.3", "Material": "Steel_Black", "Profile": {"type": "IfcRectangleHollowProfileDef", "XDim": 0.05, "YDim": 0.1, "WallThickness": 0.0023}, "Description": "Rafter of roof_south_east: light hollow section, size is a placeholder until the roof loads are checked"
+    },
+    {
+      "id": "beam_type_purlin_roof_south_east", "type": "IfcBeamType", "PredefinedType": "BEAM",
+      "Name": "RHS_40x60x2.3", "Material": "Steel_Black", "Profile": {"type": "IfcRectangleHollowProfileDef", "XDim": 0.04, "YDim": 0.06, "WallThickness": 0.0023}, "Description": "Purlin of roof_south_east: light hollow section, size is a placeholder until the roof loads are checked"
+    },
+    {
       "id": "wall_type_brick_100", "type": "IfcWallType", "HasPropertySets": ["pset_wall_ground_common", "pset_wall_ground_decision"], "PredefinedType": "STANDARD",
       "Name": "RedBrick_100", "Description": "Ground floor load-bearing red brick masonry", "MaterialLayers": [{"Material": "Red Brick", "LayerThickness": 0.1}]
     },
@@ -610,8 +618,24 @@
       "Location": [0.0, 4.4625, 6.16649], "RefDirection": [0.0, 1.0, 0.0], "Length": 2.075
     },
     {
+      "id": "knee_post_6_0_0_1", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [6.0, 0.1, 6.0], "Length": 0.38107
+    },
+    {
+      "id": "knee_post_6_0_1_0", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [6.0, 1.0, 6.0], "Length": 0.38107
+    },
+    {
       "id": "knee_post_6_0_2_0", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
-      "Location": [6.0, 2.0, 6.0], "Length": 0.48759
+      "Location": [6.0, 2.0, 6.0], "Length": 0.38107
+    },
+    {
+      "id": "knee_post_6_0_3_0", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [6.0, 3.0, 6.0], "Length": 0.38107
+    },
+    {
+      "id": "knee_post_6_0_3_4", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
+      "Location": [6.0, 3.4, 6.0], "Length": 0.38107
     },
     {
       "id": "knee_post_6_0_4_5", "type": "IfcColumn", "IsTypedBy": "column_type_knee_post", "ContainedIn": "storey_roof",
@@ -623,7 +647,7 @@
     },
     {
       "id": "knee_rail_east", "type": "IfcBeam", "IsTypedBy": "beam_type_knee_rail", "ContainedIn": "storey_roof",
-      "Location": [6.0, 0.0375, 6.48759], "RefDirection": [0.0, 1.0, 0.0], "Length": 6.12685
+      "Location": [6.0, 4.4625, 6.48759], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.70185
     },
     {
       "id": "pset_roof_north_east", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
@@ -680,11 +704,11 @@
       "Name": "roof_east", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[3, 3.5, 2.17], [7.05, 3.5, 0], [7.05, 7.05, 0]]
     },
     {
-      "id": "pset_roof_south_east", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}
+      "id": "pset_roof_south_east", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "spandek_insulated"}
     },
     {
       "id": "roof_south_east", "type": "IfcRoof", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_roof_south_east"], "PredefinedType": "SHED_ROOF",
-      "Name": "roof_south_east", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[3, 0, 2.17], [7.05, 0, 0], [7.05, 3.5, 0], [3, 3.5, 2.17]]
+      "Name": "roof_south_east", "Description": "One sloped panel; the corner z is the rise above the eaves, which stand 0.0 m above the roof slab, on the walls below", "Location": [0.0, 0.0, 6.0], "OuterCurve": [[3, 0, 2.17], [7.05, 0, 0], [7.05, 3.5, 0], [3, 3.5, 2.17]], "Strips": [[0, 0.5, "spandek_insulated"], [0.5, 1.5, "spandek_transparent"], [1.5, 2.0, "spandek_insulated"], [2.0, 3.0, "spandek_transparent"], [3.0, 3.5, "spandek_insulated"]]
     },
     {
       "id": "roof_south_east_wall_0_1", "type": "IfcWall", "IsTypedBy": "wall_type_steel_sandwich_50", "ContainedIn": "storey_roof",
@@ -701,6 +725,54 @@
     {
       "id": "wall_roof_south_east_y3_008_3", "type": "IfcWall", "IsTypedBy": "wall_type_polycarbonate_framed", "ContainedIn": "storey_roof",
       "Location": [3.008, 2, 6.0], "RefDirection": [0.0, 1.0, 0.0], "Length": 1.5, "Height": 2.17
+    },
+    {
+      "id": "roof_south_east_rafter_0", "type": "IfcBeam", "IsTypedBy": "beam_type_rafter_roof_south_east", "ContainedIn": "storey_roof",
+      "Location": [2.97443, 0.1, 8.00218], "Direction": [0.881447613, 0.0, -0.472281807], "Length": 4.53799
+    },
+    {
+      "id": "roof_south_east_rafter_1", "type": "IfcBeam", "IsTypedBy": "beam_type_rafter_roof_south_east", "ContainedIn": "storey_roof",
+      "Location": [2.97443, 1.0, 8.00218], "Direction": [0.881447613, 0.0, -0.472281807], "Length": 4.53799
+    },
+    {
+      "id": "roof_south_east_rafter_2", "type": "IfcBeam", "IsTypedBy": "beam_type_rafter_roof_south_east", "ContainedIn": "storey_roof",
+      "Location": [2.97443, 2.0, 8.00218], "Direction": [0.881447613, 0.0, -0.472281807], "Length": 4.53799
+    },
+    {
+      "id": "roof_south_east_rafter_3", "type": "IfcBeam", "IsTypedBy": "beam_type_rafter_roof_south_east", "ContainedIn": "storey_roof",
+      "Location": [2.97443, 3.0, 8.00218], "Direction": [0.881447613, 0.0, -0.472281807], "Length": 4.53799
+    },
+    {
+      "id": "roof_south_east_rafter_4", "type": "IfcBeam", "IsTypedBy": "beam_type_rafter_roof_south_east", "ContainedIn": "storey_roof",
+      "Location": [2.97443, 3.4, 8.00218], "Direction": [0.881447613, 0.0, -0.472281807], "Length": 4.53799
+    },
+    {
+      "id": "roof_south_east_purlin_0", "type": "IfcBeam", "IsTypedBy": "beam_type_purlin_roof_south_east", "ContainedIn": "storey_roof",
+      "Location": [3.03583, 0.05, 8.08677], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.4
+    },
+    {
+      "id": "roof_south_east_purlin_1", "type": "IfcBeam", "IsTypedBy": "beam_type_purlin_roof_south_east", "ContainedIn": "storey_roof",
+      "Location": [3.69416, 0.05, 7.73403], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.4
+    },
+    {
+      "id": "roof_south_east_purlin_2", "type": "IfcBeam", "IsTypedBy": "beam_type_purlin_roof_south_east", "ContainedIn": "storey_roof",
+      "Location": [4.3525, 0.05, 7.38129], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.4
+    },
+    {
+      "id": "roof_south_east_purlin_3", "type": "IfcBeam", "IsTypedBy": "beam_type_purlin_roof_south_east", "ContainedIn": "storey_roof",
+      "Location": [5.01083, 0.05, 7.02856], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.4
+    },
+    {
+      "id": "roof_south_east_purlin_4", "type": "IfcBeam", "IsTypedBy": "beam_type_purlin_roof_south_east", "ContainedIn": "storey_roof",
+      "Location": [5.66916, 0.05, 6.67582], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.4
+    },
+    {
+      "id": "roof_south_east_purlin_5", "type": "IfcBeam", "IsTypedBy": "beam_type_purlin_roof_south_east", "ContainedIn": "storey_roof",
+      "Location": [6.3275, 0.05, 6.32308], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.4
+    },
+    {
+      "id": "roof_south_east_purlin_6", "type": "IfcBeam", "IsTypedBy": "beam_type_purlin_roof_south_east", "ContainedIn": "storey_roof",
+      "Location": [6.98583, 0.05, 5.97035], "RefDirection": [0.0, 1.0, 0.0], "Length": 3.4
     },
     {
       "id": "pset_roof_stairs_1", "type": "IfcPropertySet", "Name": "Custom_Roof", "HasProperties": {"PanelMaterial_Default": "polycarbonate"}

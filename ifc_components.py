@@ -1,5 +1,5 @@
 import math
-from ifc_roof import roof_panel, build_panel
+from ifc_roof import roof_panel, build_panel, clip_strip
 from ifc_utils import (guid_for, point, direction, extrude_up, body_shape,
                        axis_placement_3d, get_material, plain_material, assign_material, style_item)
 
@@ -133,12 +133,17 @@ def build_pipe_segment(scene, node, placement):
 
 def build_roof(scene, node, placement):
     """One sloped panel over the 3 or 4 corners of `OuterCurve`, each (x, y, z) with z the rise above the eaves (`Location.z`).
-    The panel material comes from the roof's property set (`PanelMaterial_Default`)."""
+    The panel material comes from the roof's property set (`PanelMaterial_Default`). `Strips` ([y0, y1, material] each) cuts the
+    panel into cladding strips across y, one panel per strip."""
     model = scene.model
     verts = roof_panel(node["OuterCurve"])
     material_name = _properties(scene, node).get("PanelMaterial_Default", "polycarbonate")
     roof = _product(scene, node, placement)
-    build_panel(model, scene.context, placement, roof, node["id"], verts, material_name)
+    if node.get("Strips"):
+        for i, (y0, y1, strip_material) in enumerate(node["Strips"]):
+            build_panel(model, scene.context, placement, roof, f"{node['id']}_strip{i}", clip_strip(verts, y0, y1), strip_material)
+    else:
+        build_panel(model, scene.context, placement, roof, node["id"], verts, material_name)
     return roof
 
 
@@ -205,13 +210,14 @@ def build_column(scene, node, placement):
 
 
 def build_beam(scene, node, placement):
-    """Horizontal section; Location is the start of its underside centreline, running `Length` along local X."""
+    """Section; Location is the start of its underside centreline, running `Length` along local X, or along `Direction` (a unit
+    vector in the x-z plane, for a member that follows a roof slope; its profile depth then stands square to the slope)."""
     model = scene.model
     type_node = _type_of(scene, node)
     spec = type_node["Profile"]
     prof = _profile(model, spec, y_offset=_profile_depth(spec) / 2.0)
     # profile X -> world Y, profile Y -> world Z, extrusion (local Z) -> world X
-    position = axis_placement_3d(model, axis=(1.0, 0.0, 0.0), ref_direction=(0.0, 1.0, 0.0))
+    position = axis_placement_3d(model, axis=tuple(node.get("Direction", (1.0, 0.0, 0.0))), ref_direction=(0.0, 1.0, 0.0))
     solid = model.create_entity("IfcExtrudedAreaSolid", SweptArea=prof, Position=position,
         ExtrudedDirection=direction(model, 0.0, 0.0, 1.0), Depth=node["Length"])
     _style_solid(model, solid, type_node["Material"])

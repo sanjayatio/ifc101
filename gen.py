@@ -79,6 +79,12 @@ class Design:
             description = "Light hollow section for the knee wall under the roof edge; carries the roof ribbing, not a primary frame"
             add(id=KNEE_POST_TYPE, type="IfcColumnType", Name=name, Description=description, PredefinedType="COLUMN", Material="Steel_Black", Profile=profile)
             add(id=KNEE_RAIL_TYPE, type="IfcBeamType", Name=name, Description=description, PredefinedType="BEAM", Material="Steel_Black", Profile=profile)
+        for roof in self.spec.get("roofs", []):
+            for kind, s in (roof.get("frame") or {}).items():
+                profile = {"type": "IfcRectangleHollowProfileDef", "XDim": s["width"], "YDim": s["depth"], "WallThickness": s["thickness"]}
+                name = "RHS_{}x{}x{:g}".format(round(s["width"] * 1000), round(s["depth"] * 1000), round(s["thickness"] * 1000, 1))
+                add(id=f"beam_type_{kind}_{roof['id']}", type="IfcBeamType", Name=name, PredefinedType="BEAM", Material="Steel_Black", Profile=profile,
+                    Description=f"{kind.capitalize()} of {roof['id']}: light hollow section, size is a placeholder until the roof loads are checked")
         add(id="wall_type_brick_100", type="IfcWallType", Name="RedBrick_100", PredefinedType="STANDARD",
             Description="Ground floor load-bearing red brick masonry", MaterialLayers=[{"Material": "Red Brick", "LayerThickness": 0.1}],
             HasPropertySets=["pset_wall_ground_common", "pset_wall_ground_decision"])
@@ -311,8 +317,76 @@ class Design:
             self.add(id=roof["id"], type="IfcRoof", Name=roof["id"], PredefinedType="SHED_ROOF", ContainedIn=self.storey_id(storey),
                      Description=f"One sloped panel; the corner z is the rise above the eaves, which stand {rise} m above the roof slab, on the walls below",
                      HasPropertySets=[pset], Location=[0.0, 0.0, r(self.elevation(storey) + rise)],
-                     OuterCurve=[[r(x), r(y), r(z)] for x, y, z in corners])
+                     OuterCurve=[[r(x), r(y), r(z)] for x, y, z in corners], Strips=self.strips(roof))
             self.roof_walls(roof, specs)
+            self.roof_frame(roof)
+
+    @staticmethod
+    def strips(roof):
+        """`cladding`: panels laid side by side across y from the roof's south edge, `[{panel, width}]`; returns [y0, y1, panel] each."""
+        cladding = roof.get("cladding")
+        if not cladding:
+            return None
+        y = lo = min(c[1] for c in roof["corners"])
+        out = []
+        for strip in cladding:
+            out.append([r(y), r(y + strip["width"]), strip["panel"]])
+            y += strip["width"]
+        assert abs(y - max(c[1] for c in roof["corners"])) < 1e-9, f"{roof['id']}: the cladding widths add up to {r(y - lo)} m, not the roof's span"
+        return out
+
+    def frame_geometry(self, roof):
+        """Slope of a roof that falls along x: (cos, slope) with slope = dz/dx. The plane must not fall along y."""
+        xs, ys = [c[0] for c in roof["corners"]], [c[1] for c in roof["corners"]]
+        xa, xb, ya, yb = min(xs), max(xs), min(ys), max(ys)
+        assert abs(self.surface(roof, xa, yb) - self.surface(roof, xa, ya)) < 1e-9, f"{roof['id']}: the frame needs a roof that falls along x only"
+        slope = (self.surface(roof, xb, ya) - self.surface(roof, xa, ya)) / (xb - xa)
+        return 1.0 / math.sqrt(1.0 + slope * slope), slope
+
+    def frame_drop(self, roof):
+        """Vertical distance from the panel underside down to the underside of the rafter: purlin and rafter depth, measured square to the slope."""
+        cos, _ = self.frame_geometry(roof)
+        return (roof["frame"]["purlin"]["depth"] + roof["frame"]["rafter"]["depth"]) / cos
+
+    @staticmethod
+    def rafter_ys(roof):
+        """y of each rafter: one `edge_inset` in from each side edge, and every `pitch` from the south edge between them."""
+        ys, rafter = [c[1] for c in roof["corners"]], roof["frame"]["rafter"]
+        ya, yb = min(ys), max(ys)
+        inner = [ya + k * rafter["pitch"] for k in range(1, 100) if ya + k * rafter["pitch"] < yb - rafter["edge_inset"] - 1e-9]
+        return [ya + rafter["edge_inset"]] + inner + [yb - rafter["edge_inset"]]
+
+    def roof_frame(self, roof):
+        """Rafters run down the slope under the purlins, which run across it under the panels: panel, purlin, rafter, knee-wall rail.
+        Rafters sit at `pitch` along y (plus one `edge_inset` in from each side edge); purlins are spread evenly from `inset` in from
+        the high edge to `inset` in from the low edge, no further apart than `max_spacing` along the slope."""
+        frame = roof.get("frame")
+        if not frame:
+            return
+        storey, z0 = roof["storey"], self.elevation(roof["storey"])
+        cos, slope = self.frame_geometry(roof)
+        sin = -slope * cos
+        xs, ys = [c[0] for c in roof["corners"]], [c[1] for c in roof["corners"]]
+        xa, xb, ya, yb = min(xs), max(xs), min(ys), max(ys)
+        rafter, purlin = frame["rafter"], frame["purlin"]
+        pd, rd = purlin["depth"], rafter["depth"]
+        normal = (sin, 0.0, cos)  # up, square to the slope
+        x0 = xa + rafter.get("inset", 0.05)
+        for i, y in enumerate(self.rafter_ys(roof)):
+            t = pd + rd  # the rafter's underside lies this far below the panel underside, square to the slope
+            node = dict(id=f"{roof['id']}_rafter_{i}", type="IfcBeam", IsTypedBy=f"beam_type_rafter_{roof['id']}", ContainedIn=self.storey_id(storey))
+            node["Location"] = [r(x0 - t * normal[0]), r(y), r(z0 + self.surface(roof, x0, y) - t * normal[2])]
+            node.update(Direction=[round(cos, 9), 0.0, round(slope * cos, 9)], Length=r((xb - x0) / cos))
+            self.nodes.append(node)
+        p0, p1 = xa + purlin["inset"], xb - purlin["inset"]
+        n = math.ceil((p1 - p0) / cos / purlin["max_spacing"] - 1e-9)
+        for i in range(n + 1):
+            xp = p0 + i * (p1 - p0) / n
+            cx, cz = xp - pd / 2.0 * normal[0], z0 + self.surface(roof, xp, ya) - pd / 2.0 * normal[2]  # centre of the purlin, level
+            node = dict(id=f"{roof['id']}_purlin_{i}", type="IfcBeam", IsTypedBy=f"beam_type_purlin_{roof['id']}", ContainedIn=self.storey_id(storey))
+            node["Location"] = [r(cx), r(ya + purlin["inset"]), r(cz - pd / 2.0)]
+            node.update(RefDirection=[0.0, 1.0, 0.0], Length=r(yb - ya - 2 * purlin["inset"]))
+            self.nodes.append(node)
 
     @staticmethod
     def edges(roof):
@@ -448,6 +522,9 @@ class Design:
         posts, rails = {}, []  # posts: (x, y) -> height; rails: (axis, at, lo, hi, top)
         for run in spec["runs"]:
             axis, at = run["axis"], float(run["at"])
+            if "rafter_posts" in run:
+                self.rafter_posts(run, roofs[run["rafter_posts"]], z0)
+                continue
             k, f = (0, 1) if axis == "x" else (1, 0)  # k: the coordinate along the run, f: the one that stays fixed
             pts = sorted((c for c in columns if abs(c[f] - at) < 1e-9 and run["from"] - 1e-9 <= c[k] <= run["to"] + 1e-9), key=lambda c: c[k])
             pts = sorted(pts + [(float(x), float(y)) for x, y in run.get("on_beam", [])], key=lambda c: c[k])  # posts that stand on a beam, between columns
@@ -481,6 +558,16 @@ class Design:
                 node["RefDirection"] = [0.0, 1.0, 0.0]
             node["Length"] = r(hi - lo)
             self.nodes.append(node)
+
+    def rafter_posts(self, run, roof, z0):
+        """No rail: a post under each rafter of `roof` where it crosses the line `at` (axis y), up to the rafter's underside.
+        Each stands on a column or on the roof beam along the line."""
+        assert run["axis"] == "y", f"knee wall {run['id']}: rafter posts are only for a line along y"
+        at = float(run["at"])
+        for y in self.rafter_ys(roof):
+            height = r(self.surface(roof, at, y) - self.frame_drop(roof))
+            self.add(id=f"knee_post_{slug(r(at))}_{slug(r(y))}", type="IfcColumn", IsTypedBy=KNEE_POST_TYPE, ContainedIn=self.storey_id(self.spec["knee_walls"]["storey"]),
+                     Location=[r(at), r(y), z0], Length=height)
 
     # ---- beams: they end on the face of a column, or (secondary) on the web of a main beam ------
     def beam_blocks(self):

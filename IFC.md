@@ -58,7 +58,7 @@ Units and geometric contexts are supplied by the IFC template (metres, degrees).
 | `HasProperties` | **M** | Object of `name: value`. Each entry is an `IfcPropertySingleValue` (`Name` **M**, `NominalValue` O). JSON booleans, numbers and strings become `IfcBoolean`, `IfcReal` and `IfcLabel`. |
 
 Any set is carried into the IFC model as given (for instance `Custom_WallFrame`, which describes the steel frame behind a polycarbonate wall). The generator also **reads** these two sets, so the properties are required where an element uses them:
-- `Custom_Roof` (on an `IfcRoof`): `PanelMaterial_Default` (`metal` or `polycarbonate`), the material of the roof's panel.
+- `Custom_Roof` (on an `IfcRoof`): `PanelMaterial_Default` (`metal`, `polycarbonate`, `spandek_insulated` or `spandek_transparent`), the material of the roof's panel.
 - `Custom_StairFlight` (on an `IfcStairFlightType`): `Width`, `TreadThickness`, `RiserHeightMin`, `RiserHeightMax` (metres).
 
 ---
@@ -104,9 +104,9 @@ All of these take `id`, `type`, `Name`, `Location`, `RefDirection`, `Decomposes`
 |---|---|---|
 | `IfcWall` | `Length` **M**, `Height` **M**, `Outline` O (*JSON*) | Thickness comes from the type's layers. `Location` is the start of the wall's centreline, running `Length` along local X. `Outline` is a closed polygon `[[u, z], ...]` in the wall's own plane (u along the wall, z up from `Location.z`) that replaces the rectangle, for gable ends and infill under sloped roofs. |
 | `IfcSlab` | `OuterCurve` **M** | Closed polyline `[[x, y], ...]` (the first point is repeated automatically). Thickness comes from the type. `Location.z` is the slab underside. |
-| `IfcBeam` | `Length` **M** | Section from the type. `Location` is the start of the underside centreline. |
+| `IfcBeam` | `Length` **M**, `Direction` (*JSON*) | Section from the type. `Location` is the start of the underside centreline. `Direction` is an optional unit vector (default `[1, 0, 0]`) for a member that follows a slope, such as a rafter; the section's depth then stands square to it. |
 | `IfcColumn` | `Length` **M** | Section from the type. `Location` is the centre of the base, extruded up. `RefDirection` `[0, 1, 0]` turns the section 90°. |
-| `IfcRoof` | `OuterCurve` **M**, `HasPropertySets` **M** (`Custom_Roof`) | One sloped panel over 3 or 4 corners. `OuterCurve` is a list of `[x, y, z]` corners, where z is the rise above the eaves; a fourth corner must lie in the plane of the first three. `PredefinedType` `SHED_ROOF`. `Location.z` is the eave height. A roof that needs several slopes is several `IfcRoof`s sharing corners. |
+| `IfcRoof` | `OuterCurve` **M**, `HasPropertySets` **M** (`Custom_Roof`) | One sloped panel over 3 or 4 corners. `OuterCurve` is a list of `[x, y, z]` corners, where z is the rise above the eaves; a fourth corner must lie in the plane of the first three. `PredefinedType` `SHED_ROOF`. `Location.z` is the eave height. A roof that needs several slopes is several `IfcRoof`s sharing corners. Optional `Strips` (*JSON*): a list of `[y0, y1, material]` that cuts the panel into cladding strips across y, one panel each, in place of the single panel. |
 | `IfcTank` | `OuterCurve` **M**, `Height` **M** (*JSON*) | `PredefinedType` `STORAGE`. A solid box extruded up from `Location.z`; the interior is not modelled. |
 | `IfcPipeSegment` | `Direction` **M**, `Length` **M**, `Diameter` **M** (*JSON*) | `PredefinedType` `RIGIDSEGMENT` or `GUTTER` (a gutter is still drawn as a round pipe). A straight round pipe that starts at `Location` and runs `Length` along the unit vector `Direction`. |
 | `IfcStair` | none | Container only (no geometry). `PredefinedType` e.g. `TWO_STRAIGHT_RUN_STAIR`. Its flights and landing slabs `Decomposes` into it. |

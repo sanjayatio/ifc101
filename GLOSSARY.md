@@ -38,12 +38,12 @@ Dimensions in metres unless noted.
 | **Lean-to / shed roof** | A roof with a single slope, leaning against a taller wall. Here `roof_south_east` (high on the west, over the stair landing) `roof_bath` (over the toilet and bathroom strip) and `roof_slant` (over the cantilevered room). |
 | **Hip end** | A sloped end of a roof, in place of a gable. Here the triangles `roof_north_east`, `roof_north_west`, `roof_west` and `roof_east`. |
 | **Parapet** | A short wall at the roof edge that the eaves sit on. It raises the eaves, so adds headroom. Supported by the generator (`parapet`), not used in the 7x7 design. |
-| **Knee wall** | A short support set back from the eaves that the roof slope rests on, with the roof overhanging past it. Here light posts, on the columns or on a roof beam at a hip, plus a rail (`knee_walls`), not a solid wall. |
+| **Knee wall** | A short support set back from the eaves that the roof slope rests on, with the roof overhanging past it. Here light posts, on the columns or on a roof beam at a hip, usually tied by a rail (`knee_walls`), not a solid wall. Under `roof_south_east` there is no rail: one post under each rafter. |
 | **Infill wall** | A wall that closes the gap between a structure and a sloped roof edge. It carries only itself. |
 | **Overhang** | Roof projecting past its last support. It has a long lever arm against wind suction, so the roof is cut at x = 3 to avoid one. |
 | **Uplift** | Upward wind suction on a roof. An open or lightweight roof can be torn off, so every connection has to hold it down. |
 | **Ring beam** | A continuous beam around the top of the walls that ties the roof to the columns. Not yet modelled. |
-| **Rafter / purlin** | Rafters run up the slope and carry purlins, which run across it and carry the roof panels. Not yet modelled. |
+| **Rafter / purlin** | Rafters run up the slope and carry purlins, which run across it and carry the roof panels. Modelled on `roof_south_east` only (`frame`): rafters 1 m apart on the knee-wall rail, purlins at most 0.875 m apart on the rafters, then the panels. |
 | **Gutter / downpipe** | They collect rain at the eave and lead it away. Not yet modelled. |
 | **Header** | The member over a door opening, joining the posts on either side. |
 | **Door post** | The steel post at each side of an opening. The door hangs from it. |
@@ -87,7 +87,10 @@ Dimensions in metres unless noted.
 | **Steel grate** | Decided | Floor base for upper storeys. Secondary overlay panels go on top. |
 | **Red brick** | Decided | Ground-floor walls. They are load-bearing. Heavy, with a density of about 1,600–2,000 kg/m³. |
 | **AAC** (aerated autoclaved concrete, "Hebel") | Candidate | Upper-storey walls. Light, with a density of about 550–750 kg/m³, so about 3× lighter than red brick. Not a natural fit for load-bearing walls, so it is used as infill only. |
-| **Spandek** | Roof option | Metal roof sheet. Blocks light and amplifies the sound of rainfall. |
+| **Spandek** | Roof option; piloted on `roof_south_east` | Trapezoidal metal roof sheet. Blocks light and amplifies the sound of rainfall unless insulated. |
+| **Spandek insulated** (0.35 mm, bubble foil) | Piloted | 1 m wide, lengths 3–6 m, steel 0.35 mm with 2 mm insulation. Rp110,000 per sheet (Tokopedia, sjbsteel). |
+| **Spandek transparent, PET 1.2 mm** | Piloted | Clear sheet 107 cm wide, 100 cm effective; wave pitch 15 cm, wave width 10 cm, height 3 cm; from 3 m long. Rp92,500 (Shopee). |
+| **Maxlite spandek transparan** | Alternative | 0.80 mm, effective width 77 cm or 1 m, lengths 1, 2, 2.5, 3, 4, 5, 6 m, fits the old Majadeck 770 profile. Rp120,000–290,000 (Shopee). |
 | **Polycarbonate** | Preferred roof idea | Translucent, so sunlight passes through. Hollow multiwall panels reduce rain noise. It needs more framing than spandek, so it may not be lighter overall. Wind resistance at 5.5 m or more above ground is the open concern. Not structural: also used, in a steel frame, for the roof's gable and the x = 3 wall (about 2 kg/m², and it expands 2–3 mm per metre with temperature). |
 | **Steel sandwich panel** | Candidate | Roof-level walls (parapets, infill). Steel sheets on both faces around an insulating core (PU or rockwool), about 10–15 kg/m² against 55–75 kg/m² for 100 mm AAC. Lighter, but its weight does no work against uplift, so it has to be bolted down. |
 | **Light steel frame** | Candidate | Frames the roof walls and carries the door. Doubles as the ring beam. |

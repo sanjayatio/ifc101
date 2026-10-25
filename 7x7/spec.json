@@ -45,7 +45,11 @@
 
     {"id": "roof_east", "storey": "roof", "corners": [[3, 3.5, 2.17], [7.05, 3.5, 0], [7.05, 7.05, 0]], "panel": "polycarbonate", "wall": "sandwich", "edge_walls": {"0": {"wall": "polycarbonate"}}},
 
-    {"id": "roof_south_east", "storey": "roof", "corners": [[3, 0, 2.17], [7.05, 0, 0], [7.05, 3.5, 0], [3, 3.5, 2.17]], "panel": "polycarbonate", "wall": "sandwich", "edge_walls": {"0": true, "2": true, "3": {"wall": "polycarbonate", "doors": [{"from": 1, "to": 2}]}}},
+    {"id": "roof_south_east", "storey": "roof", "corners": [[3, 0, 2.17], [7.05, 0, 0], [7.05, 3.5, 0], [3, 3.5, 2.17]], "panel": "spandek_insulated", "wall": "sandwich", "edge_walls": {"0": true, "2": true, "3": {"wall": "polycarbonate", "doors": [{"from": 1, "to": 2}]}},
+     "cladding": [{"panel": "spandek_insulated", "width": 0.5}, {"panel": "spandek_transparent", "width": 1}, {"panel": "spandek_insulated", "width": 0.5},
+                  {"panel": "spandek_transparent", "width": 1}, {"panel": "spandek_insulated", "width": 0.5}],
+     "frame": {"rafter": {"width": 0.05, "depth": 0.1, "thickness": 0.0023, "pitch": 1.0, "edge_inset": 0.1},
+               "purlin": {"width": 0.04, "depth": 0.06, "thickness": 0.0023, "max_spacing": 0.875, "inset": 0.05}}},
     {"id": "roof_stairs_1", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
      "corners": [[2.9, 2, 1.5], [0, 2, 1.5], [0, 3, 1.4], [2.9, 3, 1.4]]},
     {"id": "roof_stairs_2", "storey": "roof", "panel": "polycarbonate", "wall": "sandwich",
@@ -65,7 +69,8 @@
       {"id": "north", "axis": "x", "at": 6.5, "from": 3, "to": 6, "on_beam": [[0.2156862745098036, 6.5]], "roofs": ["roof_north_west", "roof_north_east"]},
       {"id": "bath", "axis": "x", "at": 0, "from": 3, "to": 6, "roofs": ["roof_bath"], "tall_posts": [[3, 0, 2.17]]},
       {"id": "west", "axis": "y", "at": 0, "from": 4.5, "to": 6.5, "roofs": ["roof_west"]},
-      {"id": "east", "axis": "y", "at": 6, "from": 0, "to": 4.5, "on_beam": [[6, 6.126851851851852]], "roofs": ["roof_south_east", "roof_east"]}
+      {"id": "east_se", "axis": "y", "at": 6, "rafter_posts": "roof_south_east"},
+      {"id": "east", "axis": "y", "at": 6, "from": 4.5, "to": 4.5, "on_beam": [[6, 6.126851851851852]], "roofs": ["roof_east"]}
     ]
   },
 

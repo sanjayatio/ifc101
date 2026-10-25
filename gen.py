@@ -14,6 +14,9 @@ WALL_TYPES = {"brick": "wall_type_brick_100", "aac": "wall_type_aac_100", "sandw
               "polycarbonate": "wall_type_polycarbonate_framed"}
 WALL_THICKNESS = {"brick": 0.1, "aac": 0.1, "sandwich": 0.05, "polycarbonate": 0.016}  # the sum of each type's layers
 SLAB_TYPES = {"floor_100": "slab_type_floor_100", "floor_200": "slab_type_floor_200"}
+# Slab finish key (`material` in spec.json) -> (IfcMaterial name, colour is set in ifc_components.STYLED_MATERIALS)
+SLAB_MATERIALS = {"packed_dirt": "Packed Dirt", "raised_tile": "Raised Tile", "diamond_plate": "Diamond Steel Plate",
+                  "steel_deck": "Waterproofed Steel Deck", "tbd": "TBD (diamond plate or other)"}
 COLUMN_TYPE, COLUMN_SIZE = "column_type_hbeam_150x150", 0.15
 KNEE_POST_TYPE, KNEE_RAIL_TYPE = "column_type_knee_post", "beam_type_knee_rail"
 DOOR_HEIGHT = 2.1
@@ -96,10 +99,22 @@ class Design:
             Description="Steel-framed wall glazed with polycarbonate, so daylight reaches the roof deck",
             MaterialLayers=[{"Material": "Polycarbonate Multiwall", "LayerThickness": 0.016}], HasPropertySets=["pset_wall_polycarbonate_frame"])
         self.septic_types()
+        self.slab_material_types()
         add(id="slab_type_floor_100", type="IfcSlabType", Name="Floor_100", PredefinedType="FLOOR", MaterialLayers=[{"LayerThickness": 0.1}])
         add(id="slab_type_floor_200", type="IfcSlabType", Name="Floor_200", PredefinedType="FLOOR", MaterialLayers=[{"LayerThickness": 0.2}])
         add(id="slab_type_landing_100", type="IfcSlabType", Name="Landing_100", PredefinedType="LANDING", MaterialLayers=[{"LayerThickness": 0.1}])
         add(id="stair_flight_type_steel", type="IfcStairFlightType", Name="SteelFlight", PredefinedType="STRAIGHT", HasPropertySets=["pset_stair_flight"])
+
+    def slab_material_types(self):
+        """One slab type per (thickness, material) pair used by a slab's `material`; slabs without one keep the plain floor types."""
+        used = sorted({(s.get("type", "floor_100"), s["material"]) for s in self.spec.get("slabs", []) if "material" in s})
+        for kind, material in used:
+            self.add(id=self.slab_material_type(kind, material), type="IfcSlabType", Name=f"{kind.capitalize()}_{material}", PredefinedType="FLOOR",
+                     MaterialLayers=[{"Material": SLAB_MATERIALS[material], "LayerThickness": 0.2 if kind == "floor_200" else 0.1}])
+
+    @staticmethod
+    def slab_material_type(kind, material):
+        return f"slab_type_{kind}_{material}"
 
     def septic_types(self):
         """Concrete wall and slab types for every septic tank, one per thickness, sharing the corrosion-protection property set."""
@@ -132,7 +147,9 @@ class Design:
     def slabs(self):
         for s in self.spec.get("slabs", []):
             thickness = 0.2 if s.get("type", "floor_100") == "floor_200" else 0.1
-            node = dict(id=s["id"], type="IfcSlab", IsTypedBy=SLAB_TYPES[s.get("type", "floor_100")], ContainedIn=self.storey_id(s["storey"]))
+            kind = s.get("type", "floor_100")
+            type_id = self.slab_material_type(kind, s["material"]) if "material" in s else SLAB_TYPES[kind]
+            node = dict(id=s["id"], type="IfcSlab", IsTypedBy=type_id, ContainedIn=self.storey_id(s["storey"]))
             if s.get("steel_grate"):
                 node["HasPropertySets"] = ["pset_slab_steel"]
             node.update(Name=s.get("name", s["id"]), Location=[0.0, 0.0, s.get("z", r(self.elevation(s["storey"]) - thickness))],

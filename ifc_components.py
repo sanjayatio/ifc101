@@ -4,7 +4,10 @@ from ifc_utils import (guid_for, point, direction, extrude_up, body_shape,
                        axis_placement_3d, get_material, plain_material, assign_material, style_item)
 
 # Materials that carry a surface style; any other material name becomes a plain IfcMaterial.
-STYLED_MATERIALS = {"Steel_Black": (0.0, 0.0, 0.0)}
+STYLED_MATERIALS = {"Steel_Black": (0.0, 0.0, 0.0),
+                    # slab finishes, one colour each so the materials can be told apart in the viewer
+                    "Packed Dirt": (0.45, 0.32, 0.20), "Raised Tile": (0.78, 0.45, 0.30), "Diamond Steel Plate": (0.35, 0.42, 0.52),
+                    "Waterproofed Steel Deck": (0.30, 0.62, 0.60), "TBD (diamond plate or other)": (0.95, 0.75, 0.25)}
 
 
 # ---- helpers -----------------------------------------------------------------
@@ -99,7 +102,11 @@ def _outline_profile(model, outline):
 
 def build_slab(scene, node, placement):
     model = scene.model
-    solid = extrude_up(model, _outline_profile(model, node["OuterCurve"]), _thickness(_type_of(scene, node)))
+    type_node = _type_of(scene, node)
+    solid = extrude_up(model, _outline_profile(model, node["OuterCurve"]), _thickness(type_node))
+    for layer in type_node["MaterialLayers"]:
+        if layer.get("Material") in STYLED_MATERIALS:
+            _style_solid(model, solid, layer["Material"])
     return _product(scene, node, placement, body_shape(model, scene.context, "SweptSolid", [solid]))
 
 

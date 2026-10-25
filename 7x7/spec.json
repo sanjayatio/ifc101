@@ -4,25 +4,26 @@
   "storeys": ["ground", "first", "roof"],
 
   "slabs": [
-    {"id": "slab_garage", "storey": "ground", "name": "Ground_Slab", "type": "floor_200", "z": 0.0,
+    {"id": "slab_garage", "storey": "ground", "name": "Ground_Slab", "material": "packed_dirt", "type": "floor_200", "z": 0.0,
      "polygon": [[3, 0], [7, 0], [7, 7], [3, 7]]},
- 
-    {"id": "slab_watch", "storey": "ground", "name": "Watch_Slab", "type": "floor_200", "z": 0.0,
+    {"id": "slab_watch", "storey": "ground", "name": "Watch_Slab", "material": "raised_tile", "type": "floor_200", "z": 0.0,
      "polygon": [[-0.5, 4.5], [-0.5, 7], [3, 7], [3, 4.5]]},
-    {"id": "slab_toilet", "storey": "first", "name": "Toilet_Slab", "type": "floor_100", 
+    {"id": "slab_toilet", "storey": "first", "name": "Toilet_Slab", "material": "steel_deck", "type": "floor_100", 
      "polygon": [[3, -0.6], [4, -0.6], [4, 1], [3, 1]]},
-    {"id": "slab_bath", "storey": "first", "name": "Bath_Slab", "type": "floor_100", 
+    {"id": "slab_bath", "storey": "first", "name": "Bath_Slab", "material": "steel_deck", "type": "floor_100", 
      "polygon": [[4, -0.6], [6, -0.6], [6, 2], [4, 2]]},
-    {"id": "slab_room", "storey": "first", "name": "Room_Slab", "type": "floor_100", 
+    {"id": "slab_room", "storey": "first", "name": "Room_Slab", "material": "tbd", "type": "floor_100", 
      "polygon": [[-0.5, 7], [3, 7], [3, 3.5], [-0.5, 3.5]]},
     {"id": "slab_first", "storey": "first", "name": "First_Floor_Slab", "type": "floor_100", "steel_grate": true,
      "polygon": [[3, 3.5], [4, 3.5], [4, 1], [3, 1]]},
     {"id": "slab_hall", "storey": "first", "name": "Hall_Slab", "type": "floor_100", "steel_grate": true,
      "polygon": [[3, 7], [7, 7], [7, -0.6], [6, -0.6], [6, 2], [4, 2], [4, 3.5], [3, 3.5]]},
-    {"id": "slab_cover", "storey": "roof", "name": "Roof_Cover_Slab", "type": "floor_100", "steel_grate": true,
+    {"id": "slab_cover", "storey": "roof", "name": "Roof_Cover_Slab", "material": "diamond_plate", "type": "floor_100",
      "polygon": [[6, 0], [3, 0], [3, 2], [6, 2]]},
+    {"id": "slab_room_roof", "storey": "roof", "name": "Roof_Room_Slab", "material": "diamond_plate", "type": "floor_100",
+     "polygon": [[-0.5, 7], [3, 7], [3, 3.5], [-0.5, 3.5]]},
     {"id": "slab_roof", "storey": "roof", "name": "Roof_Floor_Slab", "type": "floor_100", "steel_grate": true,
-     "polygon": [[-0.5, 7], [7, 7], [7, 0], [6, 0], [6, 2], [3, 2], [3, 3.5], [-0.5, 3.5]]}
+     "polygon": [[3, 7], [7, 7], [7, 0], [6, 0], [6, 2], [3, 2]]}
   ],
 
   "roofs": [

@@ -25,6 +25,18 @@ Storey height is 3 m (`ground` at z = 0, `first` at z = 3, `roof` at z = 6). Coo
 Floors on the first storey are 100 mm slabs. `slab_first` and `slab_hall` are steel grate;
 the others are solid. On the ground storey there is no slab under the open stair area (x -0.5–3, y 0–4.5): `slab_garage` covers x 3–7 and `slab_watch` x -0.5–3, y 4.5–7.
 
+### Slab materials
+
+Each slab can set a `material`, which becomes its own slab type and a surface colour in the render. Slabs without one (the steel-grate slabs) stay uncoloured.
+
+| Slab | Material | Colour | Status | Notes |
+|---|---|---|---|---|
+| `slab_garage` | Packed dirt | brown | Decided | Or any other cheap fill. |
+| `slab_watch` | Raised tile | terracotta | Decided | Tile on pedestals, so the 200 mm build-up is mostly air. |
+| `slab_room` | TBD | amber | Open | Diamond steel plate is a candidate, but a carpet on it would hold spilled water and promote rust. Other options: grate with a tile or vinyl overlay, or a sealed deck. |
+| `slab_toilet`, `slab_bath` | Waterproofed steel deck | teal | Decided | One material for both. Chosen over concrete, which at 100 mm is about 240 kg/m² and heavy on the toilet cantilever. Needs a sealed membrane and upstands at the walls. |
+| `slab_cover`, `slab_room_roof` | Diamond steel plate | blue-grey | Decided | Solid, for privacy. |
+
 `slab_roof` (steel grate, 100 mm, top at z = 6) is the floor under the roof. It follows the first-storey outline and
 leaves the stair void open (x 0–3, y 1–3.5, and x 0–2.4, y 0–1). The strip x 2.4–3, y 0–1 outside the roof's x = 3 wall is covered by `roof_2`.
 
@@ -152,7 +164,7 @@ Water
 
 ## `spec.json` reference
 
-- `slabs`: `id`, `storey`, `name`, `type` (`floor_100` or `floor_200`), `polygon`, optional `steel_grate`, optional `z`.
+- `slabs`: `id`, `storey`, `name`, `type` (`floor_100` or `floor_200`), `polygon`, optional `material` (`packed_dirt`, `raised_tile`, `diamond_plate`, `steel_deck` or `tbd`), optional `steel_grate`, optional `z`.
 - `rooms`: walls built around an outline. Walls shared between rooms are merged into one run.
   - `rect`: `[x0, y0, x1, y1]`, or `polygon`: an axis-aligned outline given as a point list.
   - `wall`: `brick` or `aac` (`sandwich` and `polycarbonate` also exist, used on the roof).

@@ -104,6 +104,26 @@
       "Name": "SepticCover_150", "MaterialLayers": [{"Material": "Reinforced Concrete K-250", "LayerThickness": 0.15}]
     },
     {
+      "id": "slab_type_floor_100_diamond_plate", "type": "IfcSlabType", "PredefinedType": "FLOOR",
+      "Name": "Floor_100_diamond_plate", "MaterialLayers": [{"Material": "Diamond Steel Plate", "LayerThickness": 0.1}]
+    },
+    {
+      "id": "slab_type_floor_100_steel_deck", "type": "IfcSlabType", "PredefinedType": "FLOOR",
+      "Name": "Floor_100_steel_deck", "MaterialLayers": [{"Material": "Waterproofed Steel Deck", "LayerThickness": 0.1}]
+    },
+    {
+      "id": "slab_type_floor_100_tbd", "type": "IfcSlabType", "PredefinedType": "FLOOR",
+      "Name": "Floor_100_tbd", "MaterialLayers": [{"Material": "TBD (diamond plate or other)", "LayerThickness": 0.1}]
+    },
+    {
+      "id": "slab_type_floor_200_packed_dirt", "type": "IfcSlabType", "PredefinedType": "FLOOR",
+      "Name": "Floor_200_packed_dirt", "MaterialLayers": [{"Material": "Packed Dirt", "LayerThickness": 0.2}]
+    },
+    {
+      "id": "slab_type_floor_200_raised_tile", "type": "IfcSlabType", "PredefinedType": "FLOOR",
+      "Name": "Floor_200_raised_tile", "MaterialLayers": [{"Material": "Raised Tile", "LayerThickness": 0.2}]
+    },
+    {
       "id": "slab_type_floor_100", "type": "IfcSlabType", "PredefinedType": "FLOOR",
       "Name": "Floor_100", "MaterialLayers": [{"LayerThickness": 0.1}]
     },
@@ -120,23 +140,23 @@
       "Name": "SteelFlight"
     },
     {
-      "id": "slab_garage", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_200", "ContainedIn": "storey_ground",
+      "id": "slab_garage", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_200_packed_dirt", "ContainedIn": "storey_ground",
       "Name": "Ground_Slab", "Location": [0.0, 0.0, 0.0], "OuterCurve": [[3, 0], [7, 0], [7, 7], [3, 7]]
     },
     {
-      "id": "slab_watch", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_200", "ContainedIn": "storey_ground",
+      "id": "slab_watch", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_200_raised_tile", "ContainedIn": "storey_ground",
       "Name": "Watch_Slab", "Location": [0.0, 0.0, 0.0], "OuterCurve": [[-0.5, 4.5], [-0.5, 7], [3, 7], [3, 4.5]]
     },
     {
-      "id": "slab_toilet", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100", "ContainedIn": "storey_first",
+      "id": "slab_toilet", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100_steel_deck", "ContainedIn": "storey_first",
       "Name": "Toilet_Slab", "Location": [0.0, 0.0, 2.9], "OuterCurve": [[3, -0.6], [4, -0.6], [4, 1], [3, 1]]
     },
     {
-      "id": "slab_bath", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100", "ContainedIn": "storey_first",
+      "id": "slab_bath", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100_steel_deck", "ContainedIn": "storey_first",
       "Name": "Bath_Slab", "Location": [0.0, 0.0, 2.9], "OuterCurve": [[4, -0.6], [6, -0.6], [6, 2], [4, 2]]
     },
     {
-      "id": "slab_room", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100", "ContainedIn": "storey_first",
+      "id": "slab_room", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100_tbd", "ContainedIn": "storey_first",
       "Name": "Room_Slab", "Location": [0.0, 0.0, 2.9], "OuterCurve": [[-0.5, 7], [3, 7], [3, 3.5], [-0.5, 3.5]]
     },
     {
@@ -148,12 +168,16 @@
       "Name": "Hall_Slab", "Location": [0.0, 0.0, 2.9], "OuterCurve": [[3, 7], [7, 7], [7, -0.6], [6, -0.6], [6, 2], [4, 2], [4, 3.5], [3, 3.5]]
     },
     {
-      "id": "slab_cover", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_slab_steel"],
+      "id": "slab_cover", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100_diamond_plate", "ContainedIn": "storey_roof",
       "Name": "Roof_Cover_Slab", "Location": [0.0, 0.0, 5.9], "OuterCurve": [[6, 0], [3, 0], [3, 2], [6, 2]]
     },
     {
+      "id": "slab_room_roof", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100_diamond_plate", "ContainedIn": "storey_roof",
+      "Name": "Roof_Room_Slab", "Location": [0.0, 0.0, 5.9], "OuterCurve": [[-0.5, 7], [3, 7], [3, 3.5], [-0.5, 3.5]]
+    },
+    {
       "id": "slab_roof", "type": "IfcSlab", "IsTypedBy": "slab_type_floor_100", "ContainedIn": "storey_roof", "HasPropertySets": ["pset_slab_steel"],
-      "Name": "Roof_Floor_Slab", "Location": [0.0, 0.0, 5.9], "OuterCurve": [[-0.5, 7], [7, 7], [7, 0], [6, 0], [6, 2], [3, 2], [3, 3.5], [-0.5, 3.5]]
+      "Name": "Roof_Floor_Slab", "Location": [0.0, 0.0, 5.9], "OuterCurve": [[3, 7], [7, 7], [7, 0], [6, 0], [6, 2], [3, 2]]
     },
     {
       "id": "stair_1", "type": "IfcStair", "ContainedIn": "storey_ground", "PredefinedType": "TWO_STRAIGHT_RUN_STAIR"

@@ -1,8 +1,15 @@
-import math, ifcopenshell
+import uuid, ifcopenshell
+
+_GUID_NAMESPACE = uuid.UUID("5c1f3a54-8f0e-4d7b-9a53-2b6e7d1c0f42")
 
 
 def new_guid():
     return ifcopenshell.guid.new()
+
+
+def guid_for(key):
+    """Stable IfcGloballyUniqueId derived from a node's JSON `id`, so a node keeps its identity across regenerations."""
+    return ifcopenshell.guid.compress(uuid.uuid5(_GUID_NAMESPACE, key).hex)
 
 
 def point(model, *coords):
@@ -22,13 +29,9 @@ def axis_placement_3d(model, location=(0.0, 0.0, 0.0), axis=None, ref_direction=
     return model.create_entity("IfcAxis2Placement3D", **kwargs)
 
 
-def local_placement(model, x, y, z, rotation_deg):
-    rad = math.radians(rotation_deg)
-    placement_3d = axis_placement_3d(
-        model, (x, y, z),
-        axis=(0.0, 0.0, 1.0),
-        ref_direction=(round(math.cos(rad), 5), round(math.sin(rad), 5), 0.0))
-    return model.create_entity("IfcLocalPlacement", PlacementRelTo=None, RelativePlacement=placement_3d)
+def local_placement(model, location, ref_direction=(1.0, 0.0, 0.0), relative_to=None):
+    placement_3d = axis_placement_3d(model, location, axis=(0.0, 0.0, 1.0), ref_direction=ref_direction)
+    return model.create_entity("IfcLocalPlacement", PlacementRelTo=relative_to, RelativePlacement=placement_3d)
 
 
 def extrude_up(model, profile, depth, location=(0.0, 0.0, 0.0)):
@@ -72,8 +75,47 @@ def get_material(model, name, color, transparency=0.0):
     return model.create_entity("IfcMaterial", Name=name), style
 
 
-def assign_material(model, product, material):
-    model.create_entity("IfcRelAssociatesMaterial", new_guid(), None, None, None, [product], material)
+def plain_material(model, name):
+    """IfcMaterial for `name` without a surface style, created on first use."""
+    return next((m for m in model.by_type("IfcMaterial") if m.Name == name), None) or model.create_entity("IfcMaterial", Name=name)
+
+
+def assign_material(model, obj, material):
+    """`material` is any IfcMaterialSelect (material, layer set, profile set); `obj` an element or type."""
+    model.create_entity("IfcRelAssociatesMaterial", new_guid(), None, None, None, [obj], material)
+
+
+def define_by_type(model, product, type_object):
+    """A type has at most one IfcRelDefinesByType; later occurrences join its RelatedObjects."""
+    rel = next(iter(type_object.Types), None)
+    if rel is None:
+        model.create_entity("IfcRelDefinesByType", new_guid(), None, None, None, [product], type_object)
+    else:
+        rel.RelatedObjects = [*rel.RelatedObjects, product]
+
+
+def define_by_properties(model, product, pset):
+    """A property set has at most one IfcRelDefinesByProperties; later occurrences join its RelatedObjects."""
+    rel = next(iter(pset.DefinesOccurrence), None)
+    if rel is None:
+        model.create_entity("IfcRelDefinesByProperties", new_guid(), None, None, None, [product], pset)
+    else:
+        rel.RelatedObjects = [*rel.RelatedObjects, product]
+
+
+def nominal_value(model, value):
+    if isinstance(value, bool):
+        return model.create_entity("IfcBoolean", value)
+    if isinstance(value, (int, float)):
+        return model.create_entity("IfcReal", float(value))
+    return model.create_entity("IfcLabel", value)
+
+
+def property_set(model, node):
+    props = [model.create_entity("IfcPropertySingleValue", Name=name, NominalValue=nominal_value(model, value))
+             for name, value in node["HasProperties"].items()]
+    return model.create_entity("IfcPropertySet", GlobalId=guid_for(node["id"]), Name=node.get("Name"),
+                               Description=node.get("Description"), HasProperties=props)
 
 
 def style_item(model, item, style):

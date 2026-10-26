@@ -6,51 +6,36 @@ from ifc_utils import (new_guid, point, create_face, add_to_storey, aggregate, i
 ROOF_MATERIALS = {
     "metal":         ((0.62, 0.65, 0.68), 0.0, 0.03),
     "polycarbonate": ((0.70, 0.88, 0.95), 0.6, 0.01),
+    # spandek: trapezoidal sheet, 30 mm wave height is the panel thickness
+    "spandek_insulated":   ((0.55, 0.60, 0.66), 0.0, 0.03),
+    "spandek_transparent": ((0.80, 0.93, 0.98), 0.6, 0.03),
 }
 
 
-# ---- panel shapes: each returns a list of (x, y, z) vertices ----------------
-
-def isosceles_triangle(base_a, base_b, apex):
-    assert math.isclose(math.dist(base_a, apex), math.dist(base_b, apex), rel_tol=1e-6), "apex is not equidistant from base ends"
-    return [base_a, base_b, apex]
-
-
-def right_triangle(corner, leg_a, leg_b):
-    va = [a - c for a, c in zip(leg_a, corner)]
-    vb = [b - c for b, c in zip(leg_b, corner)]
-    assert math.isclose(sum(x * y for x, y in zip(va, vb)), 0.0, abs_tol=1e-6), "legs are not perpendicular"
-    return [corner, leg_a, leg_b]
-
-
-def slanted_rectangle(origin, along, rise):
-    """Rectangle spanning `along` (horizontal edge vector) and `rise` (sloped edge vector, perpendicular to `along`)."""
-    assert math.isclose(sum(x * y for x, y in zip(along, rise)), 0.0, abs_tol=1e-6), "edges are not perpendicular"
-    o = origin
-    return [o, tuple(a + b for a, b in zip(o, along)),
-            tuple(a + b + c for a, b, c in zip(o, along, rise)), tuple(a + b for a, b in zip(o, rise))]
+def clip_strip(verts, y0, y1):
+    """The part of the panel polygon `verts` with y0 <= y <= y1 (Sutherland-Hodgman on the two y half-planes)."""
+    for keep, bound in ((lambda y: y >= y0 - 1e-12, y0), (lambda y: y <= y1 + 1e-12, y1)):
+        out = []
+        for a, b in zip(verts, verts[1:] + verts[:1]):
+            if keep(a[1]):
+                out.append(a)
+            if keep(a[1]) != keep(b[1]):
+                t = (bound - a[1]) / (b[1] - a[1])
+                out.append(tuple(a[i] + t * (b[i] - a[i]) for i in range(3)))
+        verts = out
+    return verts
 
 
-def trapezoid(a, b, c, d):
-    return [a, b, c, d]
+# ---- panel shape ---------------------------------------------------------------
 
-
-# ---- hip roof layout ---------------------------------------------------------
-
-def hip_panels(min_x, min_y, max_x, max_y, pitch_deg):
-    """Faces of a hip roof over a rectangle, keyed by side (south = min_y)."""
-    half = (max_x - min_x) / 2.0
-    h = half * math.tan(math.radians(pitch_deg))
-    rx = min_x + half
-    sw, se = (min_x, min_y, 0.0), (max_x, min_y, 0.0)
-    ne, nw = (max_x, max_y, 0.0), (min_x, max_y, 0.0)
-    r_s, r_n = (rx, min_y + half, h), (rx, max_y - half, h)
-    return {
-        "south": isosceles_triangle(sw, se, r_s),
-        "east":  trapezoid(se, ne, r_n, r_s),
-        "north": isosceles_triangle(ne, nw, r_n),
-        "west":  trapezoid(nw, sw, r_s, r_n),
-    }
+def roof_panel(corners):
+    """The corners (x, y, z) of one sloped panel: 3 or 4 of them, and a fourth must lie in the plane of the first three."""
+    assert len(corners) in (3, 4), "a roof panel has 3 or 4 corners"
+    if len(corners) == 4:
+        n = _normal(corners[:3])
+        off = sum(n[i] * (corners[3][i] - corners[0][i]) for i in range(3))
+        assert abs(off) < 1e-6, f"the 4 corners are not in one plane (off by {off:.4f} m)"
+    return [tuple(float(c) for c in v) for v in corners]
 
 
 # ---- panel solid -------------------------------------------------------------
